@@ -5,6 +5,7 @@ class App extends Component {
 	render() {
 		return (
 			<div className="App">
+				<h4>Hello React</h4>
 			</div>
 		);
 	}	
