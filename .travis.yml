@@ -11,4 +11,6 @@ script:
   - npm run build
 after_success:
   - cd evento
+  - git config --global user.email "jaakko.lipsanen@outlook.com"
+  - git config --global user.name "Jaakko Lipsanen (built by Travis)"
   - npm run deploy
