@@ -5,7 +5,9 @@ cache:
   directories:
     - node_modules
 script:
+  - cd evento
   - npm test
   - npm run build
 after_success:
+  - cd evento
   - npm run deploy
