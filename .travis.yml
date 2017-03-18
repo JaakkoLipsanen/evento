@@ -10,24 +10,16 @@ cache:
   directories:
     - node_modules
 
+before_install:
+  - cd evento
+
 script:
   - npm install
   - npm test a
   - npm run build
 
 after_success:
+  - git config --global user.email "jaakko.lipsanen@outlook.com"
+  - git config --global user.name "Travis CI"
+  - git remote set-url origin https://JaakkoLipsanen:${GIT_TOKEN}@github.com/JaakkoLipsanen/evento-web.git
   - npm run deploy
-
-before_install:
-  - cd evento
-  - openssl aes-256-cbc -K $encrypted_f41f5a831225_key -iv $encrypted_f41f5a831225_iv
-    -in id_rsa.enc -out ~\/.ssh/id_rsa -d
-
-env:
-  global:
-    - DEPLOY_BRANCH="master"
-    - SOURCE_DIR="build"
-    - TARGET_BRANCH="gh-pages"
-    - SSH_KEY="id_rsa"
-    - GIT_NAME="Travis"
-    - GIT_EMAIL="jaakko.lipsanen@outlook.com"
