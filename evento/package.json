@@ -9,6 +9,7 @@
   },
   "devDependencies": {
     "gh-pages": "^0.12.0",
+    "react-router-dom": "^4.0.0",
     "react-scripts": "0.9.5"
   },
   "scripts": {
@@ -16,7 +17,6 @@
     "build": "react-scripts build",
     "test": "react-scripts test --env=jsdom",
     "eject": "react-scripts eject",
-	
     "deploy": "gh-pages -d build"
   }
 }
