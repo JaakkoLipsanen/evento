@@ -1,26 +1,26 @@
 import React, { Component } from 'react';
-import UserInfo from './UserInfo.js';
-import './App.css'
+import UserInfo from '../../components/UserInfo';
+import './Explore.css'
 
-class App extends Component {
+class Explore extends Component {
 	componentWillMount() {
 		this.setState({ users: [] });
-		
+
 		fetch('http://evento-api.herokuapp.com/users')
 		.then(response => response.json())
 		.then(users => {
 			this.setState({ users: users });
 		});
 	}
-	
+
 	render() {
 		return (
-			<div className="App">
+			<div className="Explore">
 				<h1>Users: </h1>
-				{this.state.users.map(user => <UserInfo key={user.id} user={user} /> )} 
+				{this.state.users.map(user => <UserInfo key={user.id} user={user} /> )}
 			</div>
 		);
-	}	
+	}
 }
 
-export default App;
+export default Explore;
