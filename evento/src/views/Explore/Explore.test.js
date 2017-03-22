@@ -1,6 +1,6 @@
 import React from 'react';
 import ReactDOM from 'react-dom';
-import Explore from './Explore';
+import Explore from './';
 
 it('renders without crashing', () => {
 	const div = document.createElement('div');
