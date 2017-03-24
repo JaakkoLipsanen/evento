@@ -15,7 +15,7 @@ before_install:
 
 script:
   - npm install
-  - npm test && cat ./coverage/lcov.info | ./node_modules/coveralls/bin/coveralls.js
+  - npm run travis-test
   - npm run build
 
 after_success:
