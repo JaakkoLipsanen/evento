@@ -1,6 +1,7 @@
 import React, { Component } from 'react';
+
 import UserInfo from '../../components/UserInfo';
-import './Explore.css'
+import './Explore.css';
 
 class Explore extends Component {
 	componentWillMount() {
