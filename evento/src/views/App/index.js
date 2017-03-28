@@ -9,13 +9,13 @@ class App extends Component {
 
 	render() {
 		return (
-      <Router>
-        <Switch>
+			<Router>
+				<Switch>
 					<Route path='/' component={MainPage} />
-          <Route path='*' component={PathNotFound} />
-        </Switch>
-      </Router>
-    );
+					<Route path='*' component={PathNotFound} />
+				</Switch>
+			</Router>
+		);
 	}
 }
 
