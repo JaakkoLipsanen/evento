@@ -1,2 +1,13 @@
 .TabContainer {
+	display: flex;
+
+	.Tab {
+		flex-basis: 100%;
+		padding: 4px;
+
+		a {
+			font-size: 24px;
+			text-decoration: none;
+		}
+	}
 }
