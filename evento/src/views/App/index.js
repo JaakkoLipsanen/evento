@@ -9,12 +9,14 @@ class App extends Component {
 
 	render() {
 		return (
-			<Router>
-				<Switch>
-					<Route path='/' component={MainPage} />
-					<Route path='*' component={PathNotFound} />
-				</Switch>
-			</Router>
+			<div className="App">
+				<Router>
+					<Switch>
+						<Route path='/' component={MainPage} />
+						<Route path='*' component={PathNotFound} />
+					</Switch>
+				</Router>
+			</div>
 		);
 	}
 }
