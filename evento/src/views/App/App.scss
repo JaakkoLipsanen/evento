@@ -1,4 +1,4 @@
-$max-width: 1000px;
+$max-width: 1400px;
 $default-font: "Roboto";
 $content-padding: 8px; /* how much space between edges of screen and content */
 
@@ -15,7 +15,7 @@ $body-background-color: rgb(140, 140, 140);
 
 	@media all and (min-width: $max-width) {
 		margin: auto;
-	    border-radius: 2px;
+		border-radius: 2px;
 	}
 }
 
