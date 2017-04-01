@@ -7,7 +7,7 @@ class Explore extends Component {
 	componentWillMount() {
 		this.setState({ users: [] });
 
-		fetch('http://evento-api.herokuapp.com/users')
+		fetch('/users')
 		.then(response => response.json())
 		.then(users => {
 			this.setState({ users: users });
