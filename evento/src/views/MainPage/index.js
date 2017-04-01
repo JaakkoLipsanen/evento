@@ -14,15 +14,23 @@ const tabs = [
 ];
 
 class MainPage extends Component {
+	constructor() {
+		super();
+		this.state = { filter: '' };
+	}
+
+	updateFilter(evt) {
+		this.setState({ filter: evt.target.value });
+	}
 
 	render() {
 		return (
 			<div className="MainPage">
-				<SearchBar />
+				<SearchBar filter={this.updateFilter.bind(this)}/>
 				<TabContainer tabs={tabs} />
 
 				<Switch>
-					<Route exact path='/' component={Explore} />
+					<Route exact path='/' component={() => <Explore updateFilter={this.state.filter} />} />
 					<Route exact path='/events' component={MyEvents} />
 				</Switch>
 			</div>
