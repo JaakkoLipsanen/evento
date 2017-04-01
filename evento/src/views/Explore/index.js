@@ -1,24 +1,25 @@
 import React, { Component } from 'react';
 
-import UserInfo from '../../components/UserInfo';
+import EventCard from '../../components/EventCard';
 import './Explore.css';
 
 class Explore extends Component {
 	componentWillMount() {
-		this.setState({ users: [] });
+		this.setState({ events: [] });
 
-		fetch('/users')
+		fetch('/events')
 		.then(response => response.json())
-		.then(users => {
-			this.setState({ users: users });
+		.then(events => {
+			this.setState({ events: events });
 		});
 	}
 
 	render() {
 		return (
 			<div className="Explore">
-				<h1>Users: </h1>
-				{this.state.users.map(user => <UserInfo key={user.id} user={user} /> )}
+				<div className="event-card-list">
+					{this.state.events.map(event => <EventCard key={event.id} event={event} /> )}
+				</div>
 			</div>
 		);
 	}
