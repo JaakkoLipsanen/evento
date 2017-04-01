@@ -2,6 +2,7 @@
   "name": "evento",
   "version": "0.1.0",
   "private": true,
+  "proxy": "https://evento-api.herokuapp.com/",
   "homepage": "/evento-web",
   "dependencies": {
     "react": "^15.4.2",
