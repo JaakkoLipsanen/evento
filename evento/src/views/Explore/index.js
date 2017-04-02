@@ -7,8 +7,8 @@ class Explore extends Component {
 	constructor(props) {
 		super(props);
 		this.state = { events: [] };
-		
 	}
+
 	componentWillMount() {
 		fetch('/events')
 		.then(response => response.json())

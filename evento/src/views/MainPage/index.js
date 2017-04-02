@@ -26,11 +26,11 @@ class MainPage extends Component {
 	render() {
 		return (
 			<div className="MainPage">
-				<SearchBar filter={this.updateFilter.bind(this)}/>
+				<SearchBar updateFilter={this.updateFilter.bind(this)}/>
 				<TabContainer tabs={tabs} />
 
 				<Switch>
-					<Route exact path='/' component={() => <Explore updateFilter={this.state.filter} />} />
+					<Route exact path='/' component={() => <Explore filter={this.state.filter} />} />
 					<Route exact path='/events' component={MyEvents} />
 				</Switch>
 			</div>
