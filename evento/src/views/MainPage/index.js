@@ -30,7 +30,7 @@ class MainPage extends Component {
 				<TabContainer tabs={tabs} />
 
 				<Switch>
-					<Route exact path='/' component={() => <Explore filter={this.state.filter} />} />
+					<Route exact path='/' render={() => <Explore filter={this.state.filter} />} />
 					<Route exact path='/events' component={MyEvents} />
 				</Switch>
 			</div>
