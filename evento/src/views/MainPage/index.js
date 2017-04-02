@@ -9,8 +9,8 @@ import './MainPage.css';
 
 // hard coded tabs!
 const tabs = [
-	{ title: "Explore", path: "/" },
-	{ title: "My Events", path: "/events" }
+	{ id: 1, title: "Explore", path: "/" },
+	{ id: 2, title: "My Events", path: "/events" }
 ];
 
 class MainPage extends Component {
