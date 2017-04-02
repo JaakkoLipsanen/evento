@@ -9,7 +9,7 @@ class Explore extends Component {
 		this.state = { events: [] };
 	}
 
-	componentWillMount() {
+	componentDidMount() {
 		fetch('/events')
 		.then(response => response.json())
 		.then(events => {
