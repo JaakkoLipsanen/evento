@@ -9,17 +9,23 @@ import './MainPage.css';
 
 // hard coded tabs!
 const tabs = [
-	{ id: 1, title: "Explore", path: "/" },
-	{ id: 2, title: "My Events", path: "/events" }
+	{ title: "Explore", path: "/" },
+	{ title: "My Events", path: "/events" }
 ];
 
 class MainPage extends Component {
+	onPathChange(path) {
+		this.props.history.push(path)
+	}
 
 	render() {
 		return (
 			<div className="MainPage">
 				<SearchBar />
-				<TabContainer tabs={tabs} />
+				<TabContainer
+					tabs={tabs}
+					path={this.props.location.pathname}
+					onPathChange={(path) => this.onPathChange(path)}/>
 
 				<Switch>
 					<Route exact path='/' component={Explore} />

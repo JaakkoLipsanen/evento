@@ -1,25 +1,25 @@
 import React, { Component } from 'react';
-import { Link } from 'react-router-dom';
 import './TabContainer.css';
 
-const Tab = (props) => {
+const Tab = ({title, onClick, isSelected}) => {
+	const classname = isSelected ? "Tab selected" : 'Tab';
 	return (
-		<div className="Tab">
-			<h4>
-				<Link to={props.path} onClick={() => props.onClick(props.id)}> {props.title} </Link>
-			</h4>
+		<div className={classname} onClick={() => onClick()}>
+			<h4> {title} </h4>
 		</div>
 	);
 };
 
 class TabContainer extends Component {
-	constructor() {
-		super();
-		this.state = { selectedId: 1 };
+	constructor(props) {
+		super(props);
+		const selected = this.props.tabs.filter((e) => e.path === props.path)[0];
+		this.state = { selected: selected };
 	}
 
-	onTabChange(tabId) {
-		this.setState({ selectedId: tabId });
+	onTabChange(tab) {
+		this.setState({ selected: tab });
+		this.props.onPathChange(tab.path);
 	}
 
 	render() {
@@ -29,10 +29,8 @@ class TabContainer extends Component {
 					<Tab
 						key={tab.title}
 						title={tab.title}
-						path={tab.path}
-						id={tab.id}
-						status={tab.id === this.state.selectedId ? 'selected' : 'not-selected'}
-						onClick={(e) => this.onTabChange(e)} 
+						isSelected={tab === this.state.selected}
+						onClick={() => this.onTabChange(tab)}
 					/> )}
 			</div>
 		);
