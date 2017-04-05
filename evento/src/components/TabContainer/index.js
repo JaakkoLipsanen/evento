@@ -19,7 +19,7 @@ class TabContainer extends Component {
 
 	onSelectedChange(tab) {
 		this.setState({ selected: tab });
-		this.props.onSelectedTabChange(tab.path);
+		this.props.onSelectedTabChange(tab);
 	}
 
 	render() {
