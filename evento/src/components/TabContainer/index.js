@@ -1,23 +1,37 @@
 import React, { Component } from 'react';
-import { Link } from 'react-router-dom';
 import './TabContainer.css';
 
-const Tab = (props) => {
+const Tab = ({title, onClick, isSelected}) => {
+	const classname = 'Tab' + (isSelected ? ' selected' : '');
 	return (
-		<div className="Tab">
-			<h4>
-				<Link to={props.path}> {props.title} </Link>
-			</h4>
+		<div className={classname} onClick={() => onClick()}>
+			<h4> {title} </h4>
 		</div>
 	);
 };
 
 class TabContainer extends Component {
+	constructor(props) {
+		super(props);
+		const selected = this.props.tabs.filter((e) => e.path === props.path)[0];
+		this.state = { selected: selected };
+	}
+
+	onSelectedChange(tab) {
+		this.setState({ selected: tab });
+		this.props.onSelectedTabChange(tab);
+	}
+
 	render() {
 		return (
 			<div className="TabContainer">
 				{this.props.tabs.map(tab =>
-					<Tab key={tab.title} title={tab.title} path={tab.path} /> )}
+					<Tab
+						key={tab.title}
+						title={tab.title}
+						isSelected={tab === this.state.selected}
+						onClick={() => this.onSelectedChange(tab)}
+					/> )}
 			</div>
 		);
 	}

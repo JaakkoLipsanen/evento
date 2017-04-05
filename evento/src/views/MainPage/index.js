@@ -23,11 +23,18 @@ class MainPage extends Component {
 		this.setState({ filter: evt.target.value });
 	}
 
+	changePath(path) {
+		this.props.history.push(path)
+	}
+
 	render() {
 		return (
 			<div className="MainPage">
 				<SearchBar updateFilter={this.updateFilter.bind(this)}/>
-				<TabContainer tabs={tabs} />
+				<TabContainer
+					tabs={tabs}
+					path={this.props.location.pathname}
+					onSelectedTabChange={(tab) => this.changePath(tab.path)}/>
 
 				<Switch>
 					<Route exact path='/' render={() => <Explore filter={this.state.filter} />} />
