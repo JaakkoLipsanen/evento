@@ -14,12 +14,18 @@ const tabs = [
 ];
 
 class MainPage extends Component {
+	changePath(path) {
+		this.props.history.push(path)
+	}
 
 	render() {
 		return (
 			<div className="MainPage">
 				<SearchBar />
-				<TabContainer tabs={tabs} />
+				<TabContainer
+					tabs={tabs}
+					path={this.props.location.pathname}
+					onSelectedTabChange={(tab) => this.changePath(tab.path)}/>
 
 				<Switch>
 					<Route exact path='/' component={Explore} />
