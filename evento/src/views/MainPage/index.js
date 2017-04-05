@@ -25,7 +25,7 @@ class MainPage extends Component {
 				<TabContainer
 					tabs={tabs}
 					path={this.props.location.pathname}
-					onPathChange={(path) => this.onPathChange(path)}/>
+					onSelectedTabChange={(path) => this.onPathChange(path)}/>
 
 				<Switch>
 					<Route exact path='/' component={Explore} />

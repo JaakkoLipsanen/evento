@@ -2,7 +2,7 @@ import React, { Component } from 'react';
 import './TabContainer.css';
 
 const Tab = ({title, onClick, isSelected}) => {
-	const classname = isSelected ? "Tab selected" : 'Tab';
+	const classname = 'Tab' + (isSelected ? ' selected' : '');
 	return (
 		<div className={classname} onClick={() => onClick()}>
 			<h4> {title} </h4>
@@ -17,9 +17,9 @@ class TabContainer extends Component {
 		this.state = { selected: selected };
 	}
 
-	onTabChange(tab) {
+	onSelectedChange(tab) {
 		this.setState({ selected: tab });
-		this.props.onPathChange(tab.path);
+		this.props.onSelectedTabChange(tab.path);
 	}
 
 	render() {
@@ -30,7 +30,7 @@ class TabContainer extends Component {
 						key={tab.title}
 						title={tab.title}
 						isSelected={tab === this.state.selected}
-						onClick={() => this.onTabChange(tab)}
+						onClick={() => this.onSelectedChange(tab)}
 					/> )}
 			</div>
 		);
