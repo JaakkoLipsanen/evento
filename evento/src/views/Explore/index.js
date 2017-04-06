@@ -25,7 +25,12 @@ class Explore extends Component {
 		return (
 			<div className="Explore">
 				<div className="event-card-list">
-					{ this.filteredEvents.map(event => <EventCard key={event.id} event={event} />) }
+					{ this.filteredEvents.map(event =>
+						<EventCard
+							key={event.id}
+							event={event}
+							onClick={() => this.props.history.push(`/event/${event.id}`)}/>)
+					}
 				</div>
 			</div>
 		);
