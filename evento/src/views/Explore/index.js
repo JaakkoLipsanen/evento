@@ -4,9 +4,12 @@ import EventCard from '../../components/EventCard';
 import './Explore.css';
 
 class Explore extends Component {
-	componentWillMount() {
-		this.setState({ events: [] });
+	constructor(props) {
+		super(props);
+		this.state = { events: [] };
+	}
 
+	componentDidMount() {
 		fetch('/events')
 		.then(response => response.json())
 		.then(events => {
@@ -14,11 +17,15 @@ class Explore extends Component {
 		});
 	}
 
+	get filteredEvents() {
+		return this.props.filterEvents(this.state.events);
+	}
+
 	render() {
 		return (
 			<div className="Explore">
 				<div className="event-card-list">
-					{this.state.events.map(event => <EventCard key={event.id} event={event} /> )}
+					{ this.filteredEvents.map(event => <EventCard key={event.id} event={event} />) }
 				</div>
 			</div>
 		);
