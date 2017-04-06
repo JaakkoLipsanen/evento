@@ -51,7 +51,12 @@ class MainPage extends Component {
 					onSelectedTabChange={(tab) => this.changePath(tab.path)}/>
 
 				<Switch>
-					<Route exact path='/' render={() => <Explore filterEvents={this.state.filterer} />} />
+					<Route exact path='/' render={() => (
+						<Explore
+							filterEvents={this.state.filterer}
+							history={this.props.history}
+						/>)}
+					/>
 					<Route exact path='/events' component={MyEvents} />
 				</Switch>
 			</div>
