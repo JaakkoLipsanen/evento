@@ -13,14 +13,28 @@ const tabs = [
 	{ title: "My Events", path: "/events" }
 ];
 
+const createEventFilterer = (filterQuery) => {
+	return (events) => {
+		const toString = event => [
+			event.title, event.description, event.category.name,
+			event.creator.name, event.location]
+			.join('|')
+			.toLowerCase();
+
+		return events.filter(event => toString(event).includes(filterQuery));
+	}
+};
+
 class MainPage extends Component {
 	constructor() {
 		super();
-		this.state = { filter: '' };
+
+		// matches all events by default
+		this.state = { filterer: (events) => events };
 	}
 
-	updateFilter(evt) {
-		this.setState({ filter: evt.target.value });
+	updateFilter(filterQuery) {
+		this.setState({ filterer: createEventFilterer(filterQuery) });
 	}
 
 	changePath(path) {
@@ -30,14 +44,14 @@ class MainPage extends Component {
 	render() {
 		return (
 			<div className="MainPage">
-				<SearchBar updateFilter={this.updateFilter.bind(this)}/>
+				<SearchBar onQueryChange={(evt) => this.updateFilter(evt.target.value)}/>
 				<TabContainer
 					tabs={tabs}
 					path={this.props.location.pathname}
 					onSelectedTabChange={(tab) => this.changePath(tab.path)}/>
 
 				<Switch>
-					<Route exact path='/' render={() => <Explore filter={this.state.filter} />} />
+					<Route exact path='/' render={() => <Explore filterEvents={this.state.filterer} />} />
 					<Route exact path='/events' component={MyEvents} />
 				</Switch>
 			</div>

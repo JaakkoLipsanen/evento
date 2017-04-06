@@ -5,11 +5,11 @@ class SearchBar extends Component {
 	render() {
 		return (
 			<div className="SearchBar">
-				<input 
+				<input
 					type="text"
 					name="search"
 					placeholder="search evento"
-					onChange={this.props.updateFilter}>
+					onChange={this.props.onQueryChange}>
 				</input>
 			</div>
 		);

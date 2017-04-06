@@ -16,25 +16,16 @@ class Explore extends Component {
 			this.setState({ events: events });
 		});
 	}
-	
-	isVisible(event, filterQuery) {
-		const includedProps = [event.title, event.description, event.category.name, 
-			event.creator.name, event.location];
 
-		const cleaned = includedProps
-			.filter(prop => typeof prop === 'string')
-			.map(prop => prop.toLowerCase());
-
-		return cleaned.some((element) => element.includes(filterQuery.toLowerCase()));
+	get filteredEvents() {
+		return this.props.filterEvents(this.state.events);
 	}
 
 	render() {
-		const events = this.state.events;
-		const visibleEvents = events.filter(e => this.isVisible(e, this.props.filter));
 		return (
 			<div className="Explore">
 				<div className="event-card-list">
-					{ visibleEvents.map(event => <EventCard key={event.id} event={event} />) }
+					{ this.filteredEvents.map(event => <EventCard key={event.id} event={event} />) }
 				</div>
 			</div>
 		);
