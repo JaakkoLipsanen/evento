@@ -5,7 +5,7 @@ import './SignInPage.css'
 class SignInPage extends Component {
 	constructor() {
 		super();
-		this.state = { 
+		this.state = {
 			email: '',
 			password: '',
 		 	errorMessage: ''
@@ -22,29 +22,28 @@ class SignInPage extends Component {
 				email: this.state.email,
 				password: this.state.password,
 			})
-		}).then(response => {
+		})
+		.then(response => {
 			if (response.status === 200) {
 				return response.json();
+			} else {
+				return Promise.reject(new Error('Invalid credentials'));
 			}
-			this.setState({ errorMessage: 'Invalid credentials' });
-		}).then(authKey => {
+		})
+		.then(authKey => {
 			Cookie.set('auth_token', authKey.auth_token);
-
-			// User id needs to be fetched and saved to cookie
-			fetch('/users')
-			.then(response => response.json())
-			.then(users => users.filter(user => user.email === this.state.email)[0])
-			.then(user => Cookie.set('userId', user.id))
+			Cookie.set('userId', authKey.user.id)
 
 			// Move to front page after successiful sign in
 			this.props.history.push('/')
-		});
+		})
+		.catch(error => this.setState({ errorMessage: error.message}));
 	}
 
 	render() {
 		return (
 			<form className='SignInPage' onSubmit={(e) => this.handleSubmit(e)}>
-				<p>{this.state.errorMessage}</p>
+				<p className="ErrorMessage">{this.state.errorMessage}</p>
 				<label>
 					Email:<br/>
 					<input type="text" value={this.state.email} onChange={(evt) => this.setState({email: evt.target.value})} />
