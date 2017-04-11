@@ -10,15 +10,19 @@ class MyEvents extends Component {
 	}
 
 	componentDidMount() {
+		this.fetchEvents();
+	}
+	
+	fetchEvents() {
 		const userId = Cookie.get('userId');
 		const authToken = Cookie.get('auth_token');
 
-		fetch(`/users/${userId}/events`, {
-			headers: { 'Authorization': authToken }
-		}).then(response => response.json())
-		.then(events => {
-			this.setState({ events: events });
-		});
+		// If userId or authToken is not found do try to fetch events
+		if (!userId || !authToken) return;
+
+		fetch(`/users/${userId}/events`, { headers: { 'Authorization': authToken }})
+		.then(response => response.json())
+		.then(events => this.setState({ events: events }));
 	}
 
 	render() {
@@ -30,7 +34,8 @@ class MyEvents extends Component {
 						<EventCard
 							key={event.id}
 							event={event}
-							onClick={() => this.props.history.push(`/event/${event.id}`)}/>)
+							onClick={() => this.props.history.push(`/event/${event.id}`)}
+						/>)
 					}
 				</div>
 			</div>
