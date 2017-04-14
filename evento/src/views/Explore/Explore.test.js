@@ -26,15 +26,6 @@ const eventMocks = [
 
 const eventFilterer = (events) => events;
 
-// Helper function for async fetches
-const waitForFetches = () => {
-	return new Promise((resolve, reject) => {
-		setTimeout(() => {
-				resolve();
-			}, 50);
-		});
-};
-
 it('renders without crashing', () => {
 	const div = document.createElement('div');
 	ReactDOM.render(<Explore filterEvents={eventFilterer} />, div);
