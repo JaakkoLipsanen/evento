@@ -21,7 +21,7 @@ const createEventFilterer = (filterQuery) => {
 			.join('|')
 			.toLowerCase();
 
-		return events.filter(event => toString(event).includes(filterQuery));
+		return events.filter(event => toString(event).includes(filterQuery.toLowerCase()));
 	}
 };
 
@@ -37,18 +37,14 @@ class MainPage extends Component {
 		this.setState({ filterer: createEventFilterer(filterQuery) });
 	}
 
-	changePath(path) {
-		this.props.history.push(path)
-	}
-
 	render() {
 		return (
 			<div className="MainPage">
-				<SearchBar onQueryChange={(evt) => this.updateFilter(evt.target.value)}/>
+				<SearchBar onQueryChange={(query) => this.updateFilter(query)}/>
 				<TabContainer
 					tabs={tabs}
 					path={this.props.location.pathname}
-					onSelectedTabChange={(tab) => this.changePath(tab.path)}/>
+					onSelectedTabChange={(tab) => this.props.history.push(tab.path)}/>
 
 				<Switch>
 					<Route exact path='/' render={() => (
