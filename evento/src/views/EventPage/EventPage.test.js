@@ -42,7 +42,7 @@ it('fetches event and attendees', async () => {
 it('displays error message if event not found', async () => {
 	const INVALID_ID = 5;
 	const invalidMatchMock = { params: { eventId: INVALID_ID } };
-	fetchMock.get(`^/events/`, 404);
+	fetchMock.get(`begin:/events/`, 404);
 
 	const eventPage = mount(<EventPage match={invalidMatchMock} />)
 	await waitForFetches();
