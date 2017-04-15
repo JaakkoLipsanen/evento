@@ -11,9 +11,12 @@ it('renders without crashing', () => {
 
 it('calls onChange on change', () => {
 	const callback = sinon.spy();
+	const changeEvent = { target: { value: 'plaa' } };
 	const searchBar = shallow(<SearchBar onQueryChange={callback} />);
 
 	expect(callback.called).toBe(false);
-	searchBar.find('input').simulate('change');
+	searchBar.find('input').simulate('change', changeEvent);
+
 	expect(callback.called).toBe(true);
+	expect(callback.calledWith(changeEvent.target.value)).toBe(true);
 });
