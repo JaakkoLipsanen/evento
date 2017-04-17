@@ -11,17 +11,23 @@ const UserInfo = ({ name }) => (
 class EventPage extends Component {
 	constructor() {
 		super();
-		this.state = { event: null, attendees: [] };
+		this.state = {
+			event: null,
+			attendees: [],
+			errorMessage: null
+		};
 	}
 
 	componentDidMount() {
 		const eventId = this.props.match.params.eventId;
 
 		fetch(`/events/${eventId}`)
-		.then(response => response.json())
-		.then(event => {
-			this.setState({ event: event });
-		});
+		.then(response => {
+			if (response.ok) return response.json();
+			return Promise.reject();
+		})
+		.then(event => this.setState({ event: event }))
+		.catch(() => this.setState({ errorMessage: "Something went wrong" }));
 
 		fetch(`/events/${eventId}/attendees`)
 		.then(response => response.json())
@@ -31,9 +37,12 @@ class EventPage extends Component {
 	}
 
 	render() {
-		if (this.state.event === null) {
+		if (this.state.errorMessage !== null) {
+			return <h4>{this.state.errorMessage}</h4>
+		} else if (this.state.event === null) {
 			return <h4>loading..</h4>
 		}
+
 		return (
 			<div className="EventPage">
 				<h4>{this.state.event.title}</h4>
