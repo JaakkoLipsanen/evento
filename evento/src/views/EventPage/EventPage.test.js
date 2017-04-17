@@ -4,8 +4,8 @@ import { mount } from 'enzyme';
 import fetchMock from 'fetch-mock';
 import EventPage from './';
 
-const event = generateEvent();
-const attendees = generateUsers(3);
+const event = Mock.generateEvent();
+const attendees = Mock.generateUsers(3);
 
 const matchMock = { params: { eventId: event.id } };
 

@@ -5,7 +5,7 @@ import fetchMock from 'fetch-mock';
 import sinon from 'sinon';
 import Explore from './';
 
-const eventMocks = generateEvents(5);
+const eventMocks = Mock.generateEvents(5);
 const eventFilterer = (events) => events;
 
 it('renders without crashing', () => {

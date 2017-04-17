@@ -6,7 +6,7 @@ import sinon from 'sinon';
 import { mount } from 'enzyme';
 import MyEvents from './';
 
-const eventMocks = generateEvents(5);
+const eventMocks = Mock.generateEvents(5);
 
 const UserID = 5;
 const UserAuthToken = "token_token";

@@ -5,5 +5,5 @@ import EventCard from './';
 
 it('renders without crashing', () => {
 	const div = document.createElement('div');
-	ReactDOM.render(<EventCard event={generateEvent()} />, div);
+	ReactDOM.render(<EventCard event={Mock.generateEvent()} />, div);
 });

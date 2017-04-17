@@ -7,7 +7,7 @@ import { mount } from 'enzyme';
 import fetchMock from 'fetch-mock';
 import sinon from 'sinon';
 
-const eventMocks = generateEvents(5);
+const eventMocks = Mock.generateEvents(5);
 
 const DefaultEntries = undefined;
 const DefaultLocation = { pathname: '/' };
