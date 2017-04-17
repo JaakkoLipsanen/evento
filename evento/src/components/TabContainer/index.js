@@ -5,7 +5,7 @@ const Tab = ({title, onClick, isSelected}) => {
 	const classname = 'Tab' + (isSelected ? ' selected' : '');
 	return (
 		<div className={classname} onClick={() => onClick()}>
-			<h4> {title} </h4>
+			<h4>{title}</h4>
 		</div>
 	);
 };
@@ -17,7 +17,9 @@ class TabContainer extends Component {
 		this.state = { selected: selected };
 	}
 
-	onSelectedChange(tab) {
+	onTabClick(tab) {
+		if (tab === this.state.selected) return;
+
 		this.setState({ selected: tab });
 		this.props.onSelectedTabChange(tab);
 	}
@@ -30,7 +32,7 @@ class TabContainer extends Component {
 						key={tab.title}
 						title={tab.title}
 						isSelected={tab === this.state.selected}
-						onClick={() => this.onSelectedChange(tab)}
+						onClick={() => this.onTabClick(tab)}
 					/> )}
 			</div>
 		);

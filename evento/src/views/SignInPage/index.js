@@ -24,10 +24,10 @@ class SignInPage extends Component {
 			})
 		})
 		.then(response => {
-			if (response.status === 200) {
+			if (response.ok) {
 				return response.json();
 			} else {
-				return Promise.reject(new Error('Invalid credentials'));
+				return Promise.reject('Invalid credentials');
 			}
 		})
 		.then(authKey => {
@@ -37,7 +37,7 @@ class SignInPage extends Component {
 			// Move to front page after successiful sign in
 			this.props.history.push('/')
 		})
-		.catch(error => this.setState({ errorMessage: error.message}));
+		.catch(error => this.setState({ errorMessage: error}));
 	}
 
 	render() {
