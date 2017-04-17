@@ -18,6 +18,15 @@ describe('SignInPage', () => {
 		expect(signInPage.find('.ErrorMessage').node).not.toBeUndefined();
 	});
 
+	it('has a link to register page', () => {
+		const history = {push: sinon.spy()};
+		const signInPage = mount(<SignInPage history={history}/>);
+
+		expect(signInPage.find('.Link').node).not.toBeUndefined();
+		signInPage.find('.Link').simulate('click');
+		expect(history.push.calledWith('/register')).toBe(true);
+	});
+
 	describe('form', () => {
 		it('calls callback onSubmit', async () => {
 			const signInPage = mount(<SignInPage/>);
