@@ -6,24 +6,7 @@ import sinon from 'sinon';
 import { mount } from 'enzyme';
 import MyEvents from './';
 
-const eventMocks = [
-	{
-		id: 1,
-		title: "Piano",
-		description: "Piano lesson",
-		time: '2017-04-11T15:17:49.882Z',
-		category: { name: "Music" },
-		creator: { name: "Jaakko" }
-	},
-	{
-		id: 2,
-		title: "Badminton",
-		description: "Badminton lesson",
-		time: '2017-05-11T15:17:49.882Z',
-		category: { name: "Sports" },
-		creator: { name: "Antti" }
-	}
-];
+const eventMocks = generateEvents(5);
 
 const UserID = 5;
 const UserAuthToken = "token_token";

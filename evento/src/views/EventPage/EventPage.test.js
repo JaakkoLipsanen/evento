@@ -4,22 +4,8 @@ import { mount } from 'enzyme';
 import fetchMock from 'fetch-mock';
 import EventPage from './';
 
-const event = {
-	id: 1,
-	title: "Piano",
-	description: "Piano lesson",
-	time: "2017-04-11T15:17:49.873Z",
-	category: { name: "Music" },
-	creator: { name: "Jaakko" }
-}
-
-const attendees = [
-	{
-		id: 1,
-		name: "Antti",
-		email: "antti@gmail.com"
-	}
-];
+const event = generateEvent();
+const attendees = generateUsers(3);
 
 const matchMock = { params: { eventId: event.id } };
 
