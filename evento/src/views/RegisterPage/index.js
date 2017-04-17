@@ -31,11 +31,16 @@ class RegisterPage extends React.Component {
 			})
 		})
 		.then(response => {
-			if (response.status !== 201) return Promise.reject(response);
-			// After successiful register, redirect to sign in page
-			this.props.history.push('/signin')
+			if (response.ok) {
+				// After successiful register, redirect to sign in page
+				this.props.history.push('/signin')
+			} else {
+				return Promise.reject(response);
+			}
 		})
-		.catch(response => response.json())
+		.catch(response => {
+			return response.json()
+		})
 		.then(res => {
 			const errorMessages = Object.keys(res).map(e => `${e} ${res[e]}`)
 			this.setState({ errorMessages: errorMessages })
