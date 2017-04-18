@@ -42,16 +42,19 @@ class SignInPage extends Component {
 
 	render() {
 		return (
-			<form className='SignInPage' onSubmit={(e) => this.handleSubmit(e)}>
-				<p className="ErrorMessage">{this.state.errorMessage}</p>
-				<label>
-					Email:<br/>
-					<input type="text" value={this.state.email} onChange={(evt) => this.setState({email: evt.target.value})} />
-					<br/>Password:<br/>
-					<input type="password" value={this.state.password} onChange={(evt) => this.setState({password: evt.target.value})} />
-				</label><br/>
-				<input type="submit" value="Submit" />
-			</form>
+			<div className='SignInPage'>
+				<form className='SignInForm' onSubmit={(e) => this.handleSubmit(e)}>
+					<p className="ErrorMessage">{this.state.errorMessage}</p>
+					<label>
+						Email:<br/>
+						<input type="text" value={this.state.email} onChange={(evt) => this.setState({email: evt.target.value})} />
+						<br/>Password:<br/>
+						<input type="password" value={this.state.password} onChange={(evt) => this.setState({password: evt.target.value})} />
+					</label><br/>
+				<input type="submit" value="Sign in" />
+				</form>
+				<p className="Link" onClick={() => this.props.history.push('/register')}>Not yet registered?</p>
+			</div>
 		);
 	}
 }
