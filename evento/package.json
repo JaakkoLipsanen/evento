@@ -2,7 +2,7 @@
   "name": "evento",
   "version": "0.1.0",
   "private": true,
-  "homepage": "/evento-web",
+  "homepage": "/evento",
   "dependencies": {
     "js-cookie": "^2.1.4",
     "node-sass": "^4.5.2",
@@ -26,7 +26,7 @@
     "watch-css": "npm run build-css -- -q && node-sass src/ -o src/ --watch --recursive",
     "start-js": "react-scripts start",
     "start": "npm-run-all -p watch-css start-js",
-    "build": "npm run build-css && react-scripts build",
+    "build": "npm run build-css && react-scripts build && mv build/index.html build/404.html",
     "test": "npm run build-css -- -q && react-scripts test --env=jsdom --coverage",
     "travis-test": "npm test && cat ./coverage/lcov.info | ./node_modules/coveralls/bin/coveralls.js",
     "deploy": "gh-pages -d build",
