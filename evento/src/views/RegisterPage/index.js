@@ -61,7 +61,7 @@ class RegisterPage extends React.Component {
 						<input type="text" value={this.state.email} onChange={(evt) => this.setState({email: evt.target.value})} />
 						<br/>Password:<br/>
 						<input type="password" value={this.state.password} onChange={(evt) => this.setState({password: evt.target.value})} />
-						<br/>Retype paswsword:<br/>
+						<br/>Retype password:<br/>
 						<input type="password" value={this.state.passwordConf} onChange={(evt) => this.setState({passwordConf: evt.target.value})} />
 					</label><br/>
 					<input type="submit" value="Register" />
