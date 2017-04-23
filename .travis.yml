@@ -19,7 +19,5 @@ script:
   - npm run build
 
 after_success:
-  - git config --global user.email "${GIT_EMAIL}"
-  - git config --global user.name "${GIT_COMMIT_DISPLAYNAME}"
-  - git remote set-url origin https://${GH_USER}:${GH_TOKEN}@github.com/${GH_USER}/${GH_REPO}.git
-  - npm run deploy
+  - chmod +x deploy.sh # make deploy script executable
+  - ./deploy.sh
