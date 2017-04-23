@@ -1,5 +1,6 @@
 #!/bin/bash
-echo "Deploying from $TRAVIS_BRANCH"
+echo "Deploying from $TRAVIS_BRANCH, Is PR: $TRAVIS_PULL_REQUEST"
+echo ["$TRAVIS_BRANCH" == "master"] && [$TRAVIS_PULL_REQUEST]
 if [ "$TRAVIS_BRANCH" == "master" ];
 then
    $(git config --global user.email "${GIT_EMAIL}")
