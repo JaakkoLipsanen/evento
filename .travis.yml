@@ -19,5 +19,6 @@ script:
   - npm run build
 
 after_success:
+  - cd ..
   - chmod +x deploy.sh # make deploy script executable
   - ./deploy.sh
