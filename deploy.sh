@@ -1,5 +1,6 @@
 #!/bin/bash
-if [ "$TRAVIS_BRANCH" == "prod" ];
+echo "Deploying from $TRAVIS_BRANCH"
+if [ "$TRAVIS_BRANCH" == "master" ];
 then
    $(git config --global user.email "${GIT_EMAIL}")
    $(git config --global user.name "${GIT_COMMIT_DISPLAYNAME}")
