@@ -3,7 +3,7 @@ $height: 40px;
 
 $border-radius: 4px; /* higher == corners are more rounded */
 
-$font-size: 20px;
+$font-size: 18px;
 $font-weight: 500;
 
 .SearchBar {
@@ -19,7 +19,7 @@ $font-weight: 500;
 		box-sizing: border-box;
 		outline: none; // dont show outline when selected/focused etc
 
-		border: 1px solid rgb(172, 172, 172);
+		border: 0px solid transparent;
 		border-radius: $border-radius;
 
 		font-size: $font-size;

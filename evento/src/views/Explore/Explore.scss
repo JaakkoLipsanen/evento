@@ -1,8 +1,12 @@
+$top-margin: 12px;
+$content-padding: 8px;
+
 .Explore {
 	text-align: center;
+	padding: $content-padding;
 }
 
 .event-card-list {
 	text-align: left;
-	margin-top: 60px;
+	margin-top: $top-margin;
 }

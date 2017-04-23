@@ -8,7 +8,7 @@ class SearchBar extends Component {
 				<input
 					type="text"
 					name="search"
-					placeholder="search evento"
+					placeholder="search events"
 					onChange={(evt) => this.props.onQueryChange(evt.target.value)}>
 				</input>
 			</div>

@@ -1,13 +1,11 @@
 $max-width: 1400px;
 $default-font: "Roboto";
-$content-padding: 8px; /* how much space between edges of screen and content */
 
 $body-background-color: rgb(140, 140, 140);
 
 .App {
 	max-width: $max-width;
 	min-height: 100vh;
-	padding: $content-padding;
 	box-sizing: border-box;
 
 	font-family: $default-font;
