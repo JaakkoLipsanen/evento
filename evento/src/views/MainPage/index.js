@@ -40,11 +40,13 @@ class MainPage extends Component {
 	render() {
 		return (
 			<div className="MainPage">
-				<SearchBar onQueryChange={(query) => this.updateFilter(query)}/>
-				<TabContainer
-					tabs={tabs}
-					path={this.props.location.pathname}
-					onSelectedTabChange={(tab) => this.props.history.push(tab.path)}/>
+				<div className="top-bar-container">
+					<SearchBar onQueryChange={(query) => this.updateFilter(query)}/>
+					<TabContainer
+						tabs={tabs}
+						path={this.props.location.pathname}
+						onSelectedTabChange={(tab) => this.props.history.push(tab.path)}/>
+				</div>
 
 				<Switch>
 					<Route exact path='/' render={() => (
