@@ -1,11 +1,23 @@
 import React, { Component } from 'react';
-
+import Cookie from 'js-cookie';
 import './EventPage.css';
 
 const UserInfo = ({ name }) => (
 	<div className="UserInfo">
 		<h4>{ name }</h4>
 	</div>
+);
+
+const AttendButton = (props) => (
+	<button className='Attend' onClick={props.onClick}>
+		Attend
+	</button>
+);
+
+const DoNotAttendButton = (props) => (
+	<button className='DoNotAttend' onClick={props.onClick}>
+		Do not attend
+	</button>
 );
 
 class EventPage extends Component {
@@ -19,6 +31,10 @@ class EventPage extends Component {
 	}
 
 	componentDidMount() {
+		this.fetchAttendees();
+	}
+
+	fetchAttendees() {
 		const eventId = this.props.match.params.eventId;
 
 		fetch(`/events/${eventId}`)
@@ -26,7 +42,9 @@ class EventPage extends Component {
 			if (response.ok) return response.json();
 			return Promise.reject();
 		})
-		.then(event => this.setState({ event: event }))
+		.then(event => {
+			this.setState({ event: event });
+		})
 		.catch(() => this.setState({ errorMessage: "Something went wrong" }));
 
 		fetch(`/events/${eventId}/attendees`)
@@ -36,6 +54,26 @@ class EventPage extends Component {
 		});
 	}
 
+	onAttendButtonClick() {
+		const eventId = this.props.match.params.eventId;
+
+		fetch(`/events/${eventId}/attendees`, {
+			method: 'POST',
+			headers: { 'Authorization': Cookie.get('auth_token') }
+		})
+		.then(response => {
+			if (!response.ok) return Promise.reject();
+			// If successiful attending, re-fetch attendees
+			this.fetchAttendees();
+		})
+		.catch(() => this.setState({ errorMessage: "Something went wrong" }));
+	}
+
+	isUserAttending() {
+		let user = Cookie.get('user');
+		return JSON.stringify(this.state.attendees).includes(user);
+	}
+
 	render() {
 		if (this.state.errorMessage !== null) {
 			return <h4>{this.state.errorMessage}</h4>
@@ -43,13 +81,19 @@ class EventPage extends Component {
 			return <h4>loading..</h4>
 		}
 
+		let button = null;
+		if (this.isUserAttending()) {
+			button = <DoNotAttendButton onClick={console.log}/>
+		} else {
+			button = <AttendButton onClick={() => this.onAttendButtonClick()}/>
+		}
 		return (
 			<div className="EventPage">
 				<h4>{this.state.event.title}</h4>
 				<p>{this.state.event.description}</p>
 				<p>{this.state.event.location}</p>
 				<p>{this.state.event.time}</p>
-
+				{ button }
 				<h4>Attendees</h4>
 				<ul>
 					{this.state.attendees.map(attendee => (
