@@ -17,16 +17,18 @@ class MyEvents extends Component {
 	}
 	
 	fetchEvents() {
-		const userId = Cookie.get('userId');
+		const userCookie = Cookie.get('user');
 		const authToken = Cookie.get('auth_token');
 
-		// If userId or authToken is not found do try to fetch events
-		if (!userId || !authToken) {
+		// If userCookie or authToken is not found do try to fetch events
+		if (!userCookie || !authToken) {
 			this.setState({ errorMessage: "You are not logged in. Please login again"});
 			return;
 		}
 
-		fetch(`/users/${userId}/events`, { headers: { 'Authorization': authToken }})
+		const user = JSON.parse(userCookie); // Parse user to usable form
+
+		fetch(`/users/${user.id}/events`, { headers: { 'Authorization': authToken }})
 		.then(response => response.json())
 		.then(events => this.setState({ events: events }))
 		.catch(() => this.setState({ errorMessage: "Something went wrong" }));
