@@ -1,3 +1,12 @@
+$padding: 8px;
+$top-bar-color: #85b0ca;
+
 .MainPage {
-    text-align: center;
+	text-align: center;
+}
+
+.top-bar-container {
+	background-color: $top-bar-color;
+	padding: $padding;
+	border-radius: 2px; // this adds slight rounding effect to the top-bar
 }
