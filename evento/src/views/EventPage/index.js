@@ -42,9 +42,7 @@ class EventPage extends Component {
 			if (response.ok) return response.json();
 			return Promise.reject();
 		})
-		.then(event => {
-			this.setState({ event: event });
-		})
+		.then(event => this.setState({ event: event }))
 		.catch(() => this.setState({ errorMessage: "Something went wrong" }));
 
 		fetch(`/events/${eventId}/attendees`)
@@ -81,11 +79,11 @@ class EventPage extends Component {
 			return <h4>loading..</h4>
 		}
 
-		let button = null;
+		let attendButton = null;
 		if (this.isUserAttending()) {
-			button = <DoNotAttendButton onClick={console.log}/>
+			attendButton = <DoNotAttendButton onClick={console.log}/>
 		} else {
-			button = <AttendButton onClick={() => this.onAttendButtonClick()}/>
+			attendButton = <AttendButton onClick={() => this.onAttendButtonClick()}/>
 		}
 		return (
 			<div className="EventPage">
@@ -93,7 +91,7 @@ class EventPage extends Component {
 				<p>{this.state.event.description}</p>
 				<p>{this.state.event.location}</p>
 				<p>{this.state.event.time}</p>
-				{ button }
+				{ attendButton }
 				<h4>Attendees</h4>
 				<ul>
 					{this.state.attendees.map(attendee => (
