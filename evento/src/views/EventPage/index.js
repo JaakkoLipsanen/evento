@@ -74,7 +74,7 @@ class EventPage extends Component {
 		}
 
 		const user = JSON.parse(userCookie);
-		return this.state.attendees.some(attendee => attendee.id == user.id);
+		return this.state.attendees.some(attendee => attendee.id === user.id);
 	}
 
 	render() {
