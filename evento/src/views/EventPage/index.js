@@ -68,8 +68,13 @@ class EventPage extends Component {
 	}
 
 	isUserAttending() {
-		let user = Cookie.get('user');
-		return JSON.stringify(this.state.attendees).includes(user);
+		const userCookie = Cookie.get('user');
+		if (!userCookie) {
+			 return false;
+		}
+
+		const user = JSON.parse(userCookie);
+		return this.state.attendees.some(attendee => attendee.id == user.id);
 	}
 
 	render() {
