@@ -1,7 +1,7 @@
 #!/bin/bash
 echo "Deploying from $TRAVIS_BRANCH, Is PR: $TRAVIS_PULL_REQUEST"
-echo ["$TRAVIS_BRANCH" == "master"] && [$TRAVIS_PULL_REQUEST]
-if [ "$TRAVIS_BRANCH" == "master" ];
+echo (["$TRAVIS_BRANCH" == "master"] && [$TRAVIS_PULL_REQUEST == false])
+if [ "$TRAVIS_BRANCH" == "master" ] && [$TRAVIS_PULL_REQUEST == false];
 then
    $(git config --global user.email "${GIT_EMAIL}")
    $(git config --global user.name "${GIT_COMMIT_DISPLAYNAME}")
