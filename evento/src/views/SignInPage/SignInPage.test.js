@@ -100,8 +100,8 @@ describe('SignInPage', () => {
 		it('sets auth_token and userId cookies on successiful fetch', async () => {
 			const [signInPage, AUTH_TOKEN, USER] = await successifulSignIn();
 
-			expect(Cookie.get('auth_token')).toEqual(AUTH_TOKEN);
-			expect(Cookie.get('userId')).toEqual(USER.id.toString()); // Cookies are stored as strings
+			expect(Cookie.get('auth_token')).toEqual(AUTH_TOKEN)
+			expect(JSON.parse(Cookie.get('user')).id).toEqual(USER.id); // Cookies are stored as strings
 		});
 
 		it('sets error message on failed fetch', async () => {
@@ -109,7 +109,7 @@ describe('SignInPage', () => {
 
 			expect(signInPage.state('errorMessage')).toBe('Invalid credentials');
 			expect(Cookie.get('auth_token')).toBeUndefined();
-			expect(Cookie.get('userId')).toBeUndefined();
+			expect(Cookie.get('user')).toBeUndefined();
 		});
 
 		it('redirects to front page after successiful sign in', async () => {

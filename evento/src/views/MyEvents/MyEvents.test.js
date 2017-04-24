@@ -7,15 +7,15 @@ import { mount } from 'enzyme';
 import MyEvents from './';
 
 const eventMocks = Mock.generateEvents(5);
+const userMock = Mock.generateUser();
 
-const UserID = 5;
 const UserAuthToken = "token_token";
-const setCookies = (userID = UserID, userAuthToken = UserAuthToken) => {
-	Cookie.set("userId", userID);
+const setCookies = (user = userMock, userAuthToken = UserAuthToken) => {
+	Cookie.set("user", user);
 	Cookie.set("auth_token", userAuthToken);
 };
 
-fetchMock.get(`/users/${UserID}/events`, (url, opts) => {
+fetchMock.get(`/users/${userMock.id}/events`, (url, opts) => {
 	if(!opts.headers || opts.headers.Authorization !== UserAuthToken) {
 		return { throws: 401 };
 	}
@@ -29,7 +29,7 @@ it('renders without crashing', () => {
 });
 
 it('shows error if user is not logged in', async () => {
-	Cookie.remove("userId");
+	Cookie.remove("user");
 	Cookie.remove("auth_token");
 
 	const myEventsPage = mount(<MyEvents />);
@@ -39,7 +39,7 @@ it('shows error if user is not logged in', async () => {
 });
 
 it('shows error if given incorrect parameters', async () => {
-	setCookies(UserID, "wrong_auth_token");
+	setCookies(userMock, "wrong_auth_token");
 
 	const myEventsPage = mount(<MyEvents />);
 	await waitForFetches();

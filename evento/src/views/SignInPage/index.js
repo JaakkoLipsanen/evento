@@ -30,9 +30,9 @@ class SignInPage extends Component {
 				return Promise.reject('Invalid credentials');
 			}
 		})
-		.then(authKey => {
-			Cookie.set('auth_token', authKey.auth_token);
-			Cookie.set('userId', authKey.user.id)
+		.then(json => {
+			Cookie.set('auth_token', json.auth_token);
+			Cookie.set('user', JSON.stringify(json.user))
 
 			// Move to front page after successiful sign in
 			this.props.history.push('/')
