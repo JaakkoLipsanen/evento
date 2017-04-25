@@ -2,6 +2,7 @@ import React from 'react';
 import ReactDOM from 'react-dom';
 import Cookie from 'js-cookie';
 import { mount } from 'enzyme';
+import sinon from 'sinon';
 import fetchMock from 'fetch-mock';
 import EventPage from './';
 
@@ -100,21 +101,54 @@ describe('EventPage', () => {
 		});
 	});
 
-	describe('onAttendButtonClick', () => {
-		it('sends a post to request to /event/:id/attendees when user not attending', async () => {
+	describe('updateIsAttending', () => {
+		beforeEach(() => {
 			fetchMock.get(`/events/${event.id}`, event);
 			fetchMock.get(`/events/${event.id}/attendees`, attendees);
-			Cookie.set("user", Mock.generateUser());
-			Cookie.set("auth_token", "ABCD123");
-
-			const eventPage = mount(<EventPage match={matchMock} />);
-			await waitForFetches();
-
-			fetchMock.restore();
 			fetchMock.post(`/events/${event.id}/attendees`, {
 				status: 200,
 				body: {attendees}
 			});
+
+			Cookie.set("user", Mock.generateUser());
+			Cookie.set("auth_token", "ABCD123");
+		});
+
+		it('is called with true value when AttendButton is clicked', async () => {
+			const eventPage = mount(<EventPage match={matchMock} />);
+			await waitForFetches();
+
+			const updateIsAttending = sinon.spy(eventPage.instance(), 'updateIsAttending');
+
+			eventPage.find('.Attend').simulate('click');
+			await waitForFetches();
+
+			expect(updateIsAttending.calledOnce).toBe(true);
+			expect(updateIsAttending.calledWith(true)).toBe(true);
+		});
+
+		it('is called with true value when DoNotAttendButon is clicked', async () => {
+			fetchMock.delete(`/events/${event.id}/attendees`, 200);
+			Cookie.set("user", attendees[0]);
+
+			const eventPage = mount(<EventPage match={matchMock} />);
+			await waitForFetches();
+
+			const updateIsAttending = sinon.spy(eventPage.instance(), 'updateIsAttending');
+
+			eventPage.find('.DoNotAttend').simulate('click');
+			await waitForFetches();
+
+			expect(updateIsAttending.calledOnce).toBe(true);
+			expect(updateIsAttending.calledWith(false)).toBe(true);
+		});
+
+		it('sends a post request to /event/:id/attendees when user not attending', async () => {
+			const eventPage = mount(<EventPage match={matchMock} />);
+			await waitForFetches();
+
+			// Reset fetchMock to reset "called" counter
+			fetchMock.reset();
 
 			eventPage.find('.Attend').simulate('click');
 			await waitForFetches();
@@ -122,12 +156,27 @@ describe('EventPage', () => {
 			expect(fetchMock.called(`/events/${event.id}/attendees`)).toBe(true);
 		});
 
+		it('sends a delete request to /event/:id/attendees when user is attending', async () => {
+			fetchMock.delete(`/events/${event.id}/attendees`, 200);
+			Cookie.set("user", attendees[0]);
+
+			const eventPage = mount(<EventPage match={matchMock} />);
+			await waitForFetches();
+
+			// Reset fetchMock to reset "called" counter
+			fetchMock.reset();
+
+			eventPage.find('.DoNotAttend').simulate('click');
+			await waitForFetches();
+
+			expect(fetchMock.called(`/events/${event.id}/attendees`)).toBe(true);
+		});
+
 		it('adds error message on unsuccessiful request', async () => {
+			fetchMock.restore();
 			fetchMock.get(`/events/${event.id}`, event);
 			fetchMock.get(`/events/${event.id}/attendees`, attendees);
 			fetchMock.post(`/events/${event.id}/attendees`, 401);
-			Cookie.set("user", Mock.generateUser());
-			Cookie.set("auth_token", "ABCD123");
 
 			const eventPage = mount(<EventPage match={matchMock} />);
 			await waitForFetches();
@@ -137,9 +186,5 @@ describe('EventPage', () => {
 
 			expect(eventPage.state('errorMessage')).toEqual("Something went wrong");
 		});
-	});
-
-	describe('onDoNotAttendButtonClick', () => {
-		it('sends a delete to request to /event/:id/attendees when user is attending');
 	});
 });
