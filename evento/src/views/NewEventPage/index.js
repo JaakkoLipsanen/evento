@@ -41,9 +41,11 @@ class NewEventPage extends Component {
 			// If creation was successiful, redirect to MyEvents
 			this.props.history.push('/events');
 		})
-		.catch(res => res.json()).then(json => {
-			const errorMessages = Object.keys(json).map(e => `${e} ${json[e]}`);
-			this.setState({ errorMessages: errorMessages });
+		.catch(res => {
+			res.json().then( json => {
+				const errorMessages = Object.keys(json).map(e => `${e} ${json[e]}`);
+				this.setState({ errorMessages: errorMessages });
+			});
 		});
 	}
 
