@@ -35,7 +35,6 @@ class NewEventPage extends Component {
 			})
 		})
 		.then(response => {
-			console.log(response.status)
 			if (!response.ok) {
 				return Promise.reject(response);
 			}
@@ -43,7 +42,6 @@ class NewEventPage extends Component {
 			this.props.history.push('/events');
 		})
 		.catch(res => res.json()).then(json => {
-			console.log(json)
 			const errorMessages = Object.keys(json).map(e => `${e} ${json[e]}`);
 			this.setState({ errorMessages: errorMessages });
 		});
