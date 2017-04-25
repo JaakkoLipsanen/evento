@@ -30,7 +30,7 @@ class NewEventPage extends Component {
 			body: JSON.stringify({
 				title: this.state.title,
 				description: this.state.description,
-				category_id: parseInt(this.state.category),
+				category_id: parseInt(this.state.category, 10),
 				time: this.state.startTime.format()
 			})
 		})
