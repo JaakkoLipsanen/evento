@@ -52,11 +52,11 @@ class EventPage extends Component {
 		});
 	}
 
-	onAttendButtonClick() {
+	updateIsAttending(isAttending) {
+		const method = isAttending ? 'POST' : 'DELETE';
 		const eventId = this.props.match.params.eventId;
-
 		fetch(`/events/${eventId}/attendees`, {
-			method: 'POST',
+			method: method,
 			headers: { 'Authorization': Cookie.get('auth_token') }
 		})
 		.then(response => {
@@ -86,9 +86,9 @@ class EventPage extends Component {
 
 		let attendButton = null;
 		if (this.isUserAttending()) {
-			attendButton = <DoNotAttendButton onClick={console.log}/>
+			attendButton = <DoNotAttendButton onClick={() => this.updateIsAttending(false)}/>
 		} else {
-			attendButton = <AttendButton onClick={() => this.onAttendButtonClick()}/>
+			attendButton = <AttendButton onClick={() => this.updateIsAttending(true)}/>
 		}
 		return (
 			<div className="EventPage">
