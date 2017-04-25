@@ -3,6 +3,7 @@ import { BrowserRouter as Router, Route, Switch } from 'react-router-dom';
 
 import MainPage from '../MainPage';
 import EventPage from '../EventPage';
+import NewEventPage from '../NewEventPage';
 import SignInPage from '../SignInPage';
 import RegisterPage from '../RegisterPage';
 import PathNotFound from './components/PathNotFound';
@@ -19,6 +20,7 @@ class App extends Component {
 						<Route exact path='/events' component={MainPage} />
 						<Route exact path='/signin' component={SignInPage} />
 						<Route exact path='/register' component={RegisterPage} />
+						<Route exact path='/event/new' component={NewEventPage} />
 						<Route exact path='/event/:eventId' component={EventPage} />
 						<Route path='*' component={PathNotFound} />
 					</Switch>
