@@ -12,6 +12,7 @@ class NewEventPage extends Component {
 		super(props);
 		this.state = {
 			errorMessages: null,
+			categories: [],
 			title: '',
 			description: '',
 			category: '',
@@ -21,8 +22,30 @@ class NewEventPage extends Component {
 		}
 	}
 
+	componentDidMount() {
+		fetch(`/categories`)
+		.then(response => {
+			if (response.ok) {
+				return response.json();
+			}
+			else {
+				Promise.reject(response)
+			}
+		})
+		.then(categories => this.setState({ categories: categories }))
+		.catch(this.setErrorMessages);
+	}
+
 	handleSubmit(evt) {
 		evt.preventDefault();
+
+		const category = this.state.categories
+			.find(c => c.name === this.state.category);
+
+		if (category === undefined) {
+			this.setState({ errorMessages: ['Category not found'] });
+			return;
+		}
 
 		fetch(`/events`, {
 			method: 'POST',
@@ -30,7 +53,7 @@ class NewEventPage extends Component {
 			body: JSON.stringify({
 				title: this.state.title,
 				description: this.state.description,
-				category_id: parseInt(this.state.category, 10),
+				category_id: category.id,
 				time: this.state.startTime.format()
 			})
 		})
@@ -41,11 +64,14 @@ class NewEventPage extends Component {
 			// If creation was successiful, redirect to MyEvents
 			this.props.history.push('/events');
 		})
-		.catch(res => {
-			res.json().then( json => {
-				const errorMessages = Object.keys(json).map(e => `${e} ${json[e]}`);
-				this.setState({ errorMessages: errorMessages });
-			});
+		.catch(this.setErrorMessages);
+	}
+
+	setErrorMessages(response) {
+		response.json()
+		.then( json => {
+			const errorMessages = Object.keys(json).map(e => `${e} ${json[e]}`);
+			this.setState({ errorMessages: errorMessages });
 		});
 	}
 
@@ -64,30 +90,37 @@ class NewEventPage extends Component {
 					<label>
 						Event Name
 						<input type="text"
+							className="title-input"
 							placeholder="Add short, clear name"
 							value={this.state.title}
 							onChange={(evt) => this.setState({title: evt.target.value})}
 						/>
 						<br/>Location
 						<input type="text"
+							className="location-input"
 							placeholder="Add address or place"
 							value={this.state.location}
 							onChange={(evt) => this.setState({location: evt.target.value})}
 						/>
 						<br/>Description
 						<textarea rows="4" cols="50"
+							className="description-input"
 							placeholder="Tell more about this event"
 							value={this.state.description}
 							onChange={(evt) => this.setState({description: evt.target.value})}
 						/>
 						<br/>Category
-						<input type="text"
-							placeholder="Choose category for this event"
-							value={this.state.category}
-							onChange={(evt) => this.setState({category: evt.target.value})}
-						/>
+							<input list="categories"
+								className="category-input"
+								onChange={evt => this.setState({category: evt.target.value})}
+							/>
+							<datalist id="categories">
+								{ this.state.categories.map(category =>
+									<option key={category.id} value={category.name} />
+								)}
+							</datalist>
 						<br/>
-						<div className="StartTime">Start
+						<div className="startTime">Start
 							<DatePicker
 								selected={this.state.startTime}
 								onChange={(date) => this.setState({ startTime: date })}
@@ -95,7 +128,7 @@ class NewEventPage extends Component {
 								locale='en-gb'
 							/>
 						</div>
-						<div className="EndTime">End
+						<div className="endTime">End
 							<DatePicker
 								selected={this.state.endTime || this.state.startTime}
 								onChange={(date) => this.setState({ endTime: date })}
