@@ -97,8 +97,8 @@ class NewEventPage extends Component {
 	}
 
 	render () {
-		let errorMessages = (this.state.errorMessages || []).
-			map(error => <p className="ErrorMessage" key={error}>{error}</p> );
+		let errorMessages = (this.state.errorMessages || [])
+			.map(error => <p className="ErrorMessage" key={error}>{error}</p> );
 		
 		return (
 			<div className="NewEventPage">
