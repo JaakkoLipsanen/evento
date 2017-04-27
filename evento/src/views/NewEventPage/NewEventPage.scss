@@ -1,7 +1,40 @@
 .NewEventPage {
-	text-align: center;
+	padding-top: 48px;
+	text-align: left;
 
 	.ErrorMessage {
 		color: red;
+	}
+	
+	input, textarea {
+		margin-left: 0px;
+		margin-bottom: 10px;
+		padding-left: 2px;
+		
+		width: 100%;
+		height: 30px;
+		font-size: 18px;
+	}
+	
+	label {
+		display: block;
+	}
+	
+	.time-picker-container div {
+		width: 100%;
+	}
+	
+	.DatePicker {
+		width: 100%;
+	}
+  
+	.NewEventForm {
+		margin: auto;
+		width: 95vw;
+		max-width: 500px;
+	}
+	
+	input[type=submit] {
+		height: 44px;
 	}
 }

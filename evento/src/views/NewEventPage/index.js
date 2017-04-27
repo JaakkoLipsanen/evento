@@ -87,56 +87,61 @@ class NewEventPage extends Component {
 			<div className="NewEventPage">
 				<form className="NewEventForm" onSubmit={(e) => this.handleSubmit(e)}>
 					{ errorMessages }
-					<label>
-						Event Name
+						<label>Event Name</label>
 						<input type="text"
 							className="title-input"
 							placeholder="Add short, clear name"
 							value={this.state.title}
 							onChange={(evt) => this.setState({title: evt.target.value})}
 						/>
-						<br/>Location
+						
+						<label>Location</label>
 						<input type="text"
 							className="location-input"
 							placeholder="Add address or place"
 							value={this.state.location}
 							onChange={(evt) => this.setState({location: evt.target.value})}
 						/>
-						<br/>Description
+						
+						<label>Description</label>
 						<textarea rows="4" cols="50"
 							className="description-input"
 							placeholder="Tell more about this event"
 							value={this.state.description}
 							onChange={(evt) => this.setState({description: evt.target.value})}
 						/>
-						<br/>Category
-							<input list="categories"
-								className="category-input"
-								onChange={evt => this.setState({category: evt.target.value})}
-							/>
-							<datalist id="categories">
-								{ this.state.categories.map(category =>
-									<option key={category.id} value={category.name} />
-								)}
-							</datalist>
-						<br/>
-						<div className="startTime">Start
+						
+						<label>Category</label>
+						<input list="categories"
+							className="category-input"
+							onChange={evt => this.setState({category: evt.target.value})}
+						/>
+						<datalist id="categories">
+							{ this.state.categories.map(category =>
+								<option key={category.id} value={category.name} />
+							)}
+						</datalist>
+						
+						<div className="time-picker-container">
+							<label>Start Time</label>
 							<DatePicker
 								selected={this.state.startTime}
 								onChange={(date) => this.setState({ startTime: date })}
 								dateFormat="DD.MM.YYYY"
 								locale='en-gb'
+								className="DatePicker"
 							/>
 						</div>
-						<div className="endTime">End
+						<div className="time-picker-container">
+							<label>End Time</label>
 							<DatePicker
 								selected={this.state.endTime || this.state.startTime}
 								onChange={(date) => this.setState({ endTime: date })}
 								dateFormat="DD.MM.YYYY"
 								locale='en-gb'
+								className="DatePicker"
 							/>
 						</div>
-					</label><br/>
 					<input type="submit" value="Create event" />
 				</form>
 			</div>
