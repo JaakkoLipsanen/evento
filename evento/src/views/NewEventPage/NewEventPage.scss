@@ -12,12 +12,17 @@
 		padding-left: 2px;
 		
 		width: 100%;
-		height: 30px;
+		height: 32px;
 		font-size: 18px;
+		font-family: "Roboto";
 	}
 	
 	label {
 		display: block;
+	}
+	
+	textarea {
+		height: 3em !important;
 	}
 	
 	.time-picker-container div {
