@@ -14,7 +14,7 @@ const validateIsFuture = (current, selected) => {
 
 const TimePicker = ({ initialValue, onChange }) => 
 	(<DateTimePicker
-		defaultValue={initialValue}
+		value={initialValue}
 		onChange={onChange}
 		
 		dateFormat="DD.MM.YYYY"
@@ -54,7 +54,7 @@ class NewEventPage extends Component {
 			}
 		})
 		.then(categories => this.setState({ categories: categories }))
-		.catch(this.setErrorMessages);
+		.catch(response => this.setErrorMessages(response));
 	}
 
 	handleSubmit(evt) {
@@ -85,14 +85,35 @@ class NewEventPage extends Component {
 			// If creation was successful, redirect to MyEvents
 			this.props.history.push('/events');
 		})
-		.catch(this.setErrorMessages);
+		.catch(response => this.setErrorMessages(response));
+	}
+	
+	setStartTime(newTime) {
+		this.setState({ startTime: newTime }, () => {
+			if(this.state.endTime.isBefore(newTime)) {
+				this.setState({ endTime: newTime.clone().add(1, 'hour') });
+			}
+		});
+	}
+	
+	setEndTime(newTime) {
+		this.setState({ endTime: newTime }, () => {
+			if(this.state.startTime.isAfter(newTime)) {
+				this.setState({ startTime: newTime.clone().subtract(1, 'hour') });
+			}
+		});
 	}
 
 	setErrorMessages(response) {
 		response.json()
-		.then( json => {
-			const errorMessages = Object.keys(json).map(e => `${e} ${json[e]}`);
-			this.setState({ errorMessages: errorMessages });
+		.then(json => {	
+			// the errors come in { 'name', ['too short', 'already taken'] } format
+			const errorMessagesByField = 
+				Object.keys(json)
+				.map(e => json[e].map(error => `${e} ${error}`));
+				
+			const flattened = [].concat.apply([], errorMessagesByField);
+			this.setState({ errorMessages: flattened });
 		});
 	}
 
@@ -140,19 +161,19 @@ class NewEventPage extends Component {
 						)}
 					</datalist>
 					
-					<div className="time-picker-container">
+					<div className="start-time-picker-container">
 						<label>Start Time</label>
 						<TimePicker
 							initialValue={this.state.startTime}
-							onChange={(date) => this.setState({ startTime: date })}
+							onChange={(date) => this.setStartTime(date)}
 						/>
 					</div>
 					
-					<div className="time-picker-container">
+					<div className="end-time-picker-container">
 						<label>End Time</label>
 						<TimePicker
 							initialValue={this.state.endTime}
-							onChange={(date) => this.setState({ endTime: date })}
+							onChange={(date) => this.setEndTime(date)}
 						/>
 					</div>
 						
