@@ -12,18 +12,18 @@ const validateIsFuture = (current, selected) => {
 	 return current.isAfter(moment().subtract(1, 'day'))
 };
 
-const TimePicker = ({ initialValue, onChange }) => 
+const TimePicker = ({ initialValue, onChange }) =>
 	(<DateTimePicker
 		value={initialValue}
 		onChange={onChange}
-		
+
 		dateFormat="DD.MM.YYYY"
 		locale='en-gb'
 		timeConstraints={TimePickerConstraints}
 		isValidDate={validateIsFuture}
 		className="DatePicker"
 	/>);
-	
+
 const defaultStartTime = () => moment().add(1, 'day').set({ hour: 18, minute: 0 });
 const defaultEndTime = () => defaultStartTime().add(1, 'hour');
 
@@ -37,7 +37,7 @@ class NewEventPage extends Component {
 			description: '',
 			category: '',
 			location: '',
-			
+
 			startTime: defaultStartTime(),
 			endTime: defaultEndTime()
 		}
@@ -80,14 +80,14 @@ class NewEventPage extends Component {
 			if (!response.ok) {
 				return Promise.reject(response);
 			}
-			
+
 			// TODO: should redirect to the event page
 			// If creation was successful, redirect to MyEvents
 			this.props.history.push('/events');
 		})
 		.catch(response => this.setErrorMessages(response));
 	}
-	
+
 	setStartTime(newTime) {
 		this.setState({ startTime: newTime }, () => {
 			if(this.state.endTime.isBefore(newTime)) {
@@ -95,7 +95,7 @@ class NewEventPage extends Component {
 			}
 		});
 	}
-	
+
 	setEndTime(newTime) {
 		this.setState({ endTime: newTime }, () => {
 			if(this.state.startTime.isAfter(newTime)) {
@@ -106,12 +106,12 @@ class NewEventPage extends Component {
 
 	setErrorMessages(response) {
 		response.json()
-		.then(json => {	
+		.then(json => {
 			// the errors come in { 'name', ['too short', 'already taken'] } format
-			const errorMessagesByField = 
+			const errorMessagesByField =
 				Object.keys(json)
 				.map(e => json[e].map(error => `${e} ${error}`));
-				
+
 			const flattened = [].concat.apply([], errorMessagesByField);
 			this.setState({ errorMessages: flattened });
 		});
@@ -120,12 +120,12 @@ class NewEventPage extends Component {
 	render () {
 		let errorMessages = (this.state.errorMessages || [])
 			.map(error => <p className="ErrorMessage" key={error}>{error}</p> );
-		
+
 		return (
 			<div className="NewEventPage">
 				<form className="NewEventForm" onSubmit={(e) => this.handleSubmit(e)}>
 					{ errorMessages }
-					
+
 					<label>Event Name</label>
 					<input type="text"
 						className="title-input"
@@ -133,7 +133,7 @@ class NewEventPage extends Component {
 						value={this.state.title}
 						onChange={(evt) => this.setState({ title: evt.target.value })}
 					/>
-					
+
 					<label>Location</label>
 					<input type="text"
 						className="location-input"
@@ -141,7 +141,7 @@ class NewEventPage extends Component {
 						value={this.state.location}
 						onChange={(evt) => this.setState({ location: evt.target.value })}
 					/>
-					
+
 					<label>Description</label>
 					<textarea rows="4" cols="50"
 						className="description-input"
@@ -149,7 +149,7 @@ class NewEventPage extends Component {
 						value={this.state.description}
 						onChange={(evt) => this.setState({ description: evt.target.value })}
 					/>
-					
+
 					<label>Category</label>
 					<input list="categories"
 						className="category-input"
@@ -160,7 +160,7 @@ class NewEventPage extends Component {
 							<option key={category.id} value={category.name} />
 						)}
 					</datalist>
-					
+
 					<div className="start-time-picker-container">
 						<label>Start Time</label>
 						<TimePicker
@@ -168,7 +168,7 @@ class NewEventPage extends Component {
 							onChange={(date) => this.setStartTime(date)}
 						/>
 					</div>
-					
+
 					<div className="end-time-picker-container">
 						<label>End Time</label>
 						<TimePicker
@@ -176,7 +176,7 @@ class NewEventPage extends Component {
 							onChange={(date) => this.setEndTime(date)}
 						/>
 					</div>
-						
+
 					<input type="submit" value="Create event" />
 				</form>
 			</div>

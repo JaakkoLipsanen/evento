@@ -73,49 +73,49 @@ describe('NewEventPage', () => {
 		it('changes startTime state onChange', async () => {
 			const value = moment().add(10, 'days');
 			const wrapper = mount(<NewEventPage/>);
-			
+
 			wrapper
 			.find('.start-time-picker-container input').at(0)
 			.simulate('change', { target: { value: value } });
-			
+
 			await waitForFetches();
 			expect(wrapper.state('startTime').isSame(value)).toBe(true);
 		});
-		
+
 		it('changes endTime state onChange', async () => {
 			const value = moment().add(10, 'days');
 			const wrapper = mount(<NewEventPage/>);
-			
+
 			wrapper
 			.find('.end-time-picker-container input').at(0)
 			.simulate('change', { target: { value: value } });
-			
+
 			await waitForFetches();
 			expect(wrapper.state('endTime').isSame(value)).toBe(true);
 		});
-		
+
 		it('changes the endTime if startTime is setted and is after the endTime', async () => {
 			const value = moment().add(10, 'days');
 			const wrapper = mount(<NewEventPage/>);
-			
+
 			const originalEndTime = wrapper.state('endTime');
 			wrapper
 			.find('.start-time-picker-container input').at(0)
 			.simulate('change', { target: { value: originalEndTime.clone().add(1, 'hour') } });
-			
+
 			await waitForFetches();
 			expect(wrapper.state('endTime').isAfter(originalEndTime)).toBe(true);
 		});
-		
+
 		it('changes the startTime if endTime is setted and is before the startTime', async () => {
 			const value = moment().add(10, 'days');
 			const wrapper = mount(<NewEventPage/>);
-			
+
 			const originalStartTime = wrapper.state('startTime');
 			wrapper
 			.find('.end-time-picker-container input').at(0)
 			.simulate('change', { target: { value: originalStartTime.clone().subtract(1, 'hour') } });
-			
+
 			await waitForFetches();
 			console.log(wrapper.state('startTime') + "    " + originalStartTime);
 			expect(wrapper.state('startTime').isBefore(originalStartTime)).toBe(true);
@@ -123,20 +123,20 @@ describe('NewEventPage', () => {
 	});
 
 	describe('setErrorMessages', () => {
-		it('sets error messages');   
+		it('sets error messages');
 		// doesn't work, i dont care
 				/*, async () => {
-			const body = `{"Name": ["is too short"]}`;	
+			const body = `{"Name": ["is too short"]}`;
 			fetchMock.post('/events', { status: 422, body: body, json: () => body });
-			
+
 			const wrapper = mount(<NewEventPage/>);
-			wrapper.setState({ category: categoriesMock[0].name });	
+			wrapper.setState({ category: categoriesMock[0].name });
 			await waitForFetches();
-			
+
 			const evt = { preventDefault: sinon.spy() };
-			wrapper.instance().handleSubmit(evt);		
+			wrapper.instance().handleSubmit(evt);
 			await waitForFetches();
-			
+
 			expect(wrapper.state('errorMessages')).toContain('Name is too short');
 		}); */
 	});
@@ -168,7 +168,7 @@ describe('NewEventPage', () => {
 		it('redirects to MyEvents page after successiful registering', async () => {
 			const history = { push: sinon.spy() };
 			const event = Mock.generateEvent();
-			const wrapper = await createEvent(event.title, event.description, 
+			const wrapper = await createEvent(event.title, event.description,
 				categoriesMock[0], time, history);
 
 			expect(history.push.calledOnce).toBe(true);
