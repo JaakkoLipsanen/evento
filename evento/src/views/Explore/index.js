@@ -1,5 +1,6 @@
 import React, { Component } from 'react';
 
+import api from '../../api';
 import EventCard from '../../components/EventCard';
 import './Explore.css';
 
@@ -9,12 +10,11 @@ class Explore extends Component {
 		this.state = { events: [] };
 	}
 
-	componentDidMount() {
-		fetch('/events')
-		.then(response => response.json())
-		.then(events => {
-			this.setState({ events: events });
-		});
+	async componentDidMount() {
+		const result = await api.getEvents();
+		if(result.success) {
+			this.setState({ events: result.payload.events });
+		}
 	}
 
 	get filteredEvents() {

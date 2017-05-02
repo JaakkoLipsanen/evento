@@ -1,5 +1,8 @@
 import React, { Component } from 'react';
-import Cookie from 'js-cookie';
+
+import api from '../../api';
+import session from '../../session';
+
 import EventCard from '../../components/EventCard';
 import './MyEvents.css';
 
@@ -15,23 +18,21 @@ class MyEvents extends Component {
 	componentDidMount() {
 		this.fetchEvents();
 	}
-	
-	fetchEvents() {
-		const userCookie = Cookie.get('user');
-		const authToken = Cookie.get('auth_token');
 
-		// If userCookie or authToken is not found do try to fetch events
-		if (!userCookie || !authToken) {
+	async fetchEvents() {
+		// If userId or authToken is not found do try to fetch events
+		if (!session.isLoggedIn()) {
 			this.setState({ errorMessage: "You are not logged in. Please login again"});
 			return;
 		}
 
-		const user = JSON.parse(userCookie); // Parse user to usable form
-
-		fetch(`/users/${user.id}/events`, { headers: { 'Authorization': authToken }})
-		.then(response => response.json())
-		.then(events => this.setState({ events: events }))
-		.catch(() => this.setState({ errorMessage: "Something went wrong" }));
+		const result = await api.getUserEvents();
+		if(result.success) {
+			this.setState({ events: result.payload.events });
+		}
+		else {
+			this.setState({ errorMessage: result.error.message });
+		}
 	}
 
 	render() {

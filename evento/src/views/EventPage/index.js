@@ -1,5 +1,6 @@
 import React, { Component } from 'react';
-import Cookie from 'js-cookie';
+import api from '../../api';
+
 import './EventPage.css';
 
 const UserInfo = ({ name }) => (
@@ -30,26 +31,41 @@ class EventPage extends Component {
 		};
 	}
 
-	componentDidMount() {
-		this.fetchAttendees();
-	}
 
-	fetchAttendees() {
+	async componentDidMount() {
 		const eventId = this.props.match.params.eventId;
 
-		fetch(`/events/${eventId}`)
-		.then(response => {
-			if (response.ok) return response.json();
-			return Promise.reject();
-		})
-		.then(event => this.setState({ event: event }))
-		.catch(() => this.setState({ errorMessage: "Something went wrong" }));
+		// get event
+		if(!await this.fetchEvent(eventId)) {
+			return;
+		}
 
-		fetch(`/events/${eventId}/attendees`)
-		.then(response => response.json())
-		.then(attendees => {
-			this.setState({ attendees: attendees });
-		});
+		// get event attendees
+		if(!await this.fetchAttendees(eventId)) {
+			return;
+		}
+	}
+
+	async fetchEvent(eventId) {
+		const result = await api.getEvent(eventId);
+		if(!result.success) {
+			this.setState({ errorMessage: result.error.message });
+			return false;
+		}
+
+		this.setState({ event: result.payload.event });
+		return true;
+	}
+
+	async fetchAttendees(eventId) {
+		const result = await api.getAttendees(eventId);
+		if(!result.success) {
+			this.setState({ errorMessage: result.error.message });
+			return false;
+		}
+
+		this.setState({ attendees: result.payload.attendees });
+		return true;
 	}
 
 	updateIsAttending(isAttending) {

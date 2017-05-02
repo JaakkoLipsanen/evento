@@ -1,5 +1,6 @@
 import React, { Component } from 'react';
-import Cookie from 'js-cookie';
+
+import api from '../../api';
 import './SignInPage.css'
 
 class SignInPage extends Component {
@@ -12,32 +13,17 @@ class SignInPage extends Component {
 		};
 	}
 
-	handleSubmit(evt) {
+	async handleSubmit(evt) {
 		evt.preventDefault();
 
-		fetch('/authenticate', {
-			method: 'POST',
-			headers: { 'Content-Type': 'application/json', 'Access-Control-Allow-Origin':'*' },
-			body: JSON.stringify({
-				email: this.state.email,
-				password: this.state.password,
-			})
-		})
-		.then(response => {
-			if (response.ok) {
-				return response.json();
-			} else {
-				return Promise.reject('Invalid credentials');
-			}
-		})
-		.then(json => {
-			Cookie.set('auth_token', json.auth_token);
-			Cookie.set('user', JSON.stringify(json.user))
-
+		const result = await api.signin(this.state.email, this.state.password);
+		if(result.success) {
 			// Move to front page after successiful sign in
 			this.props.history.push('/')
-		})
-		.catch(error => this.setState({ errorMessage: error}));
+		}
+		else {
+			this.setState({ errorMessage: result.error.message })
+		}
 	}
 
 	render() {
