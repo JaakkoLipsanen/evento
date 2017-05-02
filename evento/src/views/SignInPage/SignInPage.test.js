@@ -85,7 +85,7 @@ describe('SignInPage', () => {
 		};
 
 		const failedSignIn = async (history) => {
-			fetchMock.post('/authenticate', 401);
+			fetchMock.post('/authenticate', { status: 401, body: '{ }' });
 			return await signIn('wrong@email.com', 'secretpassword123', history);
 		};
 

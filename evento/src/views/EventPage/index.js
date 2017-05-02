@@ -1,5 +1,6 @@
 import React, { Component } from 'react';
 import api from '../../api';
+import session from '../../session';
 
 import './EventPage.css';
 
@@ -30,7 +31,6 @@ class EventPage extends Component {
 			errorMessage: null
 		};
 	}
-
 
 	async componentDidMount() {
 		const eventId = this.props.match.params.eventId;
@@ -68,28 +68,24 @@ class EventPage extends Component {
 		return true;
 	}
 
-	updateIsAttending(isAttending) {
-		const method = isAttending ? 'POST' : 'DELETE';
+	async updateIsAttending(isAttending) {
 		const eventId = this.props.match.params.eventId;
-		fetch(`/events/${eventId}/attendees`, {
-			method: method,
-			headers: { 'Authorization': Cookie.get('auth_token') }
-		})
-		.then(response => {
-			if (!response.ok) return Promise.reject();
-			// If successiful attending, re-fetch attendees
-			this.fetchAttendees();
-		})
-		.catch(() => this.setState({ errorMessage: "Something went wrong" }));
+		const result = await api.setIsAttending(eventId, isAttending);
+		if(result.success) {	
+			// If successful attending, then re-fetch attendees
+			this.fetchAttendees(eventId);
+		}
+		else {
+			this.setState({ errorMessage: result.error.message });
+		}
 	}
 
 	isUserAttending() {
-		const userCookie = Cookie.get('user');
-		if (!userCookie) {
-			 return false;
+		const user = session.getUser();
+		if(!user) {
+			return false;
 		}
-
-		const user = JSON.parse(userCookie);
+		
 		return this.state.attendees.some(attendee => attendee.id === user.id);
 	}
 

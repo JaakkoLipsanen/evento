@@ -10,7 +10,12 @@ export default {
 	},
 
 	getUser() {
-		return JSON.parse(Cookie.get("user"));
+		const cookie = Cookie.get("user");
+		if(!cookie) {
+			return null;
+		}
+		
+		return JSON.parse(cookie);
 	},
 
 	getAuthHeader() {
