@@ -6,6 +6,8 @@ import sinon from 'sinon';
 import fetchMock from 'fetch-mock';
 import EventPage from './';
 
+import api from '../../api';
+
 const event = Mock.generateEvent();
 const attendees = Mock.generateUsers(3);
 
@@ -33,11 +35,28 @@ describe('EventPage', () => {
 
 			const eventPage = mount(<EventPage match={invalidMatchMock} />)
 			await waitForFetches();
-			await waitForFetches();
-			await waitForFetches();
-			await waitForFetches();
 
 			expect(eventPage.text()).toContain("Something went wrong");
+		});
+
+		it('displays error message if getAttendees returns error', async () => {
+			const INVALID_ID = 5;
+			const invalidMatchMock = { params: { eventId: INVALID_ID } };
+
+			let sandbox = sinon.sandbox.create();
+			sandbox.stub(api, "getEvent").callsFake(async (eventId) => {
+				return { success: true, payload: { event: event } };
+			});
+
+			sandbox.stub(api, "getAttendees").callsFake(async (eventId) => {
+				return { success: false, error: { message: "Error" } };
+			});
+
+			const eventPage = mount(<EventPage match={invalidMatchMock} />)
+			await waitForFetches();
+
+			expect(eventPage.text()).toContain("Error");
+			sandbox.restore();
 		});
 
 		it('renders a AttendButton when user is not attending event', async () => {

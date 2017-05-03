@@ -71,7 +71,7 @@ class EventPage extends Component {
 	async updateIsAttending(isAttending) {
 		const eventId = this.props.match.params.eventId;
 		const result = await api.setIsAttending(eventId, isAttending);
-		if(result.success) {	
+		if(result.success) {
 			// If successful attending, then re-fetch attendees
 			this.fetchAttendees(eventId);
 		}
@@ -85,7 +85,7 @@ class EventPage extends Component {
 		if(!user) {
 			return false;
 		}
-		
+
 		return this.state.attendees.some(attendee => attendee.id === user.id);
 	}
 
