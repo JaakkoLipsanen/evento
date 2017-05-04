@@ -1,20 +1,26 @@
 import React, { Component } from 'react';
 
+import api from '../../api';
 import EventCard from '../../components/EventCard';
 import './Explore.css';
 
 class Explore extends Component {
 	constructor(props) {
 		super(props);
-		this.state = { events: [] };
+		this.state = {
+			events: [],
+			errorMessage: null
+		};
 	}
 
-	componentDidMount() {
-		fetch('/events')
-		.then(response => response.json())
-		.then(events => {
-			this.setState({ events: events });
-		});
+	async componentDidMount() {
+		const result = await api.getEvents();
+		if(result.success) {
+			this.setState({ events: result.payload.events });
+		}
+		else {
+			this.setState({ errorMessage: result.error.message });
+		}
 	}
 
 	get filteredEvents() {
@@ -22,6 +28,10 @@ class Explore extends Component {
 	}
 
 	render() {
+		if(this.state.errorMessage !== null) {
+			return <h4>{this.state.errorMessage}</h4>
+		}
+
 		return (
 			<div className="Explore">
 				<div className="event-card-list">

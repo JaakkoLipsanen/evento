@@ -1,5 +1,7 @@
 import React, { Component } from 'react';
-import Cookie from 'js-cookie';
+import api from '../../api';
+import session from '../../session';
+
 import './EventPage.css';
 
 const UserInfo = ({ name }) => (
@@ -30,50 +32,60 @@ class EventPage extends Component {
 		};
 	}
 
-	componentDidMount() {
-		this.fetchAttendees();
-	}
-
-	fetchAttendees() {
+	async componentDidMount() {
 		const eventId = this.props.match.params.eventId;
 
-		fetch(`/events/${eventId}`)
-		.then(response => {
-			if (response.ok) return response.json();
-			return Promise.reject();
-		})
-		.then(event => this.setState({ event: event }))
-		.catch(() => this.setState({ errorMessage: "Something went wrong" }));
+		// get event
+		if(!await this.fetchEvent(eventId)) {
+			return;
+		}
 
-		fetch(`/events/${eventId}/attendees`)
-		.then(response => response.json())
-		.then(attendees => {
-			this.setState({ attendees: attendees });
-		});
+		// get event attendees
+		if(!await this.fetchAttendees(eventId)) {
+			return;
+		}
 	}
 
-	updateIsAttending(isAttending) {
-		const method = isAttending ? 'POST' : 'DELETE';
+	async fetchEvent(eventId) {
+		const result = await api.getEvent(eventId);
+		if(!result.success) {
+			this.setState({ errorMessage: result.error.message });
+			return false;
+		}
+
+		this.setState({ event: result.payload.event });
+		return true;
+	}
+
+	async fetchAttendees(eventId) {
+		const result = await api.getAttendees(eventId);
+		if(!result.success) {
+			this.setState({ errorMessage: result.error.message });
+			return false;
+		}
+
+		this.setState({ attendees: result.payload.attendees });
+		return true;
+	}
+
+	async updateIsAttending(isAttending) {
 		const eventId = this.props.match.params.eventId;
-		fetch(`/events/${eventId}/attendees`, {
-			method: method,
-			headers: { 'Authorization': Cookie.get('auth_token') }
-		})
-		.then(response => {
-			if (!response.ok) return Promise.reject();
-			// If successiful attending, re-fetch attendees
-			this.fetchAttendees();
-		})
-		.catch(() => this.setState({ errorMessage: "Something went wrong" }));
+		const result = await api.updateIsAttending(eventId, isAttending);
+		if(result.success) {
+			// If successful attending, then re-fetch attendees
+			this.fetchAttendees(eventId);
+		}
+		else {
+			this.setState({ errorMessage: result.error.message });
+		}
 	}
 
 	isUserAttending() {
-		const userCookie = Cookie.get('user');
-		if (!userCookie) {
-			 return false;
+		const user = session.getUser();
+		if(!user) {
+			return false;
 		}
 
-		const user = JSON.parse(userCookie);
 		return this.state.attendees.some(attendee => attendee.id === user.id);
 	}
 

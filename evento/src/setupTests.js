@@ -1,3 +1,6 @@
+import Cookie from 'js-cookie';
+import fetchMock from 'fetch-mock';
+
 // Helper function for async fetches
 global.waitForFetches = () => {
 	return new Promise((resolve, reject) => {
@@ -63,5 +66,34 @@ global.Mock = {
 			events.push(Mock.generateEvent());
 		}
 		return events;
+	},
+
+	generateMocks() {
+		return {
+			event: this.generateEvent(),
+			events: this.generateEvents(10),
+			user: this.generateUser(),
+			users: this.generateUsers(5),
+			category: this.generateCategory(),
+			categories: this.generateCategories(10),
+		};
+	},
+
+	setCookies(params) {
+		for(let param of Object.keys(params)) {
+			Cookie.set(param, JSON.stringify(params[param]));
+		}
+	},
+
+	resetMocksAndCookies() {
+		// TODO: sinon.restore()?
+		fetchMock.restore();
+		this.resetCookies();
+	},
+
+	resetCookies() {
+		Object.keys(Cookie.get()).forEach(function(cookie) {
+			Cookie.remove(cookie);
+		});
 	}
 }

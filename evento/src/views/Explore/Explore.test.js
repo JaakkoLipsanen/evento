@@ -5,6 +5,8 @@ import fetchMock from 'fetch-mock';
 import sinon from 'sinon';
 import Explore from './';
 
+import api from '../../api';
+
 const eventMocks = Mock.generateEvents(5);
 const eventFilterer = (events) => events;
 
@@ -43,4 +45,14 @@ it('filters events', async () => {
 	const eventCards = explore.instance().filteredEvents;
 
 	expect(eventCards).toEqual([eventMocks[1]]);
+});
+
+it('shows error when getting events fails', async () => {
+	fetchMock.restore();
+	fetchMock.get('/events', { status: 404, body: "{ }" });
+
+	const explore = mount(<Explore filterEvents={eventFilterer} />)
+	await waitForFetches();
+
+	expect(explore.text()).toContain("Something went wrong");
 });

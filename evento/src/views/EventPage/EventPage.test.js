@@ -6,6 +6,8 @@ import sinon from 'sinon';
 import fetchMock from 'fetch-mock';
 import EventPage from './';
 
+import api from '../../api';
+
 const event = Mock.generateEvent();
 const attendees = Mock.generateUsers(3);
 
@@ -29,7 +31,20 @@ describe('EventPage', () => {
 		it('displays error message if event not found', async () => {
 			const INVALID_ID = 5;
 			const invalidMatchMock = { params: { eventId: INVALID_ID } };
-			fetchMock.get(`begin:/events/`, 404);
+			fetchMock.get(`begin:/events/`, { status: 404, body: '{ }' });
+
+			const eventPage = mount(<EventPage match={invalidMatchMock} />)
+			await waitForFetches();
+
+			expect(eventPage.text()).toContain("Something went wrong");
+		});
+
+		it('displays error message if getAttendees returns error', async () => {
+			const INVALID_ID = 5;
+			const invalidMatchMock = { params: { eventId: INVALID_ID } };
+
+			fetchMock.get(`/events/${INVALID_ID}`, event);
+			fetchMock.get(`/events/${INVALID_ID}/attendees`, { status: 404, body: '{ }' });
 
 			const eventPage = mount(<EventPage match={invalidMatchMock} />)
 			await waitForFetches();
@@ -143,7 +158,7 @@ describe('EventPage', () => {
 			expect(updateIsAttending.calledWith(false)).toBe(true);
 		});
 
-		it('sends a post request to /event/:id/attendees when user not attending', async () => {
+		it('sends a post request to /events/:id/attendees when user not attending', async () => {
 			const eventPage = mount(<EventPage match={matchMock} />);
 			await waitForFetches();
 
@@ -156,7 +171,7 @@ describe('EventPage', () => {
 			expect(fetchMock.called(`/events/${event.id}/attendees`)).toBe(true);
 		});
 
-		it('sends a delete request to /event/:id/attendees when user is attending', async () => {
+		it('sends a delete request to /events/:id/attendees when user is attending', async () => {
 			fetchMock.delete(`/events/${event.id}/attendees`, 200);
 			Cookie.set("user", attendees[0]);
 
@@ -176,7 +191,7 @@ describe('EventPage', () => {
 			fetchMock.restore();
 			fetchMock.get(`/events/${event.id}`, event);
 			fetchMock.get(`/events/${event.id}/attendees`, attendees);
-			fetchMock.post(`/events/${event.id}/attendees`, 401);
+			fetchMock.post(`/events/${event.id}/attendees`, { status: 401, body: '{ }' });
 
 			const eventPage = mount(<EventPage match={matchMock} />);
 			await waitForFetches();

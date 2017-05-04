@@ -1,4 +1,6 @@
 import React from 'react';
+
+import api from '../../api';
 import './RegisterPage.css';
 
 class RegisterPage extends React.Component {
@@ -13,7 +15,7 @@ class RegisterPage extends React.Component {
 		};
 	}
 
-	handleSubmit(evt) {
+	async handleSubmit(evt) {
 		evt.preventDefault();
 
 		if (this.state.password !== this.state.passwordConf) {
@@ -21,30 +23,14 @@ class RegisterPage extends React.Component {
 			return;
 		}
 
-		fetch('/users', {
-			method: 'POST',
-			headers: { 'Content-Type': 'application/json', 'Access-Control-Allow-Origin':'*' },
-			body: JSON.stringify({
-				name: this.state.name,
-				email: this.state.email,
-				password: this.state.password,
-			})
-		})
-		.then(response => {
-			if (response.ok) {
-				// After successiful register, redirect to sign in page
-				this.props.history.push('/signin')
-			} else {
-				return Promise.reject(response);
-			}
-		})
-		.catch(response => {
-			return response.json()
-		})
-		.then(res => {
-			const errorMessages = Object.keys(res).map(e => `${e} ${res[e]}`)
-			this.setState({ errorMessages: errorMessages })
-		});
+		const result = await api.register(this.state.name, this.state.email, this.state.password);
+		if(result.success) {
+			// After successiful register, redirect to sign in page
+			this.props.history.push('/signin')
+		}
+		else {
+			this.setState({ errorMessages: result.error.messages });
+		}
 	}
 
 	render () {
