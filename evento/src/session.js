@@ -1,21 +1,17 @@
 import Cookie from 'js-cookie';
 
+const parseOrNull = (obj) => Boolean(obj) ? JSON.parse(obj) : null;
 export default {
 	isLoggedIn() {
 		return Boolean(this.getAuthToken()) && Boolean(this.getUser());
 	},
 
 	getAuthToken() {
-		return Cookie.get("auth_token");
+		return parseOrNull(Cookie.get("auth_token"));
 	},
 
 	getUser() {
-		const cookie = Cookie.get("user");
-		if(!cookie) {
-			return null;
-		}
-		
-		return JSON.parse(cookie);
+		return parseOrNull(Cookie.get("user"));
 	},
 
 	getAuthHeader() {

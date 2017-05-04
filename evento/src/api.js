@@ -55,10 +55,14 @@ export default {
 			return _createErrorResult(await err.json());
 		}
 	},
-	
+
 	// TODO: check session.isLoggedIn() ?
 	async getUserEvents() {
-		try {	
+		if(!session.getUser()) {
+			return { success: false, error: { type: "auth", message: "You must be logged in" } };
+		}
+
+		try {
 			const response = await fetch(`/users/${session.getUser().id}/events`);
 			if(!response.ok) {
 				throw response;
@@ -67,21 +71,25 @@ export default {
 			const events = await response.json();
 			return { success: true, payload: { events: events } };
 		}
-		catch(err) {	
+		catch(err) {
 			return _createErrorResult(await err.json());
 		}
 	},
-	
-	async setIsAttending(eventId, isAttending) {
+
+	async updateIsAttending(eventId, isAttending) {
+		if(!session.getUser()) {
+			return { success: false, error: { type: "auth", message: "You must be logged in" } };
+		}
+
 		try {
 			const response = await fetch(`/events/${eventId}/attendees`, {
 				method: isAttending ? 'POST' : 'DELETE'
 			});
-			
+
 			if (!response.ok) {
 				throw response;
 			}
-			
+
 			return { success: true, payload: { } };
 		}
 		catch(err) {
@@ -130,7 +138,7 @@ export default {
 			}
 
 			const json = await response.json();
-			Cookie.set('auth_token', json.auth_token);
+			Cookie.set('auth_token', JSON.stringify(json.auth_token));
 			Cookie.set('user', JSON.stringify(json.user));
 
 			return { success: true, payload: { user: json.user, auth_token: json.auth_token } };

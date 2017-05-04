@@ -48,12 +48,11 @@ it('filters events', async () => {
 });
 
 it('shows error when getting events fails', async () => {
-	sinon.stub(api, "getEvents").callsFake(async (eventId) => {
-		 return { success: false, error: { message: "Error!" } };
-	});
+	fetchMock.restore();
+	fetchMock.get('/events', { status: 404, body: "{ }" });
 
 	const explore = mount(<Explore filterEvents={eventFilterer} />)
 	await waitForFetches();
 
-	expect(explore.text()).toContain("Error!");
+	expect(explore.text()).toContain("Something went wrong");
 });

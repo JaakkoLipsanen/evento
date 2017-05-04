@@ -12,16 +12,16 @@ const userMock = Mock.generateUser();
 
 const UserAuthToken = "token_token";
 const setCookies = (user = userMock, userAuthToken = UserAuthToken) => {
-	Cookie.set("user", user);
-	Cookie.set("auth_token", userAuthToken);
+	Cookie.set("user", JSON.stringify(user));
+	Cookie.set("auth_token", JSON.stringify(userAuthToken));
 };
 
 fetchMock.get(`/users/${userMock.id}/events`, (url, opts) => {
 	// TODO: below is what here was before, and what is more correct
 	// if(!opts.headers || opts.headers.Authorization !== UserAuthToken) {
-	// unfortunately, now we 'attach' the authorization header to fetch in the 
+	// unfortunately, now we 'attach' the authorization header to fetch in the
 	// config.js, and config.js isn't 'applied' on tests. so on tests, the auth is
-	// not sent. instead, what I know did (temporarily) is that I just check it 
+	// not sent. instead, what I know did (temporarily) is that I just check it
 	// against session.getAuthHeader, which is based on Cookie.get('auth_token')
 	if(session.getAuthHeader().Authorization !== UserAuthToken) {
 		return { status: 401, body: '{ }' };
@@ -46,7 +46,7 @@ it('shows error if user is not logged in', async () => {
 });
 
 it('shows error if given incorrect parameters', async () => {
-	setCookies(userMock, "wrong_auth_token");
+	Mock.setCookies({ user: userMock, auth_token: "wrong_auth_token" });
 
 	const myEventsPage = mount(<MyEvents />);
 	await waitForFetches();
@@ -63,7 +63,7 @@ it('shows events if user is logged in', async () => {
 	expect(myEventsPage.state('events')).toEqual(eventMocks);
 	expect(myEventsPage.find('EventCard').length).toEqual(eventMocks.length);
 });
- 
+
 
 it('updates history when event is clicked', async () => {
 	setCookies();

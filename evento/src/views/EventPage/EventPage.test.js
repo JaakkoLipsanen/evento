@@ -43,20 +43,13 @@ describe('EventPage', () => {
 			const INVALID_ID = 5;
 			const invalidMatchMock = { params: { eventId: INVALID_ID } };
 
-			let sandbox = sinon.sandbox.create();
-			sandbox.stub(api, "getEvent").callsFake(async (eventId) => {
-				return { success: true, payload: { event: event } };
-			});
-
-			sandbox.stub(api, "getAttendees").callsFake(async (eventId) => {
-				return { success: false, error: { message: "Error" } };
-			});
+			fetchMock.get(`/events/${INVALID_ID}`, event);
+			fetchMock.get(`/events/${INVALID_ID}/attendees`, { status: 404, body: '{ }' });
 
 			const eventPage = mount(<EventPage match={invalidMatchMock} />)
 			await waitForFetches();
 
-			expect(eventPage.text()).toContain("Error");
-			sandbox.restore();
+			expect(eventPage.text()).toContain("Something went wrong");
 		});
 
 		it('renders a AttendButton when user is not attending event', async () => {

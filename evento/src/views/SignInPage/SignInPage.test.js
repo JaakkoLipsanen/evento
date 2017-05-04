@@ -6,6 +6,7 @@ import sinon from 'sinon';
 import Cookie from 'js-cookie';
 import SignInPage from './';
 
+import session from '../../session';
 
 describe('SignInPage', () => {
 	it('renders without crashing', () => {
@@ -100,8 +101,8 @@ describe('SignInPage', () => {
 		it('sets auth_token and userId cookies on successiful fetch', async () => {
 			const [signInPage, AUTH_TOKEN, USER] = await successifulSignIn();
 
-			expect(Cookie.get('auth_token')).toEqual(AUTH_TOKEN)
-			expect(JSON.parse(Cookie.get('user')).id).toEqual(USER.id); // Cookies are stored as strings
+			expect(session.getAuthToken()).toEqual(AUTH_TOKEN)
+			expect(session.getUser()).toEqual(USER); // Cookies are stored as strings
 		});
 
 		it('sets error message on failed fetch', async () => {

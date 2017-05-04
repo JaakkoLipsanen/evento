@@ -22,5 +22,7 @@ export default {
 			const parameters = { headers: getDefaultHeaders(), ...params  };
 			return _fetch(BaseURL + url, parameters);
 		};
-	}
+	},
+
+	BaseURL: BaseURL
 }
