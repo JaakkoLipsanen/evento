@@ -1,20 +1,20 @@
 import React from 'react';
 import ReactDOM from 'react-dom';
-import { mount } from 'enzyme';
 import fetchMock from 'fetch-mock';
-import sinon from 'sinon';
-import Cookie from 'js-cookie';
 
 import api from './api';
 import session from './session';
 import config from './config';
+import { mocks, test, cookies } from './test-helper';
 
-const mocks = Mock.generateMocks();
+const INVALID_ID = 999999;
 
-describe('', () => {
-	afterEach(() => Mock.resetMocksAndCookies());
+const EMPTY_VALID_RESPONSE = { status: 200, body: { } };
+const NOT_FOUND_RESPONSE = { status: 404, body: { } };
 
+test('/src root files', (sinon) => {
 	describe('api.js', () => {
+		
 		describe('getEvent', () => {
 			it('returns correct result with correct parameters', async () => {
 				fetchMock.get(`/events/${mocks.event.id}`, mocks.event);
@@ -25,8 +25,7 @@ describe('', () => {
 			});
 
 			it('returns error with incorrect parameters', async () => {
-				const INVALID_ID = 100000;
-				fetchMock.get(`/events/${INVALID_ID}`, { status: 404, body: '{ }' });
+				fetchMock.get(`/events/${INVALID_ID}`, NOT_FOUND_RESPONSE);
 
 				const result = await api.getEvent(INVALID_ID);
 				expect(result.success).toBe(false);
@@ -44,7 +43,7 @@ describe('', () => {
 			});
 
 			it('returns error with incorrect parameters', async () => {
-				fetchMock.get(`/events`, { status: 404, body: '{ }' });
+				fetchMock.get(`/events`, NOT_FOUND_RESPONSE);
 
 				const result = await api.getEvents();
 				expect(result.success).toBe(false);
@@ -62,8 +61,7 @@ describe('', () => {
 			});
 
 			it('returns error with incorrect parameters', async () => {
-				const INVALID_ID = 10000;
-				fetchMock.get(`/events/${INVALID_ID}/attendees`, { status: 404, body: '{ }' });
+				fetchMock.get(`/events/${INVALID_ID}/attendees`, NOT_FOUND_RESPONSE);
 
 				const result = await api.getAttendees(INVALID_ID);
 				expect(result.success).toBe(false);
@@ -82,7 +80,7 @@ describe('', () => {
 			});
 
 			it('returns error if user is not logged in', async () => {
-				fetchMock.get(`/users/${mocks.user.id}/events`, { status: 404, body: '{ }' });
+				fetchMock.get(`/users/${mocks.user.id}/events`, NOT_FOUND_RESPONSE);
 
 				const result = await api.getUserEvents();
 				expect(result.success).toBe(false);
@@ -91,47 +89,47 @@ describe('', () => {
 
 			it('returns error if the client logged in status differs from servers logged in status', async () => {
 				Mock.setCookies({ user: mocks.user, auth_token: "valid" });
-				fetchMock.get(`/users/${mocks.user.id}/events`, { status: 404, body: '{ }' });
+				fetchMock.get(`/users/${mocks.user.id}/events`, NOT_FOUND_RESPONSE);
 
 				const result = await api.getUserEvents();
 				expect(result.success).toBe(false);
 				expect(result.error.message).toEqual("Something went wrong");
 			});
 		});
-	});
 
-	describe('updateIsAttending', () => {
-		it('updates to "is attending" if user is logged in', async () => {
-			Mock.setCookies({ user: mocks.user, auth_token: "valid" });
-			fetchMock.post(`/events/${mocks.event.id}/attendees`, { status: 200, body: { } });
+		describe('updateIsAttending', () => {
+			it('updates to "is attending" if user is logged in', async () => {
+				Mock.setCookies({ user: mocks.user, auth_token: "valid" });
+				fetchMock.post(`/events/${mocks.event.id}/attendees`, EMPTY_VALID_RESPONSE);
 
-			const result = await api.updateIsAttending(mocks.event.id, true);
-			expect(result.success).toBe(true);
-		});
+				const result = await api.updateIsAttending(mocks.event.id, true);
+				expect(result.success).toBe(true);
+			});
 
-		it('updates to "not attending" if user is logged in', async () => {
-			Mock.setCookies({ user: mocks.user, auth_token: "valid" });
-			fetchMock.delete(`/events/${mocks.event.id}/attendees`, { status: 200, body: { } });
+			it('updates to "not attending" if user is logged in', async () => {
+				Mock.setCookies({ user: mocks.user, auth_token: "valid" });
+				fetchMock.delete(`/events/${mocks.event.id}/attendees`, EMPTY_VALID_RESPONSE);
 
-			const result = await api.updateIsAttending(mocks.event.id, false);
-			expect(result.success).toBe(true);
-		});
+				const result = await api.updateIsAttending(mocks.event.id, false);
+				expect(result.success).toBe(true);
+			});
 
-		it('returns error if user is not logged in', async () => {
-			fetchMock.delete(`/events/${mocks.event.id}/attendees`, { status: 200, body: { } });
+			it('returns error if user is not logged in', async () => {
+				fetchMock.delete(`/events/${mocks.event.id}/attendees`, EMPTY_VALID_RESPONSE);
 
-			const result = await api.updateIsAttending(mocks.event.id, false);
-			expect(result.success).toBe(false);
-			expect(result.error.message).toEqual("You must be logged in");
-		});
+				const result = await api.updateIsAttending(mocks.event.id, false);
+				expect(result.success).toBe(false);
+				expect(result.error.message).toEqual("You must be logged in");
+			});
 
-		it('returns error if the client logged in status differs from servers logged in status', async () => {
-			Mock.setCookies({ user: mocks.user, auth_token: "valid" });
-			fetchMock.post(`/events/${mocks.event.id}/attendees`, { status: 404, body: { } });
+			it('returns error if the client logged in status differs from servers logged in status', async () => {
+				Mock.setCookies({ user: mocks.user, auth_token: "valid" });
+				fetchMock.post(`/events/${mocks.event.id}/attendees`, NOT_FOUND_RESPONSE);
 
-			const result = await api.updateIsAttending(mocks.event.id, true);
-			expect(result.success).toBe(false);
-			expect(result.error.message).toEqual("Something went wrong");
+				const result = await api.updateIsAttending(mocks.event.id, true);
+				expect(result.success).toBe(false);
+				expect(result.error.message).toEqual("Something went wrong");
+			});
 		});
 	});
 
@@ -190,7 +188,6 @@ describe('', () => {
 		});
 
 		it("sets default headers", async () => {
-
 			fetchMock.get(`${config.BaseURL}/test`, (url, opts) =>
 				JSON.stringify(
 					opts.headers &&
@@ -205,7 +202,6 @@ describe('', () => {
 		});
 
 		it("sets auth headers", async () => {
-
 			const cookies = { user: mocks.user, auth_token: "plaa" };
 			Mock.setCookies(cookies);
 

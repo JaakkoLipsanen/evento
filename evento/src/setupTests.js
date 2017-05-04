@@ -2,19 +2,23 @@ import Cookie from 'js-cookie';
 import fetchMock from 'fetch-mock';
 
 // Helper function for async fetches
-global.waitForFetches = () => {
+global.wait = (milliseconds = 50) => {
 	return new Promise((resolve, reject) => {
 		setTimeout(() => {
 			resolve();
-		}, 50);
+		}, milliseconds);
 	});
 };
+
+// TODO: remove waitForFetches completely?
+global.waitForFetches = global.wait;
 
 // Create a large random integer to prevent collisions
 const generateId = () => Math.round(Math.random() * Number.MAX_SAFE_INTEGER);
 // Convert number to base36 string to get random combination of alphabets and numbers
 const generateString = (n) => (Math.random().toString(36)+'00000000000000000').slice(2, n+2);
 
+const DefaultErrorMessage = "Something went wrong";
 // Factories
 
 global.Mock = {
@@ -44,7 +48,7 @@ global.Mock = {
 		}
 	},
 
-	generateUsers: (n) => {
+	generateUsers: (n = 10) => {
 		const users = [];
 		for (let x = 0; x < n; x++) {
 			users.push(Mock.generateUser());
@@ -52,7 +56,7 @@ global.Mock = {
 		return users;
 	},
 
-	generateCategories: (n) => {
+	generateCategories: (n = 10) => {
 		const categories = [];
 		for (let x = 0; x < n; x++) {
 			categories.push(Mock.generateCategory());
@@ -60,23 +64,12 @@ global.Mock = {
 		return categories;
 	},
 
-	generateEvents: (n) => {
+	generateEvents: (n = 10) => {
 		const events = [];
 		for (let x = 0; x < n; x++) {
 			events.push(Mock.generateEvent());
 		}
 		return events;
-	},
-
-	generateMocks() {
-		return {
-			event: this.generateEvent(),
-			events: this.generateEvents(10),
-			user: this.generateUser(),
-			users: this.generateUsers(5),
-			category: this.generateCategory(),
-			categories: this.generateCategories(10),
-		};
 	},
 
 	setCookies(params) {
@@ -95,5 +88,5 @@ global.Mock = {
 		Object.keys(Cookie.get()).forEach(function(cookie) {
 			Cookie.remove(cookie);
 		});
-	}
+	},
 }
