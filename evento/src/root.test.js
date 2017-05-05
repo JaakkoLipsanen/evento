@@ -7,14 +7,15 @@ import session from './session';
 import config from './config';
 import { mocks, test, cookies } from './test-helper';
 
-const INVALID_ID = 999999;
-
 const EMPTY_VALID_RESPONSE = { status: 200, body: { } };
 const NOT_FOUND_RESPONSE = { status: 404, body: { } };
 
+const INVALID_ID = 999999;
+const DEFAULT_COOKIES = { user: mocks.user, auth_token: "valid" };
+
 test('/src root files', (sinon) => {
 	describe('api.js', () => {
-		
+
 		describe('getEvent', () => {
 			it('returns correct result with correct parameters', async () => {
 				fetchMock.get(`/events/${mocks.event.id}`, mocks.event);
@@ -71,7 +72,7 @@ test('/src root files', (sinon) => {
 
 		describe('getUserEvents', () => {
 			it('returns events if user is logged in', async () => {
-				Mock.setCookies({ user: mocks.user, auth_token: "valid" });
+				cookies.set(DEFAULT_COOKIES);
 				fetchMock.get(`/users/${mocks.user.id}/events`, mocks.events);
 
 				const result = await api.getUserEvents();
@@ -88,7 +89,7 @@ test('/src root files', (sinon) => {
 			});
 
 			it('returns error if the client logged in status differs from servers logged in status', async () => {
-				Mock.setCookies({ user: mocks.user, auth_token: "valid" });
+				cookies.set(DEFAULT_COOKIES);
 				fetchMock.get(`/users/${mocks.user.id}/events`, NOT_FOUND_RESPONSE);
 
 				const result = await api.getUserEvents();
@@ -99,7 +100,7 @@ test('/src root files', (sinon) => {
 
 		describe('updateIsAttending', () => {
 			it('updates to "is attending" if user is logged in', async () => {
-				Mock.setCookies({ user: mocks.user, auth_token: "valid" });
+				cookies.set(DEFAULT_COOKIES)
 				fetchMock.post(`/events/${mocks.event.id}/attendees`, EMPTY_VALID_RESPONSE);
 
 				const result = await api.updateIsAttending(mocks.event.id, true);
@@ -107,7 +108,7 @@ test('/src root files', (sinon) => {
 			});
 
 			it('updates to "not attending" if user is logged in', async () => {
-				Mock.setCookies({ user: mocks.user, auth_token: "valid" });
+				cookies.set(DEFAULT_COOKIES);
 				fetchMock.delete(`/events/${mocks.event.id}/attendees`, EMPTY_VALID_RESPONSE);
 
 				const result = await api.updateIsAttending(mocks.event.id, false);
@@ -123,7 +124,7 @@ test('/src root files', (sinon) => {
 			});
 
 			it('returns error if the client logged in status differs from servers logged in status', async () => {
-				Mock.setCookies({ user: mocks.user, auth_token: "valid" });
+				cookies.set(DEFAULT_COOKIES);
 				fetchMock.post(`/events/${mocks.event.id}/attendees`, NOT_FOUND_RESPONSE);
 
 				const result = await api.updateIsAttending(mocks.event.id, true);
@@ -138,10 +139,8 @@ test('/src root files', (sinon) => {
 
 	describe('session.js', () => {
 		it('returns auth header if user is logged in', async () => {
-			const cookies = { user: mocks.user, auth_token: "valid" };
-			Mock.setCookies(cookies);
-
-			expect(session.getAuthHeader().Authorization).toEqual(cookies.auth_token);
+			cookies.set(DEFAULT_COOKIES);
+			expect(session.getAuthHeader().Authorization).toEqual(DEFAULT_COOKIES.auth_token);
 		});
 
 		it('does not return auth header if user is not logged in', async () => {
@@ -149,11 +148,10 @@ test('/src root files', (sinon) => {
 		});
 
 		it('returns user and auth_token if user is logged in', async () => {
-			const cookies = { user: mocks.user, auth_token: "valid" };
-			Mock.setCookies(cookies);
+			cookies.set(DEFAULT_COOKIES);
 
-			expect(session.getUser()).toEqual(cookies.user);
-			expect(session.getAuthToken()).toEqual(cookies.auth_token);
+			expect(session.getUser()).toEqual(DEFAULT_COOKIES.user);
+			expect(session.getAuthToken()).toEqual(DEFAULT_COOKIES.auth_token);
 		});
 
 		it('does not return user or auth_token if user is not logged in', async () => {
@@ -163,7 +161,7 @@ test('/src root files', (sinon) => {
 
 		it('returns isLoggedIn correctly', async () => {
 			expect(session.isLoggedIn()).toBe(false);
-			Mock.setCookies({ user: mocks.user, auth_token: "valid" });
+			cookies.set(DEFAULT_COOKIES);
 			expect(session.isLoggedIn()).toBe(true);
 		});
 	});
@@ -195,20 +193,19 @@ test('/src root files', (sinon) => {
 					opts.headers["Access-Control-Allow-Origin"] === '*')
 			);
 
-			config.apply();
+			config.apply(); // config applied after fetch-mock, so will override fetch-mock
 			const response = await fetch('/test');
 			const result = await response.json();
 			expect(result).toBe(true);
 		});
 
 		it("sets auth headers", async () => {
-			const cookies = { user: mocks.user, auth_token: "plaa" };
-			Mock.setCookies(cookies);
+			cookies.set(DEFAULT_COOKIES);
 
 			fetchMock.get(`${config.BaseURL}/test`, (url, opts) =>
 				JSON.stringify(
 					opts.headers &&
-					opts.headers["Authorization"] === cookies.auth_token)
+					opts.headers["Authorization"] === DEFAULT_COOKIES.auth_token)
 			);
 
 			config.apply();

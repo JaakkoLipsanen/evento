@@ -10,7 +10,7 @@ const cookies = {
 			Cookie.set(param, JSON.stringify(cookies[param]));
 		}
 	},
-	
+
 	reset() {
 		Object.keys(Cookie.get()).forEach(function(cookie) {
 			Cookie.remove(cookie);
@@ -19,21 +19,30 @@ const cookies = {
 };
 
 const DefaultErrorMessage = "Something went wrong";
-const mocks = {		
+const mocks = {
 	// deconstructs all values (event, events, user, users etc) to this object.
 	...mockFactory.createAll(),
-		
+
+	generate: {
+		// usage: mocks.generate.user() etc
+		...mockFactory.createAllFunctions()
+	},
+
 	api: {
 		DefaultErrorMessage: DefaultErrorMessage,
 		responses: {
 			get DefaultError() {
 				return () => { return { success: false, error: { type: "unknown", message: DefaultErrorMessage } } };
 			},
-			
+
+			get DefaultSuccess() {
+				return () => this.create({ });
+			},
+
 			create(payload) {
 				return { success: true, payload: payload };
 			},
-			
+
 			createError(error) {
 				return { success: false, error: { type: error.type || "unknown", message: error.message || DefaultErrorMessage } };
 			}
@@ -57,18 +66,21 @@ const waitForFetches = (milliseconds = 50) => {
 const mount = async (component) => {
 	const mounted = enzyme.mount(component);
 	await waitForFetches();
-	
+
+	mounted.wait = waitForFetches;
 	return mounted;
 };
 
 // usage: top-level "describe" in all test files uses this instead
 const test = (name, callback) => {
-	let sandbox;			
-	const sinonProxy = { 
+	let sandbox;
+	const sinonProxy = {
+		get match() { return sandbox.match; },
 		spy(...params) { return sandbox.spy(...params); },
-		stub(...params) { return sandbox.stub(...params); } 
+		stub(...params) { return sandbox.stub(...params); },
+		restore() { return sandbox.restore(); }
 	};
-	
+
 	//const reset = this.reset;
 	describe('EventPage', () => {
 		beforeEach(() => sandbox = sinon.sandbox.create());
@@ -76,7 +88,7 @@ const test = (name, callback) => {
 			reset();
 			sandbox.restore();
 		});
-		
+
 		callback(sinonProxy);
 	});
 };
