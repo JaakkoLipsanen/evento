@@ -11,7 +11,6 @@ const matchMocks = {
 };
 
 test('EventPage', (sinon) => {
-
 	const mockGetEventSuccess = (eventId) => {
 		sinon.stub(api, "getEvent")
 			.withArgs(eventId)

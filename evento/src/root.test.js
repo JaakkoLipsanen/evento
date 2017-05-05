@@ -15,7 +15,6 @@ const DEFAULT_COOKIES = { user: mocks.user, auth_token: "valid" };
 
 test('/src root files', (sinon) => {
 	describe('api.js', () => {
-
 		describe('getEvent', () => {
 			it('returns correct result with correct parameters', async () => {
 				fetchMock.get(`/events/${mocks.event.id}`, mocks.event);

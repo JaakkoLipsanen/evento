@@ -50,11 +50,6 @@ const mocks = {
 	},
 };
 
-const reset = () => {
-	cookies.reset();
-	fetchMock.restore();
-};
-
 const waitForFetches = (milliseconds = 50) => {
 	return new Promise((resolve, reject) => {
 		setTimeout(() => {
@@ -82,10 +77,11 @@ const test = (name, callback) => {
 	};
 
 	//const reset = this.reset;
-	describe('EventPage', () => {
+	describe(name, () => {
 		beforeEach(() => sandbox = sinon.sandbox.create());
 		afterEach(() => {
-			reset();
+			cookies.reset();
+			fetchMock.restore();
 			sandbox.restore();
 		});
 
@@ -93,4 +89,4 @@ const test = (name, callback) => {
 	});
 };
 
-export { cookies, mocks, waitForFetches, mount, test, reset }
+export { cookies, mocks, waitForFetches, mount, test }
