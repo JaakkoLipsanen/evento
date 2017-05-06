@@ -1,16 +1,23 @@
 import Cookie from 'js-cookie';
 import session from './session';
 
+const NOT_LOGGED_IN_MESSAGE = "You must be logged in";
+const INVALID_CREDENTIALS_MESSAGE = "Invalid credentials";
+const DEFAULT_ERROR_MESSAGE = "Something went wrong";
+
 const _createErrorResult = async (err) => {
 	return { success: false, error: {
 		type: err.type || "unknown",
-		message: err.message || "Something went wrong" }
+		message: err.message || DEFAULT_ERROR_MESSAGE }
 	};
 }
 
 // TODO: lots of duplicate code here!
 export default {
-
+	NOT_LOGGED_IN_MESSAGE: NOT_LOGGED_IN_MESSAGE,
+	INVALID_CREDENTIALS_MESSAGE: INVALID_CREDENTIALS_MESSAGE,
+	DEFAULT_ERROR_MESSAGE: DEFAULT_ERROR_MESSAGE,
+	
 	async getEvent(eventId) {
 		try {
 			const response = await fetch(`/events/${eventId}`);
@@ -59,7 +66,7 @@ export default {
 	// TODO: check session.isLoggedIn() ?
 	async getUserEvents() {
 		if(!session.getUser()) {
-			return { success: false, error: { type: "auth", message: "You must be logged in" } };
+			return { success: false, error: { type: "auth", message: NOT_LOGGED_IN_MESSAGE } };
 		}
 
 		try {
@@ -78,7 +85,7 @@ export default {
 
 	async updateIsAttending(eventId, isAttending) {
 		if(!session.getUser()) {
-			return { success: false, error: { type: "auth", message: "You must be logged in" } };
+			return { success: false, error: { type: "auth", message: NOT_LOGGED_IN_MESSAGE } };
 		}
 
 		try {
@@ -134,7 +141,7 @@ export default {
 			});
 
 			if(!response.ok) {
-				return { success: false, error: { type: "auth", message: "Invalid credentials" } };
+				return { success: false, error: { type: "auth", message: INVALID_CREDENTIALS_MESSAGE } };
 			}
 
 			const json = await response.json();

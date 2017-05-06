@@ -18,7 +18,7 @@ class SignInPage extends Component {
 
 		const result = await api.signin(this.state.email, this.state.password);
 		if(result.success) {
-			// Move to front page after successiful sign in
+			// Move to front page after successful sign in
 			this.props.history.push('/')
 		}
 		else {

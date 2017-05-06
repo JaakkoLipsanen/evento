@@ -25,7 +25,7 @@ class RegisterPage extends React.Component {
 
 		const result = await api.register(this.state.name, this.state.email, this.state.password);
 		if(result.success) {
-			// After successiful register, redirect to sign in page
+			// After successful register, redirect to sign in page
 			this.props.history.push('/signin')
 		}
 		else {

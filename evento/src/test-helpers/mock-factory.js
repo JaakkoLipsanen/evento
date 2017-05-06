@@ -62,7 +62,7 @@ export default {
 		return events;
 	},
 
-	createAll() {
+	createAllMocks() {
 		return {
 			event: this.createEvent(),
 			events: this.createEvents(10),
@@ -75,7 +75,7 @@ export default {
 		};
 	},
 
-	createAllFunctions() {
+	getCreateFunctions() {
 		return {
 			event: this.createEvent,
 			events: this.createEvents,

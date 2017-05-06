@@ -1,9 +1,10 @@
 import React from 'react';
 import ReactDOM from 'react-dom';
-import UserInfo from './';
 
-const user = { name: "Jack", email: "jack@aol.com", id: 1 };
+import UserInfo from './';
+import { mocks } from '../../test-helpers';
+
 it('renders without crashing', () => {
 	const div = document.createElement('div');
-	ReactDOM.render(<UserInfo user={user} />, div);
+	ReactDOM.render(<UserInfo user={mocks.user} />, div);
 });

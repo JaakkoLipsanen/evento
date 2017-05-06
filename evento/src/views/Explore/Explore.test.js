@@ -1,58 +1,54 @@
 import React from 'react';
 import ReactDOM from 'react-dom';
-import { mount } from 'enzyme';
-import fetchMock from 'fetch-mock';
-import sinon from 'sinon';
 import Explore from './';
 
 import api from '../../api';
+import { mount, mocks, createSinonSandbox } from '../../test-helpers';
 
-const eventMocks = Mock.generateEvents(5);
-const eventFilterer = (events) => events;
+const ReturnAllFilterer = (events) => events;
 
-it('renders without crashing', () => {
-	const div = document.createElement('div');
-	ReactDOM.render(<Explore filterEvents={eventFilterer} />, div);
-});
+describe("Explore", () => {
+	const sinon = createSinonSandbox({ restoreAfterEachTest: true });
+	
+	it('renders without crashing', () => {
+		const div = document.createElement('div');
+		ReactDOM.render(<Explore filterEvents={ReturnAllFilterer} />, div);
+	});
+	
+	it('shows error when getting events fails', async () => {
+		sinon.stub(api, "getEvents")
+			.callsFake(() => mocks.api.responses.DefaultError);
+			
+		const explore = await mount(<Explore filterEvents={ReturnAllFilterer} />)
+		expect(explore.text()).toContain(mocks.api.DefaultErrorMessage);
+	});
+	
+	describe("on succesful request", () => {
+		beforeEach(() => {
+			sinon.stub(api, "getEvents")
+				.callsFake(() => mocks.api.responses.create({ events: mocks.events }));
+		});
+		
+		it('sets events', async () => {
+			const explore = await mount(<Explore filterEvents={ReturnAllFilterer} />)
+			expect(explore.state('events')).toEqual(mocks.events);
+		});
 
-it('fetches events', async () => {
-	fetchMock.get('/events', eventMocks);
+		it('calls callback on click', async () => {
+			const history = { push: sinon.spy() };
+			const explore = await mount(<Explore filterEvents={ReturnAllFilterer} history={history} />)
+			explore.find('EventCard').at(1).simulate('click');
 
-	const explore = mount(<Explore filterEvents={eventFilterer} />)
-	await waitForFetches();
+			expect(history.push.calledWith(`/event/${mocks.events[1].id}`)).toBe(true);
+		});
 
-	expect(explore.state('events')).toEqual(eventMocks);
-});
+		it('filters events', async () => {
+			const customFilterer = (events) => events.filter(e => e === events[1]);
 
-it('calls callback on click', async () => {
-	fetchMock.get('/events', eventMocks);
+			const explore = await mount(<Explore filterEvents={customFilterer} />)
+			const eventCards = explore.instance().filteredEvents;
 
-	const history = { push: sinon.spy() };
-	const explore = mount(<Explore filterEvents={eventFilterer} history={history} />)
-	await waitForFetches();
-
-	explore.find('EventCard').at(1).simulate('click');
-
-	expect(history.push.calledWith(`/event/${eventMocks[1].id}`)).toBe(true);
-});
-
-it('filters events', async () => {
-	fetchMock.get('/events', eventMocks);
-	const customFilterer = (events) => events.filter(e => e === events[1]);
-
-	const explore = mount(<Explore filterEvents={customFilterer} />)
-	await waitForFetches();
-	const eventCards = explore.instance().filteredEvents;
-
-	expect(eventCards).toEqual([eventMocks[1]]);
-});
-
-it('shows error when getting events fails', async () => {
-	fetchMock.restore();
-	fetchMock.get('/events', { status: 404, body: "{ }" });
-
-	const explore = mount(<Explore filterEvents={eventFilterer} />)
-	await waitForFetches();
-
-	expect(explore.text()).toContain("Something went wrong");
+			expect(eventCards).toEqual([mocks.events[1]]);
+		});
+	});
 });

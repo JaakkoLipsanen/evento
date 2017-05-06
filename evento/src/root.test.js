@@ -5,7 +5,7 @@ import fetchMock from 'fetch-mock';
 import api from './api';
 import session from './session';
 import config from './config';
-import { mocks, test, cookies } from './test-helper';
+import { mocks, cookies, createSinonSandbox } from './test-helpers';
 
 const EMPTY_VALID_RESPONSE = { status: 200, body: { } };
 const NOT_FOUND_RESPONSE = { status: 404, body: { } };
@@ -13,7 +13,10 @@ const NOT_FOUND_RESPONSE = { status: 404, body: { } };
 const INVALID_ID = 999999;
 const DEFAULT_COOKIES = { user: mocks.user, auth_token: "valid" };
 
-test('/src root files', (sinon) => {
+describe('/src root files', () => {
+	const sinon = createSinonSandbox({ restoreAfterEachTest: true });
+	afterEach(() => { fetchMock.restore(); cookies.reset(); });
+	
 	describe('api.js', () => {
 		describe('getEvent', () => {
 			it('returns correct result with correct parameters', async () => {

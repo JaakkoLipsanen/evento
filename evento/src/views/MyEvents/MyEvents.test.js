@@ -1,77 +1,73 @@
 import React from 'react';
-import ReactDOM from 'react-dom';
-import Cookie from 'js-cookie';
-import fetchMock from 'fetch-mock';
-import sinon from 'sinon';
-import { mount } from 'enzyme';
+import ReactDOM from 'react-dom';;
 import MyEvents from './';
+
 import session from '../../session';
+import api from '../../api';
+import { mount, mocks, cookies, createSinonSandbox } from '../../test-helpers';
 
-const eventMocks = Mock.generateEvents(5);
-const userMock = Mock.generateUser();
+const VALID_COOKIES = { user: mocks.user, auth_token: "valid" };
+const INVALID_COOKIES = { user: mocks.user, auth_token: "invalid" };
 
-const UserAuthToken = "token_token";
-const setCookies = (user = userMock, userAuthToken = UserAuthToken) => {
-	Cookie.set("user", JSON.stringify(user));
-	Cookie.set("auth_token", JSON.stringify(userAuthToken));
-};
+describe("MyEvents", () => {
+	const sinon = createSinonSandbox({ restoreAfterEachTest: true });
+	
+	beforeEach(() => {
+		cookies.reset();
+		
+		// mocks getUserEvents, checks if cookies/session is correct
+		sinon.stub(api, "getUserEvents")
+			.callsFake(() => {
+				// logged in, but wrong user/auth_token
+				if(!session.isLoggedIn()) {
+					return mocks.api.responses.createError({ type: "auth", message: api.NOT_LOGGED_IN_MESSAGE });	
+				}
+				
+				const valid = 
+					session.getUser().id === VALID_COOKIES.user.id &&
+				   session.getAuthToken() === VALID_COOKIES.auth_token;
+					
+				if(valid) {
+					return mocks.api.responses.create({ events: mocks.events });
+				}
+				
+				return mocks.api.responses.createError({ type: "auth", message: api.DEFAULT_ERROR_MESSAGE });
+		});
+	});
+	
+	it('renders without crashing', () => {
+		const div = document.createElement('div');
+		ReactDOM.render(<MyEvents />, div);
+	});
 
-fetchMock.get(`/users/${userMock.id}/events`, (url, opts) => {
-	// TODO: below is what here was before, and what is more correct
-	// if(!opts.headers || opts.headers.Authorization !== UserAuthToken) {
-	// unfortunately, now we 'attach' the authorization header to fetch in the
-	// config.js, and config.js isn't 'applied' on tests. so on tests, the auth is
-	// not sent. instead, what I know did (temporarily) is that I just check it
-	// against session.getAuthHeader, which is based on Cookie.get('auth_token')
-	if(session.getAuthHeader().Authorization !== UserAuthToken) {
-		return { status: 401, body: '{ }' };
-	}
+	it('shows error if user is not logged in', async () => {
+		const myEventsPage = await mount(<MyEvents />);
+		expect(myEventsPage.text()).toEqual(api.NOT_LOGGED_IN_MESSAGE);
+	});
+	
+	it('shows error if given incorrect parameters', async () => {
+		cookies.set(INVALID_COOKIES);
+		
+		const myEventsPage = await mount(<MyEvents />);
+		expect(myEventsPage.text()).toEqual(api.DEFAULT_ERROR_MESSAGE);
+	});
 
-	return eventMocks;
-});
+	describe("user is logged in", () => {
+		beforeEach(() => cookies.set(VALID_COOKIES));
+		
+		it('shows events if user is logged in', async () => {
+			const myEventsPage = await mount(<MyEvents />);
 
-it('renders without crashing', () => {
-	const div = document.createElement('div');
-	ReactDOM.render(<MyEvents />, div);
-});
+			expect(myEventsPage.state('events')).toEqual(mocks.events);
+			expect(myEventsPage.find('EventCard').length).toEqual(mocks.events.length);
+		});
 
-it('shows error if user is not logged in', async () => {
-	Cookie.remove("user");
-	Cookie.remove("auth_token");
+		it('updates history when event is clicked', async () => {
+			const history = { push: sinon.spy() };
+			const myEventsPage = await mount(<MyEvents history={history} />);
 
-	const myEventsPage = mount(<MyEvents />);
-	await waitForFetches();
-
-	expect(myEventsPage.text()).toEqual("You are not logged in. Please login again");
-});
-
-it('shows error if given incorrect parameters', async () => {
-	Mock.setCookies({ user: userMock, auth_token: "wrong_auth_token" });
-
-	const myEventsPage = mount(<MyEvents />);
-	await waitForFetches();
-
-	expect(myEventsPage.text()).toEqual("Something went wrong");
-});
-
-it('shows events if user is logged in', async () => {
-	setCookies();
-
-	const myEventsPage = mount(<MyEvents />);
-	await waitForFetches();
-
-	expect(myEventsPage.state('events')).toEqual(eventMocks);
-	expect(myEventsPage.find('EventCard').length).toEqual(eventMocks.length);
-});
-
-
-it('updates history when event is clicked', async () => {
-	setCookies();
-
-	const history = { push: sinon.spy() };
-	const myEventsPage = mount(<MyEvents history={history} />);
-	await waitForFetches();
-
-	myEventsPage.find('EventCard').at(1).simulate('click');
-	expect(history.push.calledWith(`/event/${eventMocks[1].id}`)).toBe(true);
-});
+			myEventsPage.find('EventCard').at(1).simulate('click');
+			expect(history.push.calledWith(`/event/${mocks.events[1].id}`)).toBe(true);
+		});
+	})
+})

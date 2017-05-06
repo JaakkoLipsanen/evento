@@ -18,7 +18,7 @@ const createEventFilterer = (filterQuery) => {
 		const toString = event => [
 			event.title, event.description, event.category.name,
 			event.creator.name, event.location]
-			.join('|')
+			.join('|') // so that every field is checked individually
 			.toLowerCase();
 
 		return events.filter(event => toString(event).includes(filterQuery.toLowerCase()));

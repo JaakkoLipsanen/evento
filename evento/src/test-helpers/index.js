@@ -2,7 +2,9 @@ import * as enzyme from 'enzyme';
 import sinon from 'sinon';
 import Cookie from 'js-cookie';
 import fetchMock from 'fetch-mock';
+
 import mockFactory from './mock-factory';
+import api from '../api';
 
 const cookies = {
 	set(cookies) {
@@ -18,25 +20,24 @@ const cookies = {
 	}
 };
 
-const DefaultErrorMessage = "Something went wrong";
 const mocks = {
 	// deconstructs all values (event, events, user, users etc) to this object.
-	...mockFactory.createAll(),
+	...mockFactory.createAllMocks(),
 
 	generate: {
 		// usage: mocks.generate.user() etc
-		...mockFactory.createAllFunctions()
+		...mockFactory.getCreateFunctions()
 	},
 
 	api: {
-		DefaultErrorMessage: DefaultErrorMessage,
+		DefaultErrorMessage: api.DEFAULT_ERROR_MESSAGE,
 		responses: {
 			get DefaultError() {
-				return () => { return { success: false, error: { type: "unknown", message: DefaultErrorMessage } } };
+				return this.createError({ });
 			},
 
 			get DefaultSuccess() {
-				return () => this.create({ });
+				return this.create({ });
 			},
 
 			create(payload) {
@@ -44,7 +45,7 @@ const mocks = {
 			},
 
 			createError(error) {
-				return { success: false, error: { type: error.type || "unknown", message: error.message || DefaultErrorMessage } };
+				return { success: false, error: { type: "unknown", message: api.DEFAULT_ERROR_MESSAGE, ...error } };
 			}
 		}
 	},
@@ -66,8 +67,7 @@ const mount = async (component) => {
 	return mounted;
 };
 
-// usage: top-level "describe" in all test files uses this instead
-const test = (name, callback) => {
+const createSinonSandbox = ({ restoreAfterEachTest }) => {
 	let sandbox;
 	const sinonProxy = {
 		get match() { return sandbox.match; },
@@ -75,18 +75,13 @@ const test = (name, callback) => {
 		stub(...params) { return sandbox.stub(...params); },
 		restore() { return sandbox.restore(); }
 	};
-
-	//const reset = this.reset;
-	describe(name, () => {
+	
+	if(restoreAfterEachTest) {
 		beforeEach(() => sandbox = sinon.sandbox.create());
-		afterEach(() => {
-			cookies.reset();
-			fetchMock.restore();
-			sandbox.restore();
-		});
-
-		callback(sinonProxy);
-	});
+		afterEach(() => { sandbox.restore(); });
+	}
+	
+	return sinonProxy;
 };
 
-export { cookies, mocks, waitForFetches, mount, test }
+export { cookies, mocks, mount, createSinonSandbox }

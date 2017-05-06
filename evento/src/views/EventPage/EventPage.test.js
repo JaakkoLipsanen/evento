@@ -3,14 +3,17 @@ import ReactDOM from 'react-dom';
 import EventPage from './';
 
 import api from '../../api';
-import { test, mount, mocks, cookies } from '../../test-helper';
+import { mount, mocks, cookies, createSinonSandbox } from '../../test-helpers';
 
 const matchMocks = {
 	valid: { eventId: mocks.event.id, params: { eventId: mocks.event.id } },
 	invalid: { eventId: 99999, params: { eventId: 99999 } }
 };
 
-test('EventPage', (sinon) => {
+describe('EventPage', () => {
+	const sinon = createSinonSandbox({ restoreAfterEachTest: true });
+	afterEach(() => { cookies.reset(); });
+		
 	const mockGetEventSuccess = (eventId) => {
 		sinon.stub(api, "getEvent")
 			.withArgs(eventId)
@@ -26,13 +29,13 @@ test('EventPage', (sinon) => {
 	const mockGetEventFailure = (eventId) => {
 		sinon.stub(api, "getEvent")
 			.withArgs(eventId)
-			.callsFake(mocks.api.responses.DefaultError);
+			.callsFake(() => mocks.api.responses.DefaultError);
 	};
 
 	const mockGetAttendeesFailure = (eventId) => {
 		sinon.stub(api, "getAttendees")
 			.withArgs(eventId)
-			.callsFake(mocks.api.responses.DefaultError);
+			.callsFake(() => mocks.api.responses.DefaultError);
 	};
 
 	describe('render', () => {
@@ -79,7 +82,7 @@ test('EventPage', (sinon) => {
 		});
 	});
 
-	it('fetches event and mocks.attendees', async () => {
+	it('sets event and attendees', async () => {
 		mockGetEventSuccess(matchMocks.valid.eventId);
 		mockGetAttendeesSuccess(matchMocks.valid.eventId);
 
@@ -121,7 +124,7 @@ test('EventPage', (sinon) => {
 
 			sinon.stub(api, "updateIsAttending")
 				.withArgs(matchMocks.valid.eventId, sinon.match.any)
-				.callsFake(mocks.api.responses.DefaultSuccess);
+				.callsFake(() => mocks.api.responses.DefaultSuccess);
 
 			cookies.set({ user: mocks.generate.user(), auth_token: "ABCD123" });
 		});
@@ -145,6 +148,19 @@ test('EventPage', (sinon) => {
 
 			expect(updateIsAttending.calledOnce).toBe(true);
 			expect(updateIsAttending.calledWith(false)).toBe(true);
+		});
+		
+		it('fetches attendees again after succesful update', async () => {
+			cookies.set({ user: mocks.attendees[0], auth_token: "valid" });
+
+			const eventPage = await mount(<EventPage match={matchMocks.valid} />);
+			const fetchAttendees = sinon.spy(eventPage.instance(), "fetchAttendees");
+
+			eventPage.find('.DoNotAttend').simulate('click');
+			await eventPage.wait();
+
+			expect(fetchAttendees.called).toBe(true);
+			expect(fetchAttendees.calledWith(matchMocks.valid.eventId)).toBe(true);
 		});
 
 		it('sends a post request to /events/:id/attendees when user not attending', async () => {
@@ -176,7 +192,7 @@ test('EventPage', (sinon) => {
 
 			sinon.stub(api, "updateIsAttending")
 				.withArgs(matchMocks.valid.eventId, sinon.match.any)
-				.callsFake(mocks.api.responses.DefaultError);
+				.callsFake(() => mocks.api.responses.DefaultError);
 
 			const eventPage = await mount(<EventPage match={matchMocks.valid} />);
 			eventPage.find('.Attend').simulate('click');
