@@ -1,8 +1,6 @@
 import React, { Component } from 'react';
 
 import api from '../../api';
-import session from '../../session';
-
 import EventCard from '../../components/EventCard';
 import './MyEvents.css';
 
