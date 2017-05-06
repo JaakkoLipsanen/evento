@@ -34,6 +34,14 @@ describe('/src root files', () => {
 				expect(result.success).toBe(false);
 				expect(result.error.message).toEqual("Something went wrong");
 			});
+			
+			it('returns default error if fetch fails', async () => {
+				fetchMock.get(`/events/${INVALID_ID}`, () => { throw new Error() });
+				
+				const result = await api.getEvent(INVALID_ID)
+				expect(result.success).toBe(false);
+				expect(result.error.message).toEqual(api.DEFAULT_ERROR_MESSAGE);
+			});
 		});
 
 		describe('getEvents', () => {
@@ -52,6 +60,14 @@ describe('/src root files', () => {
 				expect(result.success).toBe(false);
 				expect(result.error.message).toEqual("Something went wrong");
 			});
+			
+			it('returns default error if fetch fails', async () => {
+				fetchMock.get(`/events`, () => { throw new Error() });
+				
+				const result = await api.getEvents()
+				expect(result.success).toBe(false);
+				expect(result.error.message).toEqual(api.DEFAULT_ERROR_MESSAGE);
+			});
 		});
 
 		describe('getAttendees', () => {
@@ -69,6 +85,14 @@ describe('/src root files', () => {
 				const result = await api.getAttendees(INVALID_ID);
 				expect(result.success).toBe(false);
 				expect(result.error.message).toEqual("Something went wrong");
+			});
+			
+			it('returns default error if fetch fails', async () => {
+				fetchMock.get(`/events/${INVALID_ID}/attendees`, () => { throw new Error() });
+				
+				const result = await api.getAttendees(INVALID_ID)
+				expect(result.success).toBe(false);
+				expect(result.error.message).toEqual(api.DEFAULT_ERROR_MESSAGE);
 			});
 		});
 
@@ -97,6 +121,15 @@ describe('/src root files', () => {
 				const result = await api.getUserEvents();
 				expect(result.success).toBe(false);
 				expect(result.error.message).toEqual("Something went wrong");
+			});
+			
+			it('returns default error if fetch fails', async () => {
+				cookies.set(DEFAULT_COOKIES);
+				fetchMock.get(`/users/${mocks.user.id}/events`, () => { throw new Error() });
+				
+				const result = await api.getUserEvents();
+				expect(result.success).toBe(false);
+				expect(result.error.message).toEqual(api.DEFAULT_ERROR_MESSAGE);
 			});
 		});
 
@@ -133,12 +166,138 @@ describe('/src root files', () => {
 				expect(result.success).toBe(false);
 				expect(result.error.message).toEqual("Something went wrong");
 			});
+			
+			it('returns default error if fetch fails', async () => {
+				cookies.set(DEFAULT_COOKIES);
+				fetchMock.post(`/events/${mocks.event.id}/attendees`, () => { throw new Error() });
+				
+				const result = await api.updateIsAttending(mocks.event.id, true);
+				expect(result.success).toBe(false);
+				expect(result.error.message).toEqual(api.DEFAULT_ERROR_MESSAGE);
+			});
+		});
+		
+		describe('register', () => {
+			const valid = { name: "Jii Jaa", email: "some@thing.com", password: "password1234" };
+			const invalid = { name: "Plaa", email: "ploo@plaa.com", password: "short" };
+			
+			// async register(name, email, password) {
+			it('calls fetch', async () => {
+				fetchMock.post(`/users`, EMPTY_VALID_RESPONSE, { name: "register-fetch" });
+				
+				const result = await api.register(valid.name, valid.email, valid.password);
+				expect(result.success).toBe(true);
+				expect(fetchMock.called("register-fetch")).toBe(true);
+			});
+			
+			it('calls fetch with correct parameters', async () => {
+				fetchMock.post(`/users`, (url, opts) => {
+					const body = JSON.parse(opts.body);
+					const success = 
+						opts.method === 'POST' &&
+						body.name === valid.name &&
+						body.email === valid.email &&
+						body.password === valid.password;
+						
+					return success ? EMPTY_VALID_RESPONSE : NOT_FOUND_RESPONSE;
+							 
+				}, { name: "register-fetch" });
+				
+				const result = await api.register(valid.name, valid.email, valid.password);
+				expect(result.success).toBe(true);
+				expect(fetchMock.called("register-fetch")).toBe(true);
+			});
+			
+			it('on fail returns error messages specifying what failed', async () => {
+				fetchMock.post(`/users`, { status: 300, body: {
+					email: ["is too short", "can't be blank"], 
+					password: ["is too short"] 
+				}});
+				
+				const result = await api.register(invalid.name, invalid.email, invalid.password);
+				expect(result.success).toBe(false); 
+				expect(result.error.messages.length).toBe(3);
+				expect(result.error.messages).toContain("email can't be blank");
+			});
+			
+			it('returns default error if fetch fails', async () => {
+				fetchMock.post(`/users`, () => { throw new Error() });
+				
+				const result = await api.register(invalid.name, invalid.email, invalid.password);
+				expect(result.success).toBe(false);
+				expect(result.error.message).toEqual(api.DEFAULT_ERROR_MESSAGE);
+			});
+		});
+		
+		describe('signin', () => {
+			const valid = { name: "Jii Jaa", email: "some@thing.com", password: "password1234" };
+			const invalid = { name: "Plaa", email: "ploo@plaa.com", password: "short" };
+			
+			// async register(name, email, password) {
+			it('calls fetch', async () => {
+				fetchMock.post(`/authenticate`, 
+					{ status: 200, body: { user: mocks.user, auth_token: "valid" } }, 
+					{ name: "signin-fetch" }
+				);
+				
+				const result = await api.signin(valid.name, valid.password);
+				expect(result.success).toBe(true);
+				expect(fetchMock.called("signin-fetch")).toBe(true);
+			});
+			
+			it('calls fetch with correct parameters', async () => {
+				fetchMock.post(`/authenticate`, (url, opts) => {
+					const body = JSON.parse(opts.body);
+					const success = 
+						opts.method === 'POST' &&
+						body.email === valid.email &&
+						body.password === valid.password;
+						
+					return success ? EMPTY_VALID_RESPONSE : NOT_FOUND_RESPONSE; 
+				});
+				
+				const result = await api.signin(valid.email, valid.password);
+				expect(result.success).toBe(true);
+			});
+			
+			it('sets cookies', async () => {
+				fetchMock.post(`/authenticate`, { status: 200, body: {
+					user: mocks.user,
+					auth_token: "valid"
+				}});
+				
+				const result = await api.signin(valid.email, valid.password);
+				expect(result.success).toBe(true);
+				expect(session.getUser()).toEqual(mocks.user);
+				expect(session.getAuthToken()).toEqual("valid");
+			});
+			
+			it('returns invalid credentials if signin fails', async () => {
+				fetchMock.post(`/authenticate`, NOT_FOUND_RESPONSE);
+				
+				const result = await api.signin(valid.email, valid.password);
+				expect(result.success).toBe(false);
+				expect(result.error.message).toEqual(api.INVALID_CREDENTIALS_MESSAGE);
+			});
+			
+			it('returns default error if fetch fails', async () => {
+				fetchMock.post(`/authenticate`, () => { throw new Error() });
+				
+				const result = await api.signin(valid.email, valid.password);
+				expect(result.success).toBe(false);
+				expect(result.error.message).toEqual(api.DEFAULT_ERROR_MESSAGE);
+			});
+				
+			it('returns specific error if back-end returns specific error', async () => {
+				fetchMock.post(`/authenticate`, { status: 300, body: { message: "Specific error" } });
+				
+				const result = await api.signin(valid.email, valid.password);
+				expect(result.success).toBe(false);
+				expect(result.error.message).toEqual("Specific error");
+			});
 		});
 	});
-
-	// TODO: tests for api.register
-	// TODO: tests for api.signin
-
+	
 	describe('session.js', () => {
 		it('returns auth header if user is logged in', async () => {
 			cookies.set(DEFAULT_COOKIES);
