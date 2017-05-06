@@ -20,7 +20,7 @@ describe("Explore", () => {
 			.callsFake(() => mocks.api.responses.DefaultError);
 			
 		const explore = await mount(<Explore filterEvents={ReturnAllFilterer} />)
-		expect(explore.text()).toContain(mocks.api.DefaultErrorMessage);
+		expect(explore.text()).toContain(api.DEFAULT_ERROR_MESSAGE);
 	});
 	
 	describe("on succesful request", () => {

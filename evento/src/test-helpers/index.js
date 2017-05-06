@@ -30,7 +30,6 @@ const mocks = {
 	},
 
 	api: {
-		DefaultErrorMessage: api.DEFAULT_ERROR_MESSAGE,
 		responses: {
 			get DefaultError() {
 				return this.createError({ });

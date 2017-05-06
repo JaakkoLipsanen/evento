@@ -32,7 +32,7 @@ describe('/src root files', () => {
 
 				const result = await api.getEvent(INVALID_ID);
 				expect(result.success).toBe(false);
-				expect(result.error.message).toEqual("Something went wrong");
+				expect(result.error.message).toEqual(api.DEFAULT_ERROR_MESSAGE);
 			});
 			
 			it('returns default error if fetch fails', async () => {
@@ -58,7 +58,7 @@ describe('/src root files', () => {
 
 				const result = await api.getEvents();
 				expect(result.success).toBe(false);
-				expect(result.error.message).toEqual("Something went wrong");
+				expect(result.error.message).toEqual(api.DEFAULT_ERROR_MESSAGE);
 			});
 			
 			it('returns default error if fetch fails', async () => {
@@ -84,7 +84,7 @@ describe('/src root files', () => {
 
 				const result = await api.getAttendees(INVALID_ID);
 				expect(result.success).toBe(false);
-				expect(result.error.message).toEqual("Something went wrong");
+				expect(result.error.message).toEqual(api.DEFAULT_ERROR_MESSAGE);
 			});
 			
 			it('returns default error if fetch fails', async () => {
@@ -120,7 +120,7 @@ describe('/src root files', () => {
 
 				const result = await api.getUserEvents();
 				expect(result.success).toBe(false);
-				expect(result.error.message).toEqual("Something went wrong");
+				expect(result.error.message).toEqual(api.DEFAULT_ERROR_MESSAGE);
 			});
 			
 			it('returns default error if fetch fails', async () => {
@@ -164,7 +164,7 @@ describe('/src root files', () => {
 
 				const result = await api.updateIsAttending(mocks.event.id, true);
 				expect(result.success).toBe(false);
-				expect(result.error.message).toEqual("Something went wrong");
+				expect(result.error.message).toEqual(api.DEFAULT_ERROR_MESSAGE);
 			});
 			
 			it('returns default error if fetch fails', async () => {

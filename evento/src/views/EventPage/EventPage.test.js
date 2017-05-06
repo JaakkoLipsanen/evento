@@ -48,7 +48,7 @@ describe('EventPage', () => {
 			mockGetEventFailure(matchMocks.invalid.eventId);
 
 			const eventPage = await mount(<EventPage match={matchMocks.invalid} />);
-			expect(eventPage.text()).toContain(mocks.api.DefaultErrorMessage);
+			expect(eventPage.text()).toContain(api.DEFAULT_ERROR_MESSAGE);
 		});
 
 		it('displays error message if getAttendees returns error', async () => {
@@ -56,7 +56,7 @@ describe('EventPage', () => {
 			mockGetAttendeesFailure(matchMocks.invalid.eventId);
 
 			const eventPage = await mount(<EventPage match={matchMocks.invalid} />)
-			expect(eventPage.text()).toContain("Something went wrong");
+			expect(eventPage.text()).toContain(api.DEFAULT_ERROR_MESSAGE);
 		});
 
 		it('renders a AttendButton when user is not attending event', async () => {
@@ -198,7 +198,7 @@ describe('EventPage', () => {
 			eventPage.find('.Attend').simulate('click');
 			await eventPage.wait();
 
-			expect(eventPage.state('errorMessage')).toEqual("Something went wrong");
+			expect(eventPage.state('errorMessage')).toEqual(api.DEFAULT_ERROR_MESSAGE);
 		});
 	});
 });
