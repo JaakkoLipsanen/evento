@@ -13,15 +13,15 @@ const cookies = {
 		}
 	},
 
-	reset() {
-		Object.keys(Cookie.get()).forEach(function(cookie) {
+	reset() {	
+		for(let cookie of Object.keys(Cookie.get())) {
 			Cookie.remove(cookie);
-		});
+		}
 	}
 };
 
 const mocks = {
-	// deconstructs all values (event, events, user, users etc) to this object.
+	// destructures all values (event, events, user, users etc) to this object.
 	...mockFactory.createAllMocks(),
 
 	generate: {
