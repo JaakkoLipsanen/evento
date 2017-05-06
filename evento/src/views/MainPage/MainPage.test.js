@@ -33,7 +33,7 @@ it('displays Explore if path is \'/\'', async () => {
 		initialEntries: [location.pathname],
 		initialLocation: location
 	});
-	
+
 	expect(mainPage.find('Explore').length).toEqual(1);
 	expect(mainPage.find('MyEvent').length).toEqual(0);
 });
@@ -58,14 +58,14 @@ it('by default doesn\'t filter anything', async () => {
 
 it('filters events correctly', async () => {
 	const mainPage = await mountMainPage();
-	
+
 	// this only tests description atm
 	const testFiltering = (filterValue) => {
 		mainPage.node.updateFilter(filterValue);
 		expect(mainPage.node.state.filterer(mocks.events))
 			.toEqual(mocks.events.filter(event => event.description.toLowerCase().includes(filterValue.toLowerCase())));
 	};
-	
+
 	// this only tests description atm
 	testFiltering(mocks.events[1].description.toLowerCase());
 	testFiltering(mocks.events[2].description.slice(0, 5));

@@ -10,7 +10,7 @@ const NOT_LOGGED_IN_ERROR = { type: "auth", message: NOT_LOGGED_IN_MESSAGE };
 
 const _createErrorResult = async ({ from, defaultValues = SOMETHING_WENT_WRONG_ERROR }) => {
 	if(from.json) from = await from.json();
-	
+
 	const error = { ...defaultValues, ...from };
 	return { success: false, error: error };
 }
@@ -20,7 +20,7 @@ export default {
 	NOT_LOGGED_IN_MESSAGE: NOT_LOGGED_IN_MESSAGE,
 	INVALID_CREDENTIALS_MESSAGE: INVALID_CREDENTIALS_MESSAGE,
 	DEFAULT_ERROR_MESSAGE: DEFAULT_ERROR_MESSAGE,
-	
+
 	async getEvent(eventId) {
 		try {
 			const response = await fetch(`/events/${eventId}`);
@@ -123,7 +123,7 @@ export default {
 				const errorMessages = Object.keys(error).map(key => error[key].map(value => `${key} ${value}`));
 				const flattened = [].concat.apply([], errorMessages);
 
-				return { success: false, error: { type: "unknown", messages: flattened } };	
+				return { success: false, error: { type: "unknown", messages: flattened } };
 			}
 
 			// TODO: should the register API return the created user object?

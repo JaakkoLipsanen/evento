@@ -7,7 +7,7 @@ import { mount, mocks, createSinonSandbox } from '../../test-helpers';
 
 describe('RegisterPage', () => {
 	const sinon = createSinonSandbox({ restoreAfterEachTest: true });
-	
+
 	it('renders without crashing', () => {
 		const div = document.createElement('div');
 		ReactDOM.render(<RegisterPage />, div);
@@ -16,7 +16,7 @@ describe('RegisterPage', () => {
 	it('has an error message', async () => {
 		const registerPage = await mount(<RegisterPage />);
 		registerPage.setState({ errorMessages: ['test error'] });
-		
+
 		expect(registerPage.find('.ErrorMessage').node).not.toBeUndefined();
 	});
 
@@ -112,7 +112,7 @@ describe('RegisterPage', () => {
 		});
 
 		it('does not redirect on failed registering', async () => {
-			const history = { push: sinon.spy() };	
+			const history = { push: sinon.spy() };
 			sinon.stub(api, "register")
 				.callsFake(() => mocks.api.responses.DefaultError);
 
@@ -122,7 +122,7 @@ describe('RegisterPage', () => {
 
 		it('sets error messages on failed register', async () => {
 			sinon.stub(api, "register")
-				.callsFake(() => mocks.api.responses.createError({ 
+				.callsFake(() => mocks.api.responses.createError({
 					messages: [
 						"email is invalid", "email can't be blank",
 						"name is too short", "name can't be blank"

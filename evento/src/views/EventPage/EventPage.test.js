@@ -13,7 +13,7 @@ const matchMocks = {
 describe('EventPage', () => {
 	const sinon = createSinonSandbox({ restoreAfterEachTest: true });
 	afterEach(() => { cookies.reset(); });
-		
+
 	const mockGetEventSuccess = (eventId) => {
 		sinon.stub(api, "getEvent")
 			.withArgs(eventId)
@@ -149,7 +149,7 @@ describe('EventPage', () => {
 			expect(updateIsAttending.calledOnce).toBe(true);
 			expect(updateIsAttending.calledWith(false)).toBe(true);
 		});
-		
+
 		it('fetches attendees again after succesful update', async () => {
 			cookies.set({ user: mocks.attendees[0], auth_token: "valid" });
 

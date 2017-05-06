@@ -8,7 +8,7 @@ import { mount, createSinonSandbox, cookies, mocks } from '../../test-helpers';
 
 describe('SignInPage', () => {
 	const sinon = createSinonSandbox({ restoreAfterEachTest: true });
-	
+
 	it('renders without crashing', () => {
 		const div = document.createElement('div');
 		ReactDOM.render(<SignInPage />, div);
@@ -54,7 +54,7 @@ describe('SignInPage', () => {
 
 	describe('handleSubmit', () => {
 		beforeEach(() => { cookies.reset(); });
-		
+
 		const AUTH_TOKEN = '12345678';
 		const USER = mocks.user;
 		const PASSWORD = "secretpassword123";
@@ -95,7 +95,7 @@ describe('SignInPage', () => {
 
 			expect(event.preventDefault.calledOnce).toBe(true);
 		});
-		
+
 		/* this should be in api.js
 		it('sets auth_token and userId cookies on successful fetch', async () => {
 			const { auth_token, user } = await successfulSignIn();
@@ -103,7 +103,7 @@ describe('SignInPage', () => {
 			expect(session.getAuthToken()).toEqual(auth_token)
 			expect(session.getUser()).toEqual(user);
 		}); */
-		
+
 		it('sets error message on failed sign in', async () => {
 			const signInPage = await failedSignIn();
 

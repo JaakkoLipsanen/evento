@@ -9,26 +9,26 @@ const ReturnAllFilterer = (events) => events;
 
 describe("Explore", () => {
 	const sinon = createSinonSandbox({ restoreAfterEachTest: true });
-	
+
 	it('renders without crashing', () => {
 		const div = document.createElement('div');
 		ReactDOM.render(<Explore filterEvents={ReturnAllFilterer} />, div);
 	});
-	
+
 	it('shows error when getting events fails', async () => {
 		sinon.stub(api, "getEvents")
 			.callsFake(() => mocks.api.responses.DefaultError);
-			
+
 		const explore = await mount(<Explore filterEvents={ReturnAllFilterer} />)
 		expect(explore.text()).toContain(api.DEFAULT_ERROR_MESSAGE);
 	});
-	
+
 	describe("on succesful request", () => {
 		beforeEach(() => {
 			sinon.stub(api, "getEvents")
 				.callsFake(() => mocks.api.responses.create({ events: mocks.events }));
 		});
-		
+
 		it('sets events', async () => {
 			const explore = await mount(<Explore filterEvents={ReturnAllFilterer} />)
 			expect(explore.state('events')).toEqual(mocks.events);

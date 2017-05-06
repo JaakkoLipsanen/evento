@@ -13,7 +13,7 @@ const cookies = {
 		}
 	},
 
-	reset() {	
+	reset() {
 		for(let cookie of Object.keys(Cookie.get())) {
 			Cookie.remove(cookie);
 		}
@@ -74,12 +74,12 @@ const createSinonSandbox = ({ restoreAfterEachTest }) => {
 		stub(...params) { return sandbox.stub(...params); },
 		restore() { return sandbox.restore(); }
 	};
-	
+
 	if(restoreAfterEachTest) {
 		beforeEach(() => sandbox = sinon.sandbox.create());
 		afterEach(() => { sandbox.restore(); });
 	}
-	
+
 	return sinonProxy;
 };
 
