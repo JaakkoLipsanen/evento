@@ -1,8 +1,6 @@
 import React, { Component } from 'react';
 
 import api from '../../api';
-import session from '../../session';
-
 import EventCard from '../../components/EventCard';
 import './MyEvents.css';
 
@@ -20,12 +18,7 @@ class MyEvents extends Component {
 	}
 
 	async fetchEvents() {
-		// If userId or authToken is not found do try to fetch events
-		if (!session.isLoggedIn()) {
-			this.setState({ errorMessage: "You are not logged in. Please login again"});
-			return;
-		}
-
+		// gets the currently logged in user's events
 		const result = await api.getUserEvents();
 		if(result.success) {
 			this.setState({ events: result.payload.events });

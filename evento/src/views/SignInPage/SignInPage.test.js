@@ -1,27 +1,27 @@
 import React from 'react';
 import ReactDOM from 'react-dom';
-import { mount } from 'enzyme';
-import fetchMock from 'fetch-mock';
-import sinon from 'sinon';
-import Cookie from 'js-cookie';
 import SignInPage from './';
 
+import api from '../../api';
 import session from '../../session';
+import { mount, createSinonSandbox, cookies, mocks } from '../../test-helpers';
 
 describe('SignInPage', () => {
+	const sinon = createSinonSandbox({ restoreAfterEachTest: true });
+
 	it('renders without crashing', () => {
 		const div = document.createElement('div');
 		ReactDOM.render(<SignInPage />, div);
 	});
 
-	it('has an error message', () => {
-		const signInPage = mount(<SignInPage/>);
+	it('has an error message', async () => {
+		const signInPage = await mount(<SignInPage />);
 		expect(signInPage.find('.ErrorMessage').node).not.toBeUndefined();
 	});
 
-	it('has a link to register page', () => {
-		const history = {push: sinon.spy()};
-		const signInPage = mount(<SignInPage history={history}/>);
+	it('has a link to register page', async () => {
+		const history = { push: sinon.spy() };
+		const signInPage = await mount(<SignInPage history={history} />);
 
 		expect(signInPage.find('.Link').node).not.toBeUndefined();
 		signInPage.find('.Link').simulate('click');
@@ -30,7 +30,7 @@ describe('SignInPage', () => {
 
 	describe('form', () => {
 		it('calls callback onSubmit', async () => {
-			const signInPage = mount(<SignInPage/>);
+			const signInPage = await mount(<SignInPage />);
 			const callback = sinon.spy(signInPage.instance(), 'handleSubmit');
 			signInPage.find('form').simulate('submit');
 
@@ -38,84 +38,83 @@ describe('SignInPage', () => {
 		});
 
 		it('changes email state onChange', async () => {
-			const signInPage = mount(<SignInPage/>);
-			signInPage.find('input').at(0).simulate('change', {target: {value: 'name@example.com'}});
+			const signInPage = await mount(<SignInPage />);
+			signInPage.find('input').at(0).simulate('change', { target: { value: 'name@example.com' } });
 
 			expect(signInPage.state('email')).toBe('name@example.com');
 		});
 
 		it('changes password state onChange', async () => {
-			const signInPage = mount(<SignInPage/>);
-			signInPage.find('input').at(1).simulate('change', {target: {value: 'secretpassword123'}});
+			const signInPage = await mount(<SignInPage/>);
+			signInPage.find('input').at(1).simulate('change', { target: { value: 'secretpassword123' } });
 
 			expect(signInPage.state('password')).toBe('secretpassword123');
 		});
 	});
 
 	describe('handleSubmit', () => {
-		beforeEach(() => {
-			Object.keys(Cookie.get()).forEach(function(cookie) {
-				Cookie.remove(cookie);
-			});
-			fetchMock.restore();
-		});
+		beforeEach(() => { cookies.reset(); });
+
+		const AUTH_TOKEN = '12345678';
+		const USER = mocks.user;
+		const PASSWORD = "secretpassword123";
 
 		const signIn = async (email, password, history) => {
-			const signInPage = mount(<SignInPage history={history}/>);
+			const signInPage = await mount(<SignInPage history={history} />);
 
 			// Type credentials and submit
-			signInPage.find('input').at(0).simulate('change', {target: {value: email}});
-			signInPage.find('input').at(1).simulate('change', {target: {value: password}});
+			signInPage.find('input').at(0).simulate('change', { target: { value: email } });
+			signInPage.find('input').at(1).simulate('change', { target: { value: password } });
 			signInPage.find('form').simulate('submit');
-			await waitForFetches();
+			await signInPage.wait();
 
 			return signInPage;
 		};
 
-		const successifulSignIn = async (history) => {
-			const AUTH_TOKEN = '12345678';
-			const USER = {id: 123, name: 'Antti', email: 'antt@gmail.com'};
+		const successfulSignIn = async (history) => {
+			sinon.stub(api, "signin")
+				.withArgs(USER.email, PASSWORD)
+				.callsFake(() => mocks.api.responses.create({ user: USER, auth_token: AUTH_TOKEN }));
 
-			fetchMock.post('/authenticate', {
-				status: 200,
-				body: {auth_token: AUTH_TOKEN, user: USER}
-			});
-
-			const signInPage = await signIn(USER.email, 'secretpassword123', history);
-			return [signInPage, AUTH_TOKEN, USER];
+			const signInPage = await signIn(USER.email, PASSWORD, history);
+			return { signInPage, auth_token: AUTH_TOKEN, user: USER };
 		};
 
 		const failedSignIn = async (history) => {
-			fetchMock.post('/authenticate', { status: 401, body: '{ }' });
-			return await signIn('wrong@email.com', 'secretpassword123', history);
+			sinon.stub(api, "signin")
+				.withArgs(USER.email, PASSWORD)
+				.callsFake(() => mocks.api.responses.createError({ message: api.INVALID_CREDENTIALS_MESSAGE }));
+
+			return await signIn(USER.email, PASSWORD, history);
 		};
 
 		it('calls preventDefault on event', async () => {
 			const event = { preventDefault: sinon.spy() };
-			const signInPage = mount(<SignInPage/>);
+			const signInPage = await mount(<SignInPage />);
 			signInPage.instance().handleSubmit(event);
 
 			expect(event.preventDefault.calledOnce).toBe(true);
 		});
 
-		it('sets auth_token and userId cookies on successiful fetch', async () => {
-			const [signInPage, AUTH_TOKEN, USER] = await successifulSignIn();
+		/* this should be in api.js
+		it('sets auth_token and userId cookies on successful fetch', async () => {
+			const { auth_token, user } = await successfulSignIn();
 
-			expect(session.getAuthToken()).toEqual(AUTH_TOKEN)
-			expect(session.getUser()).toEqual(USER); // Cookies are stored as strings
-		});
+			expect(session.getAuthToken()).toEqual(auth_token)
+			expect(session.getUser()).toEqual(user);
+		}); */
 
-		it('sets error message on failed fetch', async () => {
+		it('sets error message on failed sign in', async () => {
 			const signInPage = await failedSignIn();
 
 			expect(signInPage.state('errorMessage')).toBe('Invalid credentials');
-			expect(Cookie.get('auth_token')).toBeUndefined();
-			expect(Cookie.get('user')).toBeUndefined();
+			expect(session.getAuthToken()).toBeFalsy();
+			expect(session.getUser()).toBeFalsy();
 		});
 
-		it('redirects to front page after successiful sign in', async () => {
+		it('redirects to front page after successful sign in', async () => {
 			const history = { push: sinon.spy() };
-			const [signInPage, AUTH_TOKEN, USER] = await successifulSignIn(history);
+			await successfulSignIn(history);
 
 			expect(history.push.calledOnce).toBe(true);
 			expect(history.push.calledWith('/')).toBe(true);
