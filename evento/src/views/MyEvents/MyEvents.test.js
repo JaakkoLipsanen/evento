@@ -10,7 +10,7 @@ const VALID_COOKIES = { user: mocks.user, auth_token: "valid" };
 const INVALID_COOKIES = { user: mocks.user, auth_token: "invalid" };
 
 describe("MyEvents", () => {
-	const sinon = createSinonSandbox({ restoreAfterEachTest: true });
+	const sinon = createSinonSandbox({ restoreAfterEachTest: true, throwIfApiNotMocked: false });
 
 	beforeEach(() => {
 		cookies.reset();

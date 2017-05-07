@@ -1,8 +1,8 @@
 import React, { Component } from 'react';
 import DateTimePicker from 'react-datetime';
 import moment from 'moment';
-import Cookie from 'js-cookie';
 
+import api from '../../api';
 import './NewEventPage.css';
 import './react-datetime.css';
 
@@ -43,21 +43,17 @@ class NewEventPage extends Component {
 		}
 	}
 
-	componentDidMount() {
-		fetch(`/categories`)
-		.then(response => {
-			if (response.ok) {
-				return response.json();
-			}
-			else {
-				Promise.reject(response)
-			}
-		})
-		.then(categories => this.setState({ categories: categories }))
-		.catch(response => this.setErrorMessages(response));
+	async componentDidMount() {
+		const result = await api.getCategories();
+		if(result.success) {
+			this.setState({ categories: result.payload.categories });
+		}
+		else {
+			this.setState({ errorMessages: [result.error.message] });
+		}
 	}
 
-	handleSubmit(evt) {
+	async handleSubmit(evt) {
 		evt.preventDefault();
 
 		const category = this.state.categories.find(c => c.name === this.state.category);
@@ -66,26 +62,21 @@ class NewEventPage extends Component {
 			return;
 		}
 
-		fetch(`/events`, {
-			method: 'POST',
-			headers: { 'Authorization': Cookie.get('auth_token'), 'Content-Type': 'application/json'},
-			body: JSON.stringify({
-				title: this.state.title,
-				description: this.state.description,
-				category_id: category.id,
-				time: this.state.startTime.format()
-			})
-		})
-		.then(response => {
-			if (!response.ok) {
-				return Promise.reject(response);
-			}
+		const result = await api.createNewEvent({
+			title: this.state.title,
+			description: this.state.description,
+			category_id: category.id,
+			time: this.state.startTime.format()
+		});
 
-			// TODO: should redirect to the event page
+		if(result.success) {
+			// TODO: should redirect to the page of the newly created event?
 			// If creation was successful, redirect to MyEvents
 			this.props.history.push('/events');
-		})
-		.catch(response => this.setErrorMessages(response));
+		}
+		else {
+			this.setState({ errorMessages: result.error.messages });
+		}
 	}
 
 	setStartTime(newTime) {
@@ -101,19 +92,6 @@ class NewEventPage extends Component {
 			if(this.state.startTime.isAfter(newTime)) {
 				this.setState({ startTime: newTime.clone().subtract(1, 'hour') });
 			}
-		});
-	}
-
-	setErrorMessages(response) {
-		response.json()
-		.then(json => {
-			// the errors come in { 'name', ['too short', 'already taken'] } format
-			const errorMessagesByField =
-				Object.keys(json)
-				.map(e => json[e].map(error => `${e} ${error}`));
-
-			const flattened = [].concat.apply([], errorMessagesByField);
-			this.setState({ errorMessages: flattened });
 		});
 	}
 

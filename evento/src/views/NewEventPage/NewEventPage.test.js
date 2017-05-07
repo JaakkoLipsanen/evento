@@ -1,69 +1,83 @@
 import React from 'react';
 import ReactDOM from 'react-dom';
-import { mount } from 'enzyme';
-import fetchMock from 'fetch-mock';
-import sinon from 'sinon';
-import NewEventPage from './';
 import moment from 'moment';
 
-const time = moment();
-const categoriesMock = Mock.generateCategories(3);
+import NewEventPage from './';
+import api from '../../api';
+import { mount, createSinonSandbox, mocks, cookies } from '../../test-helpers';
+
+const DEFAULT_TIME = moment();
 
 describe('NewEventPage', () => {
-	beforeEach(() => {
-		fetchMock.get(`/categories`, categoriesMock);
-		fetchMock.post('/events', { status: 201 });
-		fetchMock.catch(503);
-	});
+	const sinon = createSinonSandbox({ restoreAfterEachTest: true });
+	beforeEach(() => cookies.reset());
 
-	afterEach(fetchMock.restore);
+	beforeEach(() => {
+		sinon.stub(api, "getCategories")
+			.callsFake(() => mocks.api.responses.create({ categories: mocks.categories }));
+
+		sinon.stub(api, "createNewEvent")
+			.callsFake(() => mocks.api.responses.create({ }))
+	});
 
 	it('renders without crashing', () => {
 		const div = document.createElement('div');
 		ReactDOM.render(<NewEventPage />, div);
 	});
 
-	it('has an error message', () => {
-		const wrapper = mount(<NewEventPage/>);
+	it('has an error message', async () => {
+		const wrapper = await mount(<NewEventPage />);
 		wrapper.setState({ errorMessages: ['test error'] });
 		expect(wrapper.find('.ErrorMessage').node).not.toBeUndefined();
 	});
 
+	it('sets error messages when getCategories fails', async () => {
+		api.getCategories.restore();
+		sinon.stub(api, "getCategories")
+			.callsFake(() => mocks.api.responses.createError({ message: "Random error" }));
+
+		const wrapper = await mount(<NewEventPage />);
+
+		expect(wrapper.state('errorMessages')).not.toBeFalsy();
+		expect(wrapper.state('errorMessages').length).toBe(1);
+		expect(wrapper.state('errorMessages')).toContain("Random error");
+	});
+
 	describe('form', async () => {
-		it('calls callback onSubmit', () => {
-			const wrapper = mount(<NewEventPage/>);
+		it('calls callback onSubmit', async () => {
+			const wrapper = await mount(<NewEventPage/>);
 			const callback = sinon.spy(wrapper.instance(), 'handleSubmit');
 			wrapper.find('form').simulate('submit');
 
 			expect(callback.calledOnce).toBe(true);
 		});
 
-		it('changes title state onChange', () => {
-			const wrapper = mount(<NewEventPage/>);
+		it('changes title state onChange', async () => {
+			const wrapper = await mount(<NewEventPage />);
 			wrapper.find('.title-input')
 				.simulate('change', {target: {value: 'Party'}});
 
 			expect(wrapper.state('title')).toBe('Party');
 		});
 
-		it('changes description state onChange', () => {
-			const wrapper = mount(<NewEventPage/>);
+		it('changes description state onChange', async () => {
+			const wrapper = await mount(<NewEventPage/>);
 			wrapper.find('.description-input')
 				.simulate('change', {target: {value: 'Biggest baddest party!'}});
 
 			expect(wrapper.state('description')).toBe('Biggest baddest party!');
 		});
 
-		it('changes location state onChange', () => {
-			const wrapper = mount(<NewEventPage/>);
+		it('changes location state onChange', async () => {
+			const wrapper = await mount(<NewEventPage/>);
 			wrapper.find('.location-input')
 				.simulate('change', {target: {value: 'My house'}});
 
 			expect(wrapper.state('location')).toBe('My house');
 		});
 
-		it('changes category state onChange', () => {
-			const wrapper = mount(<NewEventPage/>);
+		it('changes category state onChange', async () => {
+			const wrapper = await mount(<NewEventPage/>);
 			wrapper.find('.category-input')
 				.simulate('change', {target: {value: 'Other'}});
 
@@ -72,104 +86,76 @@ describe('NewEventPage', () => {
 
 		it('changes startTime state onChange', async () => {
 			const value = moment().add(10, 'days');
-			const wrapper = mount(<NewEventPage/>);
+			const wrapper = await mount(<NewEventPage/>);
 
-			wrapper
-			.find('.start-time-picker-container input').at(0)
-			.simulate('change', { target: { value: value } });
+			wrapper.find('.start-time-picker-container input').at(0)
+				.simulate('change', { target: { value: value } });
 
-			await waitForFetches();
 			expect(wrapper.state('startTime').isSame(value)).toBe(true);
 		});
 
 		it('changes endTime state onChange', async () => {
 			const value = moment().add(10, 'days');
-			const wrapper = mount(<NewEventPage/>);
+			const wrapper = await mount(<NewEventPage/>);
 
-			wrapper
-			.find('.end-time-picker-container input').at(0)
-			.simulate('change', { target: { value: value } });
+			wrapper.find('.end-time-picker-container input').at(0)
+				.simulate('change', { target: { value: value } });
 
-			await waitForFetches();
 			expect(wrapper.state('endTime').isSame(value)).toBe(true);
 		});
 
 		it('changes the endTime if startTime is setted and is after the endTime', async () => {
 			const value = moment().add(10, 'days');
-			const wrapper = mount(<NewEventPage/>);
+			const wrapper = await mount(<NewEventPage/>);
 
 			const originalEndTime = wrapper.state('endTime');
-			wrapper
-			.find('.start-time-picker-container input').at(0)
-			.simulate('change', { target: { value: originalEndTime.clone().add(1, 'hour') } });
+			wrapper.find('.start-time-picker-container input').at(0)
+				.simulate('change', { target: { value: originalEndTime.clone().add(1, 'hour') } });
 
-			await waitForFetches();
 			expect(wrapper.state('endTime').isAfter(originalEndTime)).toBe(true);
 		});
 
 		it('changes the startTime if endTime is setted and is before the startTime', async () => {
 			const value = moment().add(10, 'days');
-			const wrapper = mount(<NewEventPage/>);
+			const wrapper = await mount(<NewEventPage/>);
 
 			const originalStartTime = wrapper.state('startTime');
-			wrapper
-			.find('.end-time-picker-container input').at(0)
-			.simulate('change', { target: { value: originalStartTime.clone().subtract(1, 'hour') } });
+			wrapper.find('.end-time-picker-container input').at(0)
+				.simulate('change', { target: { value: originalStartTime.clone().subtract(1, 'hour') } });
 
-			await waitForFetches();
-			console.log(wrapper.state('startTime') + "    " + originalStartTime);
 			expect(wrapper.state('startTime').isBefore(originalStartTime)).toBe(true);
 		});
-	});
-
-	describe('setErrorMessages', () => {
-		it('sets error messages');
-		// doesn't work, i dont care
-				/*, async () => {
-			const body = `{"Name": ["is too short"]}`;
-			fetchMock.post('/events', { status: 422, body: body, json: () => body });
-
-			const wrapper = mount(<NewEventPage/>);
-			wrapper.setState({ category: categoriesMock[0].name });
-			await waitForFetches();
-
-			const evt = { preventDefault: sinon.spy() };
-			wrapper.instance().handleSubmit(evt);
-			await waitForFetches();
-
-			expect(wrapper.state('errorMessages')).toContain('Name is too short');
-		}); */
 	});
 
 	describe('handleSubmit', () => {
 		it('calls preventDefault on event', async () => {
 			const event = { preventDefault: sinon.spy() };
-			const wrapper = mount(<NewEventPage/>);
+			const wrapper = await mount(<NewEventPage/>);
 			wrapper.instance().handleSubmit(event);
 
 			expect(event.preventDefault.calledOnce).toBe(true);
 		});
 
 		const createEvent = async (title, description, category, startTime, history) => {
-			const wrapper = mount(<NewEventPage history={history}/>);
-			await waitForFetches();
+			cookies.set({ user: mocks.user, auth_token: "valid" });
+			const wrapper = await mount(<NewEventPage history={history} />);
+			wrapper.setState({ categories: [category] });
 
 			// Type all fields and submit
-			wrapper.find('input').at(0).simulate('change', {target: {value: title}});
-			wrapper.find('input').at(1).simulate('change', {target: {value: description}});
-			wrapper.find('input').at(2).simulate('change', {target: {value: category.name}});
-			wrapper.find('input').at(3).simulate('change', {target: {value: startTime}});
+			wrapper.find('input').at(0).simulate('change', { target: { value: title } });
+			wrapper.find('input').at(1).simulate('change', { target: { value: description } });
+			wrapper.find('input').at(2).simulate('change', { target: { value: category.name } });
+			wrapper.find('input').at(3).simulate('change', { target: { value: startTime } });
 			wrapper.find('form').simulate('submit');
-			await waitForFetches();
+			await wrapper.wait();
 
 			return wrapper;
 		};
 
-		it('redirects to MyEvents page after successiful registering', async () => {
+		it('redirects to MyEvents page after successful registering', async () => {
 			const history = { push: sinon.spy() };
-			const event = Mock.generateEvent();
-			const wrapper = await createEvent(event.title, event.description,
-				categoriesMock[0], time, history);
+			const wrapper = await createEvent(mocks.event.title, mocks.event.description,
+				mocks.categories[0], DEFAULT_TIME, history);
 
 			expect(history.push.calledOnce).toBe(true);
 			expect(history.push.calledWith('/events')).toBe(true);
@@ -177,23 +163,29 @@ describe('NewEventPage', () => {
 
 		it('does not redirect on failed registering', async () => {
 			const history = { push: sinon.spy() };
-			fetchMock.post('/events', { status: 422 });
+
+			api.createNewEvent.restore();
+			sinon.stub(api, "createNewEvent")
+				.callsFake(() => mocks.api.responses.DefaultError);
 
 			// Bad arguments
-			const wrapper = await createEvent('', 'bad', 'nope', time, '', history);
-
+			const wrapper = await createEvent('', 'bad', 'nope', DEFAULT_TIME, '', history);
 			expect(history.push.called).toBe(false);
 		});
 
-		it('sets error messages on failed fetch', async () => {
-			const body = `{"category":["must exist","can't be blank"],
-			"time":["cant be in the past"],
-			"title":["can't be blank","is too short (minimum is 3 characters)"]}`
-			fetchMock.post('/events', { status: 422, body: body });
+		it('sets error messages on failed event creation', async () => {
+			api.createNewEvent.restore();
+			sinon.stub(api, "createNewEvent")
+				.callsFake(() => mocks.api.responses.createError({ messages: [
+					"category must exist", "category can't be blank",
+					"time can't be in the past"
+				]}));
 
-			const wrapper = await createEvent('', '', '', time, '');
+			const wrapper = await createEvent('plaa', 'ploo', 'asf', DEFAULT_TIME, 'sdgds');
 
-			expect(wrapper.state('errorMessages').length).toBeGreaterThan(0);
+			expect(wrapper.state('errorMessages')).not.toBeFalsy();
+			expect(wrapper.state('errorMessages').length).toBe(3);
+			expect(wrapper.state('errorMessages')).toContain("time can't be in the past");
 		});
 	});
 });

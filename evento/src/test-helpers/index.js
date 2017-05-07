@@ -66,7 +66,13 @@ const mount = async (component) => {
 	return mounted;
 };
 
-const createSinonSandbox = ({ restoreAfterEachTest }) => {
+const ApiFunctionNames = Object.getOwnPropertyNames(api).filter((p) =>  typeof api[p] === 'function');
+const ApiFunctionValues = ApiFunctionNames.reduce((map, name) => { map[name] = api[name]; return map; }, { });
+
+const MockAllApiCalls = (mockFunc) => ApiFunctionNames.forEach((name) => api[name] = () => mockFunc(name));
+const RestoreAllApiCalls = () => ApiFunctionNames.forEach((name) => api[name] = ApiFunctionValues[name]);
+
+const createSinonSandbox = ({ restoreAfterEachTest, throwIfApiNotMocked = true }) => {
 	let sandbox;
 	const sinonProxy = {
 		get match() { return sandbox.match; },
@@ -78,6 +84,15 @@ const createSinonSandbox = ({ restoreAfterEachTest }) => {
 	if(restoreAfterEachTest) {
 		beforeEach(() => sandbox = sinon.sandbox.create());
 		afterEach(() => { sandbox.restore(); });
+	}
+
+	if(throwIfApiNotMocked) {
+		if(!restoreAfterEachTest) {
+			throw new Error("Auto-mocking api to throw is not supported if sinon will not be restored after each test");
+		}
+
+		beforeEach(() => MockAllApiCalls(name => mocks.api.responses.createError({ message: `API call ${name} is not mocked!` })));
+		afterEach(() => RestoreAllApiCalls());
 	}
 
 	return sinonProxy;
