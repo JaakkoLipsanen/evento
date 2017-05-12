@@ -1,6 +1,7 @@
 import React from 'react';
 import ReactDOM from 'react-dom';
 import fetchMock from 'fetch-mock';
+import moment from 'moment';
 
 import api from './api';
 import session from './session';
@@ -14,7 +15,8 @@ const INVALID_ID = 999999;
 const DEFAULT_COOKIES = { user: mocks.user, auth_token: "valid" };
 
 describe('/src root files', () => {
-	const sinon = createSinonSandbox({ restoreAfterEachTest: true });
+	const sinon = createSinonSandbox({ restoreAfterEachTest: true, throwIfApiNotMocked: false });
+	beforeEach(() => fetchMock.catch(404));
 	afterEach(() => { fetchMock.restore(); cookies.reset(); });
 
 	describe('api.js', () => {
@@ -91,6 +93,40 @@ describe('/src root files', () => {
 				fetchMock.get(`/events/${INVALID_ID}/attendees`, () => { throw new Error() });
 
 				const result = await api.getAttendees(INVALID_ID)
+				expect(result.success).toBe(false);
+				expect(result.error.message).toEqual(api.DEFAULT_ERROR_MESSAGE);
+			});
+		});
+
+		describe('getCategories', () => {
+			it('returns correct result with correct parameters', async () => {
+				fetchMock.get(`/categories`, mocks.categories);
+
+				const result = await api.getCategories();
+				expect(result.success).toBe(true);
+				expect(result.payload.categories).toEqual(mocks.categories);
+			});
+
+			it('returns error with incorrect parameters', async () => {
+				fetchMock.get(`/categories`, NOT_FOUND_RESPONSE);
+
+				const result = await api.getCategories();
+				expect(result.success).toBe(false);
+				expect(result.error.message).toEqual(api.DEFAULT_ERROR_MESSAGE);
+			});
+
+			it('returns specific error with incorrect parameters if error is specified', async () => {
+				fetchMock.get(`/categories`, { status: 401, body: { message: "Specific error" } });
+
+				const result = await api.getCategories();
+				expect(result.success).toBe(false);
+				expect(result.error.message).toEqual("Specific error");
+			});
+
+			it('returns default error if fetch fails', async () => {
+				fetchMock.get(`/categories`, () => { throw new Error() });
+
+				const result = await api.getCategories()
 				expect(result.success).toBe(false);
 				expect(result.error.message).toEqual(api.DEFAULT_ERROR_MESSAGE);
 			});
@@ -174,6 +210,60 @@ describe('/src root files', () => {
 				const result = await api.updateIsAttending(mocks.event.id, true);
 				expect(result.success).toBe(false);
 				expect(result.error.message).toEqual(api.DEFAULT_ERROR_MESSAGE);
+			});
+		});
+
+
+		describe('createNewEvent', () => {
+			const VALID_EVENT = { title: "Plaa", description: "Ploo", categoryId: 2, startTime: moment().format() };
+			it('shows error if not logged in', async () => {
+				const result = await api.createNewEvent(VALID_EVENT);
+				expect(result.success).toBe(false);
+				expect(result.error.message).toEqual(api.NOT_LOGGED_IN_MESSAGE);
+			});
+
+			it('does not call fetch if not logged in', async () => {
+				fetchMock.post(`/events`, EMPTY_VALID_RESPONSE, { name: "new-event-fetch" });
+
+				const result = await api.createNewEvent(VALID_EVENT);
+				expect(result.success).toBe(false);
+				expect(fetchMock.called("new-event-fetch")).toBe(false);
+			});
+
+			it('calls fetch', async () => {
+				cookies.set(DEFAULT_COOKIES);
+				fetchMock.post(`/events`, EMPTY_VALID_RESPONSE, { name: "new-event-fetch" });
+
+				const result = await api.createNewEvent(VALID_EVENT);
+				expect(result.success).toBe(true);
+				expect(fetchMock.called("new-event-fetch")).toBe(true);
+			});
+
+			it('returns default error message if fails and not specified', async () => {
+				cookies.set(DEFAULT_COOKIES);
+				fetchMock.post(`/events`, NOT_FOUND_RESPONSE);
+
+				const result = await api.createNewEvent(VALID_EVENT);
+				expect(result.success).toBe(false);
+				expect(result.error.messages).toContain(api.DEFAULT_ERROR_MESSAGE);
+			});
+
+			it('returns specific error message if fails and is specified', async () => {
+				cookies.set(DEFAULT_COOKIES);
+				fetchMock.post(`/events`, () => { return { status: 401, body: { title: ["is too short"] } } });
+
+				const result = await api.createNewEvent(VALID_EVENT);
+				expect(result.success).toBe(false);
+				expect(result.error.messages).toContain("title is too short");
+			});
+
+			it('returns default error if fetch fails', async () => {
+				cookies.set(DEFAULT_COOKIES);
+				fetchMock.post(`/events`, () => { throw new Error() });
+
+				const result = await api.createNewEvent(VALID_EVENT);
+				expect(result.success).toBe(false);
+				expect(result.error.messages).toContain(api.DEFAULT_ERROR_MESSAGE);
 			});
 		});
 
