@@ -17,5 +17,10 @@ export default {
 	getAuthHeader() {
 		if(!this.isLoggedIn()) return { };
 		return { 'Authorization': this.getAuthToken() };
+	},
+
+	reset() {
+		Cookie.remove("auth_token");
+		Cookie.remove("user");
 	}
 }
