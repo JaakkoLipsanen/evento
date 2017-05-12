@@ -72,7 +72,7 @@ class App extends Component {
 		return session.isLoggedIn() ? AuthStatus.Authenticated : AuthStatus.NotAuthenticated;
 	}
 
-	authenticate() {
+	async authenticate() {
 		this.setState({ authenticating: true });
 
 		const result = await api.getAuthenticationStatus();
