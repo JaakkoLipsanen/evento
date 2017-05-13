@@ -4,20 +4,15 @@ $content-padding: 8px;
 .AuthenticationPage {
 	text-align: center;
 
-	.SignInPage {
+	.SignInForm, .RegisterPage {
 		display: inline-block;
 	}
 
-	.separator {
-		display: inline-block;
-		border-left:5px
-		solid #000;
-		height:100%;
-		margin: 5%;
-		margin-top: 15%
-	}
+	a {
+		display: block;
+		margin-top: 16px;
+		color: #337ab7;
 
-	.RegisterPage {
-		display: inline-block;
+		cursor: pointer;
 	}
 }

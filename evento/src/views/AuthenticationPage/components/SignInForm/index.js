@@ -1,9 +1,9 @@
 import React, { Component } from 'react';
 
-import api from '../../api';
-import './SignInPage.css'
+import api from '../../../../api';;
+import './SignInForm.css'
 
-class SignInPage extends Component {
+class SignInForm extends Component {
 	constructor(props) {
 		super(props);
 		this.state = {
@@ -27,8 +27,8 @@ class SignInPage extends Component {
 
 	render() {
 		return (
-			<div className='SignInPage'>
-				<form className='SignInForm' onSubmit={(e) => this.handleSubmit(e)}>
+			<div className='SignInForm'>
+				<form onSubmit={(e) => this.handleSubmit(e)}>
 					<p className="ErrorMessage">{this.state.errorMessage}</p>
 					<label>
 						Email:<br/>
@@ -43,4 +43,4 @@ class SignInPage extends Component {
 	}
 }
 
-export default SignInPage;
+export default SignInForm;

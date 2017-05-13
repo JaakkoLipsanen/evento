@@ -1,27 +1,27 @@
 import React from 'react';
 import ReactDOM from 'react-dom';
-import SignInPage from './';
+import SignInForm from './';
 
 import api from '../../api';
 import session from '../../session';
 import { mount, createSinonSandbox, cookies, mocks } from '../../test-helpers';
 
-describe('SignInPage', () => {
+describe('SignInForm', () => {
 	const sinon = createSinonSandbox({ restoreAfterEachTest: true });
 
 	it('renders without crashing', () => {
 		const div = document.createElement('div');
-		ReactDOM.render(<SignInPage />, div);
+		ReactDOM.render(<SignInForm />, div);
 	});
 
 	it('has an error message', async () => {
-		const signInPage = await mount(<SignInPage />);
+		const signInPage = await mount(<SignInForm />);
 		expect(signInPage.find('.ErrorMessage').node).not.toBeUndefined();
 	});
 
 	it('has a link to register page', async () => {
 		const history = { push: sinon.spy() };
-		const signInPage = await mount(<SignInPage history={history} />);
+		const signInPage = await mount(<SignInForm history={history} />);
 
 		expect(signInPage.find('.Link').node).not.toBeUndefined();
 		signInPage.find('.Link').simulate('click');
@@ -30,7 +30,7 @@ describe('SignInPage', () => {
 
 	describe('form', () => {
 		it('calls callback onSubmit', async () => {
-			const signInPage = await mount(<SignInPage />);
+			const signInPage = await mount(<SignInForm />);
 			const callback = sinon.spy(signInPage.instance(), 'handleSubmit');
 			signInPage.find('form').simulate('submit');
 
@@ -38,14 +38,14 @@ describe('SignInPage', () => {
 		});
 
 		it('changes email state onChange', async () => {
-			const signInPage = await mount(<SignInPage />);
+			const signInPage = await mount(<SignInForm />);
 			signInPage.find('input').at(0).simulate('change', { target: { value: 'name@example.com' } });
 
 			expect(signInPage.state('email')).toBe('name@example.com');
 		});
 
 		it('changes password state onChange', async () => {
-			const signInPage = await mount(<SignInPage/>);
+			const signInPage = await mount(<SignInForm/>);
 			signInPage.find('input').at(1).simulate('change', { target: { value: 'secretpassword123' } });
 
 			expect(signInPage.state('password')).toBe('secretpassword123');
@@ -60,7 +60,7 @@ describe('SignInPage', () => {
 		const PASSWORD = "secretpassword123";
 
 		const signIn = async (email, password, history) => {
-			const signInPage = await mount(<SignInPage history={history} />);
+			const signInPage = await mount(<SignInForm history={history} />);
 
 			// Type credentials and submit
 			signInPage.find('input').at(0).simulate('change', { target: { value: email } });
@@ -90,7 +90,7 @@ describe('SignInPage', () => {
 
 		it('calls preventDefault on event', async () => {
 			const event = { preventDefault: sinon.spy() };
-			const signInPage = await mount(<SignInPage />);
+			const signInPage = await mount(<SignInForm />);
 			signInPage.instance().handleSubmit(event);
 
 			expect(event.preventDefault.calledOnce).toBe(true);
