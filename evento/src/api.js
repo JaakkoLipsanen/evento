@@ -224,7 +224,7 @@ export default {
 		try {
 			const response = await fetch('/authentication');
 			if(!response.ok) {
-				return await _createErrorResult({ from: response, defaultValues: { type: "auth", message: INVALID_CREDENTIALS_MESSAGE } });
+				return await _createErrorResult({ from: response });
 			}
 
 			const json = await response.json();

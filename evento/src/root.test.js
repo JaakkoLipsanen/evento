@@ -386,6 +386,63 @@ describe('/src root files', () => {
 				expect(result.error.message).toEqual("Specific error");
 			});
 		});
+
+		describe('getAuthenticationStatus', () => {
+			it('calls fetch if cookies are set', async () => {
+				fetchMock.get(`/authentication`,
+					{ status: 200, body: { authenticated: true } },
+					{ name: "auth-fetch" }
+				);
+
+				cookies.set({ user: mocks.user, auth_token: "valid "});
+
+				const result = await api.getAuthenticationStatus();
+				expect(result.success).toBe(true);
+				expect(fetchMock.called("auth-fetch")).toBe(true);
+			});
+
+			it('doesn\'t call fetch if cookies aren\'t set', async () => {
+				fetchMock.get(`/authentication`,
+					{ status: 200, body: { authenticated: true } },
+					{ name: "auth-fetch" }
+				);
+
+				const result = await api.getAuthenticationStatus();
+				expect(result.success).toBe(true);
+				expect(fetchMock.called("auth-fetch")).toBe(false);
+			});
+
+			it('resets cookies if not authenticateds', async () => {
+				fetchMock.get(`/authentication`,
+					{ status: 200, body: { authenticated: false } }
+				);
+
+				cookies.set({ user: mocks.user, auth_token: "valid "});
+
+				const result = await api.getAuthenticationStatus();
+				expect(result.success).toBe(true);
+				expect(session.getUser()).toBe(null);
+				expect(session.getAuthToken()).toBe(null);
+			});
+
+			it('returns default error if fetch fails', async () => {
+				fetchMock.get(`/authentication`, () => { throw new Error() });
+				cookies.set({ user: mocks.user, auth_token: "valid "});
+
+				const result = await api.getAuthenticationStatus();
+				expect(result.success).toBe(false);
+				expect(result.error.message).toEqual(api.DEFAULT_ERROR_MESSAGE);
+			});
+
+			it('returns specific error if back-end returns specific error', async () => {
+				fetchMock.get(`/authentication`, { status: 300, body: { message: "Specific error" } });
+				cookies.set({ user: mocks.user, auth_token: "valid "});
+
+				const result = await api.getAuthenticationStatus();
+				expect(result.success).toBe(false);
+				expect(result.error.message).toEqual("Specific error");
+			});
+		});
 	});
 
 	describe('session.js', () => {
