@@ -2,8 +2,8 @@ import React from 'react';
 import ReactDOM from 'react-dom';
 import RegisterForm from './';
 
-import api from '../../api';
-import { mount, mocks, createSinonSandbox } from '../../test-helpers';
+import api from '../../../../api';
+import { mount, mocks, createSinonSandbox } from '../../../../test-helpers';
 
 describe('RegisterForm', () => {
 	const sinon = createSinonSandbox({ restoreAfterEachTest: true });
@@ -18,15 +18,6 @@ describe('RegisterForm', () => {
 		registerForm.setState({ errorMessages: ['test error'] });
 
 		expect(registerForm.find('.ErrorMessage').node).not.toBeUndefined();
-	});
-
-	it('has a link to sign in page', async () => {
-		const history = { push: sinon.spy() };
-		const registerForm = await mount(<RegisterForm history={history} />);
-
-		expect(registerForm.find('.Link').node).not.toBeUndefined();
-		registerForm.find('.Link').simulate('click');
-		expect(history.push.calledWith('/signin')).toBe(true);
 	});
 
 	describe('form', () => {
@@ -99,16 +90,19 @@ describe('RegisterForm', () => {
 			return registerForm;
 		};
 
-		it('redirects to sign in page after successful registering', async () => {
+		it('signs in after successful registering', async () => {
 			const history = { push: sinon.spy() };
 			sinon.stub(api, "register")
 				.callsFake(() => mocks.api.responses.DefaultSuccess);
 
+			const spy = sinon.spy();
+			sinon.stub(api, "signin")
+				.callsFake(spy);
+
 			const registerForm = await register(mocks.user.name, mocks.user.email,
 				'validpassword123', 'validpassword123', history);
 
-			expect(history.push.calledOnce).toBe(true);
-			expect(history.push.calledWith('/signin')).toBe(true);
+			expect(spy.calledOnce).toBe(true);
 		});
 
 		it('does not redirect on failed registering', async () => {

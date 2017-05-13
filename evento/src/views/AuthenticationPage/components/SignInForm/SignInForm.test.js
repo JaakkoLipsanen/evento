@@ -2,9 +2,9 @@ import React from 'react';
 import ReactDOM from 'react-dom';
 import SignInForm from './';
 
-import api from '../../api';
-import session from '../../session';
-import { mount, createSinonSandbox, cookies, mocks } from '../../test-helpers';
+import api from '../../../../api';
+import session from '../../../../session';
+import { mount, createSinonSandbox, cookies, mocks } from '../../../../test-helpers';
 
 describe('SignInForm', () => {
 	const sinon = createSinonSandbox({ restoreAfterEachTest: true });
@@ -17,15 +17,6 @@ describe('SignInForm', () => {
 	it('has an error message', async () => {
 		const signInPage = await mount(<SignInForm />);
 		expect(signInPage.find('.ErrorMessage').node).not.toBeUndefined();
-	});
-
-	it('has a link to register page', async () => {
-		const history = { push: sinon.spy() };
-		const signInPage = await mount(<SignInForm history={history} />);
-
-		expect(signInPage.find('.Link').node).not.toBeUndefined();
-		signInPage.find('.Link').simulate('click');
-		expect(history.push.calledWith('/register')).toBe(true);
 	});
 
 	describe('form', () => {
@@ -110,14 +101,6 @@ describe('SignInForm', () => {
 			expect(signInPage.state('errorMessage')).toBe('Invalid credentials');
 			expect(session.getAuthToken()).toBeFalsy();
 			expect(session.getUser()).toBeFalsy();
-		});
-
-		it('redirects to front page after successful sign in', async () => {
-			const history = { push: sinon.spy() };
-			await successfulSignIn(history);
-
-			expect(history.push.calledOnce).toBe(true);
-			expect(history.push.calledWith('/')).toBe(true);
 		});
 	});
 });
