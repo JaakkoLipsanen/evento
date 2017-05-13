@@ -9,12 +9,6 @@ import AuthenticationPage from '../AuthenticationPage';
 import PathNotFound from './components/PathNotFound';
 import './App.css';
 
-const AuthStatus = {
-	Authenticating: 0,
-	Authenticated: 1,
-	NotAuthenticated: 2,
-};
-
 class App extends Component {
 	constructor() {
 		super();
