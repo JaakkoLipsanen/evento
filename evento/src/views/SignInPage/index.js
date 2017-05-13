@@ -4,8 +4,8 @@ import api from '../../api';
 import './SignInPage.css'
 
 class SignInPage extends Component {
-	constructor() {
-		super();
+	constructor(props) {
+		super(props);
 		this.state = {
 			email: '',
 			password: '',
@@ -18,8 +18,7 @@ class SignInPage extends Component {
 
 		const result = await api.signin(this.state.email, this.state.password);
 		if(result.success) {
-			// Move to front page after successful sign in
-			this.props.history.push('/')
+			this.props.onSignIn();
 		}
 		else {
 			this.setState({ errorMessage: result.error.message })
@@ -39,7 +38,6 @@ class SignInPage extends Component {
 					</label><br/>
 				<input type="submit" value="Sign in" />
 				</form>
-				<p className="Link" onClick={() => this.props.history.push('/register')}>Not yet registered?</p>
 			</div>
 		);
 	}

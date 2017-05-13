@@ -1,16 +1,13 @@
 import React, { Component } from 'react';
-import { BrowserRouter as Router, Route, Switch } from 'react-router-dom';
+import { BrowserRouter as Router, Route, Switch, browserHistory } from 'react-router-dom';
 
+import api from '../../api';
 import MainPage from '../MainPage';
 import EventPage from '../EventPage';
 import NewEventPage from '../NewEventPage';
-import SignInPage from '../SignInPage';
-import RegisterPage from '../RegisterPage';
+import AuthenticationPage from '../AuthenticationPage';
 import PathNotFound from './components/PathNotFound';
 import './App.css';
-
-import api from '../../api';
-import session from '../../session';
 
 const AuthStatus = {
 	Authenticating: 0,
@@ -22,69 +19,48 @@ class App extends Component {
 	constructor() {
 		super();
 		this.state = {
-			authenticating: true,
-			errorMessage: null,
-		};
+			authenticated: false,
+			checkingAuthentication: true,
+		}
 	}
 
-	async componentDidMount() {
-		this.authenticate();
+	componentDidMount() {
+		this.checkAuthenticationStatus();
 	}
 
 	render() {
+		if (this.state.checkingAuthentication) {
+			return <h3>'Loading...'</h3>
+		} else if (!this.state.authenticated) {
+			return <AuthenticationPage onSignIn={ () => this.onSignin() } />
+		}
+
 		return (
 			<div className="App">
-				<Router basename="/evento">
-					{this.getContent()}
+				<Router basename="/evento" history={browserHistory}>
+					<Switch>
+						<Route exact path='/' component={ MainPage } />
+						<Route exact path='/events' component={ MainPage } />
+						<Route exact path='/event/new' component={ NewEventPage } />
+						<Route exact path='/event/:eventId' component={ EventPage } />
+						<Route path='*' component={ PathNotFound } />
+					</Switch>
 				</Router>
 			</div>
 		);
 	}
 
-	getContent() {
-		if(this.state.errorMessage) {
-			return <h4>{ this.state.errorMessage }</h4>;
-		}
-
-		const authStatus = this.getAuthStatus();
-		if(authStatus === AuthStatus.Authenticating) {
-			return <h4>loading...</h4>;
-		}
-		else if(authStatus === AuthStatus.NotAuthenticated) {
-			return <Route component={SignInPage} />;
-		}
-
-		return (
-			<Switch>
-				<Route exact path='/' component={MainPage} />
-				<Route exact path='/events' component={MainPage} />
-				<Route exact path='/signin' component={SignInPage} />
-				<Route exact path='/register' component={RegisterPage} />
-				<Route exact path='/event/new' component={NewEventPage} />
-				<Route exact path='/event/:eventId' component={EventPage} />
-				<Route path='*' component={PathNotFound} />
-			</Switch>
-		);
-	}
-
-	getAuthStatus() {
-		if(this.state.authenticating) return AuthStatus.Authenticating;
-		return session.isLoggedIn() ? AuthStatus.Authenticated : AuthStatus.NotAuthenticated;
-	}
-
-	async authenticate() {
-		this.setState({ authenticating: true });
+	async checkAuthenticationStatus() {
+		this.setState({ checkAuthenticationStatus: true })
 
 		const result = await api.getAuthenticationStatus();
-		if(result.success) {
-			/* api.getAuthenticationStatus changes cookies so session.isLoggedIn
-			/* get updated accordingly and thus getAuthStatus() changes */
-		}
-		else {
-			this.setState({ errorMessage: result.error.message });
-		}
+		const isAuthenticated = result.success && result.payload.isAuthenticated;
+		await this.setState({ authenticated: isAuthenticated, checkingAuthentication: false });
+	}
 
-		this.setState({ authenticating: false });
+	onSignin() {
+		this.setState({ authenticated: true });
+		this.forceUpdate(); // re-render App
 	}
 }
 
