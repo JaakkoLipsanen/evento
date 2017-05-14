@@ -26,7 +26,7 @@ class App extends Component {
 		if (this.state.checkingAuthentication) {
 			return <h3>'Loading...'</h3>
 		} else if (!this.state.authenticated) {
-			return <AuthenticationPage onSignIn={ () => this.onSignin() } />
+			return <AuthenticationPage onSignIn={() => this.onSignin()} />
 		}
 
 		return (
@@ -45,7 +45,7 @@ class App extends Component {
 	}
 
 	async checkAuthenticationStatus() {
-		this.setState({ checkAuthenticationStatus: true })
+		this.setState({ checkingAuthentication: true })
 
 		const result = await api.getAuthenticationStatus();
 		const isAuthenticated = result.success && result.payload.isAuthenticated;
@@ -54,7 +54,6 @@ class App extends Component {
 
 	onSignin() {
 		this.setState({ authenticated: true });
-		this.forceUpdate(); // re-render App
 	}
 }
 

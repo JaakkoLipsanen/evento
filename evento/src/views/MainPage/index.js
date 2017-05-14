@@ -1,17 +1,10 @@
 import React, { Component } from 'react';
 import { Switch, Route } from 'react-router-dom';
 
-import SearchBar from '../../components/SearchBar';
-import TabContainer from '../../components/TabContainer';
+import Topbar from '../Topbar';
 import Explore from '../Explore';
 import MyEvents from '../MyEvents';
 import './MainPage.css';
-
-// hard coded tabs!
-const tabs = [
-	{ title: "Explore", path: "/" },
-	{ title: "My Events", path: "/events" }
-];
 
 const createEventFilterer = (filterQuery) => {
 	return (events) => {
@@ -40,13 +33,9 @@ class MainPage extends Component {
 	render() {
 		return (
 			<div className="MainPage">
-				<div className="top-bar-container">
-					<SearchBar onQueryChange={(query) => this.updateFilter(query)}/>
-					<TabContainer
-						tabs={tabs}
-						path={this.props.location.pathname}
-						onSelectedTabChange={(tab) => this.props.history.push(tab.path)}/>
-				</div>
+				<Topbar
+					{...this.props}
+					onSearchBarChange={query => this.updateFilter(query)} />
 
 				<Switch>
 					<Route exact path='/' render={() => (

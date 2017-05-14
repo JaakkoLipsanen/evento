@@ -1,0 +1,47 @@
+$padding: 8px;
+$top-bar-color: #85b0ca;
+
+$max-content-width: 600px;
+$profile-menu-width: 32px;
+$change-x: $max-content-width + $profile-menu-width * 2 + $padding * 3;
+
+
+.Topbar {
+	.topbar-content {
+		max-width: $max-content-width;
+		margin: auto;
+	}
+
+	.searchbar-and-menu-container {
+		display: flex;
+
+		.SearchBar {
+			flex: 1;
+		}
+
+		.ProfileMenu {
+			width: 40px;
+			height: 40px;
+		}
+
+		@media (max-width: $change-x) {
+			.ProfileMenu {
+				flex: 0 0 auto;
+				margin-left: 8px;
+			}
+		}
+
+		@media (min-width: $change-x) {
+			.ProfileMenu {
+				position: absolute;
+				float: right;
+				right: 8px;
+			}
+		}
+	}
+
+	background-color: $top-bar-color;
+	padding: $padding;
+	border-radius: 2px; // this adds slight rounding effect to the top-bar
+
+}
