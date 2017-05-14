@@ -94,6 +94,7 @@ class RegisterForm extends React.Component {
 						floatingLabelText="password confirmation"
 						errorText={this.state.fieldErrors.passwordConf}
 						value={this.state.passwordConf}
+						onKeyPress={e => e.key === "Enter" && this.register()}
 						onChange={(evt) => this.setState({ passwordConf: evt.target.value })} />
 
 					<br/>

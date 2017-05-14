@@ -42,6 +42,7 @@ class SignInForm extends Component {
 						floatingLabelText="password"
 						errorText={this.state.errorMessage}
 						value={this.state.password}
+						onKeyPress={e => e.key === "Enter" && this.signin()}
 						onChange={(evt) => this.setState({ password: evt.target.value })} />
 					<br/>
 
