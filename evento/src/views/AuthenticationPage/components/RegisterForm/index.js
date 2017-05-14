@@ -59,6 +59,9 @@ class RegisterForm extends React.Component {
 	}
 
 	render () {
+		const textFieldStyle = { height: "62px" };
+		const floatingLabelStyle = { top: "28px" };
+
 		return (
 			<div className="RegisterForm">
 				<form onSubmit={(e) => this.handleSubmit(e)}>
@@ -69,7 +72,10 @@ class RegisterForm extends React.Component {
 						floatingLabelText="name"
 						errorText={this.state.fieldErrors.name}
 						value={this.state.name}
-						onChange={(evt) => this.setState({ name: evt.target.value })} />
+
+						onChange={(evt) => this.setState({ name: evt.target.value })}
+						style={textFieldStyle}
+						floatingLabelStyle={floatingLabelStyle} />
 
 					<br/>
 					<TextField
@@ -77,8 +83,10 @@ class RegisterForm extends React.Component {
 						floatingLabelText="e-mail"
 						errorText={this.state.fieldErrors.email}
 						value={this.state.email}
-						ref={(field) => this.emailField = field }
-						onChange={(evt) => this.setState({ email: evt.target.value })} />
+
+						onChange={(evt) => this.setState({ email: evt.target.value })}
+						style={textFieldStyle}
+						floatingLabelStyle={floatingLabelStyle} />
 
 					<br/>
 					<TextField
@@ -86,7 +94,10 @@ class RegisterForm extends React.Component {
 						floatingLabelText="password"
 						errorText={this.state.fieldErrors.password}
 						value={this.state.password}
-						onChange={(evt) => this.setState({ password: evt.target.value })} />
+
+						onChange={(evt) => this.setState({ password: evt.target.value })}
+						style={textFieldStyle}
+						floatingLabelStyle={floatingLabelStyle} />
 
 					<br/>
 					<TextField
@@ -94,8 +105,11 @@ class RegisterForm extends React.Component {
 						floatingLabelText="password confirmation"
 						errorText={this.state.fieldErrors.passwordConf}
 						value={this.state.passwordConf}
+
 						onKeyPress={e => e.key === "Enter" && this.register()}
-						onChange={(evt) => this.setState({ passwordConf: evt.target.value })} />
+						onChange={(evt) => this.setState({ passwordConf: evt.target.value })}
+						style={textFieldStyle}
+						floatingLabelStyle={floatingLabelStyle} />
 
 					<br/>
 					<RaisedButton
