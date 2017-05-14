@@ -1,4 +1,6 @@
 import React, { Component } from 'react';
+import TextField from 'material-ui/TextField';
+import RaisedButton from 'material-ui/RaisedButton';
 
 import api from '../../../../api';;
 import './SignInForm.css'
@@ -13,9 +15,7 @@ class SignInForm extends Component {
 		};
 	}
 
-	async handleSubmit(evt) {
-		evt.preventDefault();
-
+	async signin() {
 		const result = await api.signin(this.state.email, this.state.password);
 		if(result.success) {
 			this.props.onSignIn();
@@ -29,14 +29,27 @@ class SignInForm extends Component {
 		return (
 			<div className='SignInForm'>
 				<form onSubmit={(e) => this.handleSubmit(e)}>
-					<p className="ErrorMessage">{this.state.errorMessage}</p>
-					<label>
-						Email:<br/>
-						<input type="text" value={this.state.email} onChange={(evt) => this.setState({email: evt.target.value})} />
-						<br/>Password:<br/>
-						<input type="password" value={this.state.password} onChange={(evt) => this.setState({password: evt.target.value})} />
-					</label><br/>
-				<input type="submit" value="Sign in" />
+					<TextField
+						name="email-field"
+						type="text"
+						floatingLabelText="e-mail"
+						value={this.state.email}
+						onChange={(evt) => this.setState({ email: evt.target.value })} />
+					<br/>
+					<TextField
+						name="password-field"
+						type="password"
+						floatingLabelText="password"
+						errorText={this.state.errorMessage}
+						value={this.state.password}
+						onChange={(evt) => this.setState({ password: evt.target.value })} />
+					<br/>
+
+					<RaisedButton
+						label="Sign in"
+						primary={true}
+						fullWidth={true}
+						onClick={() => this.signin()} />
 				</form>
 			</div>
 		);

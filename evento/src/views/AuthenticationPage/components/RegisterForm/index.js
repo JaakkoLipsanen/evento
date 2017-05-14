@@ -1,4 +1,6 @@
 import React from 'react';
+import TextField from 'material-ui/TextField';
+import RaisedButton from 'material-ui/RaisedButton';
 
 import api from '../../../../api';
 import './RegisterForm.css';
@@ -11,15 +13,16 @@ class RegisterForm extends React.Component {
 			email: '',
 			password: '',
 			passwordConf: '',
+
+			fieldErrors: {},
 			errorMessages: []
 		};
 	}
 
-	async handleSubmit(evt) {
-		evt.preventDefault();
-
+	async register() {
 		if (this.state.password !== this.state.passwordConf) {
-			this.setState({ errorMessages: ['Passwords do not match'] });
+			this.state.fieldErrors.passwordConf = "Passwords do not match";
+			this.forceUpdate();
 			return;
 		}
 
@@ -43,17 +46,40 @@ class RegisterForm extends React.Component {
 					{this.state.errorMessages.map(error =>
 						<p className="ErrorMessage" key={error}>{error}</p>
 					)}
-					<label>
-						Name:<br/>
-						<input type="text" value={this.state.name} onChange={(evt) => this.setState({name: evt.target.value})} />
-						<br/>Email:<br/>
-						<input type="text" value={this.state.email} onChange={(evt) => this.setState({email: evt.target.value})} />
-						<br/>Password:<br/>
-						<input type="password" value={this.state.password} onChange={(evt) => this.setState({password: evt.target.value})} />
-						<br/>Retype password:<br/>
-						<input type="password" value={this.state.passwordConf} onChange={(evt) => this.setState({passwordConf: evt.target.value})} />
-					</label><br/>
-					<input type="submit" value="Register" />
+					<TextField
+						type="text"
+						floatingLabelText="name"
+						value={this.state.name}
+						onChange={(evt) => this.setState({ name: evt.target.value })} />
+
+					<br/>
+					<TextField
+						type="text"
+						floatingLabelText="e-mail"
+						value={this.state.email}
+						onChange={(evt) => this.setState({ email: evt.target.value })} />
+
+					<br/>
+					<TextField
+						type="password"
+						floatingLabelText="password"
+						value={this.state.password}
+						onChange={(evt) => this.setState({ password: evt.target.value })} />
+
+					<br/>
+					<TextField
+						type="password"
+						floatingLabelText="password confirmation"
+						errorText={this.state.fieldErrors.passwordConf}
+						value={this.state.passwordConf}
+						onChange={(evt) => this.setState({ passwordConf: evt.target.value })} />
+
+					<br/>
+					<RaisedButton
+						label="Register"
+						primary={true}
+						fullWidth={true}
+						onClick={() => this.register()} />
 				</form>
 			</div>
 		);

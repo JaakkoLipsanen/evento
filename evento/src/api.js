@@ -28,6 +28,7 @@ const getErrorMessages = async ({ from }) => {
 		flattened.push(DEFAULT_ERROR_MESSAGE);
 	}
 
+	flattened.raw = error;
 	return flattened;
 };
 
