@@ -26,8 +26,11 @@ class SignInForm extends Component {
 	}
 
 	render() {
-		const textFieldStyle = { height: "62px" };
-		const floatingLabelStyle = { top: "28px" };
+		const styles = {
+			style: { height: "62px" },
+			inputStyle: { "margin-top": "7px" },
+			floatingLabelStyle: { top: "28px" }
+		};
 
 		return (
 			<div className='SignInForm'>
@@ -47,9 +50,7 @@ class SignInForm extends Component {
 
 						onKeyPress={e => e.key === "Enter" && this.signin()}
 						onChange={(evt) => this.setState({ password: evt.target.value })}
-
-						style={textFieldStyle}
-						floatingLabelStyle={floatingLabelStyle} />
+						{...styles} />
 					<br/>
 
 					<RaisedButton
