@@ -1,0 +1,18 @@
+$top-margin: 12px;
+$content-padding: 8px;
+
+.AuthenticationPage {
+	text-align: center;
+
+	.SignInForm, .RegisterPage {
+		display: inline-block;
+	}
+
+	a {
+		display: block;
+		margin-top: 16px;
+		color: #337ab7;
+
+		cursor: pointer;
+	}
+}

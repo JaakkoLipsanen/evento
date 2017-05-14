@@ -18,7 +18,7 @@ const getDefaultHeaders = () => {
 export default {
 	apply() {
 		const _fetch = window.fetch;
-		window.fetch = (url, ...params) => {
+		window.fetch = (url, params) => {
 			const parameters = { headers: getDefaultHeaders(), ...params  };
 			return _fetch(BaseURL + url, parameters);
 		};

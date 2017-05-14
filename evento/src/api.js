@@ -101,7 +101,7 @@ export default {
 
 	// TODO: check session.isLoggedIn() ?
 	async getUserEvents() {
-		if(!session.getUser()) {
+		if(!session.isLoggedIn()) {
 			return { success: false, error: NOT_LOGGED_IN_ERROR };
 		}
 
@@ -120,7 +120,7 @@ export default {
 	},
 
 	async updateIsAttending(eventId, isAttending) {
-		if(!session.getUser()) {
+		if(!session.isLoggedIn()) {
 			return { success: false, error: NOT_LOGGED_IN_ERROR };
 		}
 
@@ -141,7 +141,7 @@ export default {
 	},
 
 	async createNewEvent({ title, description, categoryId, startTime }) {
-		if(!session.getUser()) {
+		if(!session.isLoggedIn()) {
 			return { success: false, error: NOT_LOGGED_IN_ERROR };
 		}
 
@@ -210,6 +210,30 @@ export default {
 			Cookie.set('user', JSON.stringify(json.user));
 
 			return { success: true, payload: { user: json.user, auth_token: json.auth_token } };
+		}
+		catch(err) {
+			return { success: false, error: SOMETHING_WENT_WRONG_ERROR };
+		}
+	},
+
+	async getAuthenticationStatus() {
+		if(!session.isLoggedIn()) {
+			return { success: true, payload: { isAuthenticated: false} };
+		}
+
+		try {
+			const response = await fetch('/authentication');
+			if(!response.ok) {
+				return await _createErrorResult({ from: response });
+			}
+
+			const json = await response.json();
+			const authenticated = json.authenticated;
+			if(!authenticated) {
+				session.reset(); // reset cookies
+			}
+
+			return { success: true, payload: { isAuthenticated: authenticated } };
 		}
 		catch(err) {
 			return { success: false, error: SOMETHING_WENT_WRONG_ERROR };

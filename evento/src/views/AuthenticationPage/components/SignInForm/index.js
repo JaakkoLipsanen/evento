@@ -1,11 +1,11 @@
 import React, { Component } from 'react';
 
-import api from '../../api';
-import './SignInPage.css'
+import api from '../../../../api';;
+import './SignInForm.css'
 
-class SignInPage extends Component {
-	constructor() {
-		super();
+class SignInForm extends Component {
+	constructor(props) {
+		super(props);
 		this.state = {
 			email: '',
 			password: '',
@@ -18,8 +18,7 @@ class SignInPage extends Component {
 
 		const result = await api.signin(this.state.email, this.state.password);
 		if(result.success) {
-			// Move to front page after successful sign in
-			this.props.history.push('/')
+			this.props.onSignIn();
 		}
 		else {
 			this.setState({ errorMessage: result.error.message })
@@ -28,8 +27,8 @@ class SignInPage extends Component {
 
 	render() {
 		return (
-			<div className='SignInPage'>
-				<form className='SignInForm' onSubmit={(e) => this.handleSubmit(e)}>
+			<div className='SignInForm'>
+				<form onSubmit={(e) => this.handleSubmit(e)}>
 					<p className="ErrorMessage">{this.state.errorMessage}</p>
 					<label>
 						Email:<br/>
@@ -39,10 +38,9 @@ class SignInPage extends Component {
 					</label><br/>
 				<input type="submit" value="Sign in" />
 				</form>
-				<p className="Link" onClick={() => this.props.history.push('/register')}>Not yet registered?</p>
 			</div>
 		);
 	}
 }
 
-export default SignInPage;
+export default SignInForm;

@@ -1,9 +1,9 @@
 import React from 'react';
 
-import api from '../../api';
-import './RegisterPage.css';
+import api from '../../../../api';
+import './RegisterForm.css';
 
-class RegisterPage extends React.Component {
+class RegisterForm extends React.Component {
 	constructor(props) {
 		super(props);
 		this.state = {
@@ -23,20 +23,23 @@ class RegisterPage extends React.Component {
 			return;
 		}
 
-		const result = await api.register(this.state.name, this.state.email, this.state.password);
-		if(result.success) {
-			// After successful register, redirect to sign in page
-			this.props.history.push('/signin')
+		const registerResult = await api.register(this.state.name, this.state.email, this.state.password);
+		if(registerResult.success) {
+			// After succsesiful register, sign in
+			const signInResult = await api.signin(this.state.email, this.state.password);
+			if(signInResult.success) {
+				this.props.onSignIn();
+			}
 		}
 		else {
-			this.setState({ errorMessages: result.error.messages });
+			this.setState({ errorMessages: registerResult.error.messages });
 		}
 	}
 
 	render () {
 		return (
-			<div className="RegisterPage">
-				<form className='RegisterForm' onSubmit={(e) => this.handleSubmit(e)}>
+			<div className="RegisterForm">
+				<form onSubmit={(e) => this.handleSubmit(e)}>
 					{this.state.errorMessages.map(error =>
 						<p className="ErrorMessage" key={error}>{error}</p>
 					)}
@@ -52,10 +55,9 @@ class RegisterPage extends React.Component {
 					</label><br/>
 					<input type="submit" value="Register" />
 				</form>
-				<p className="Link" onClick={() => this.props.history.push('/signin')}>Not yet registered?</p>
 			</div>
 		);
 	}
 }
 
-export default RegisterPage;
+export default RegisterForm;
