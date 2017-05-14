@@ -1,6 +1,9 @@
 import React, { Component } from 'react';
 import { Switch, Route } from 'react-router-dom';
 
+import FloatingActionButton from 'material-ui/FloatingActionButton';
+import ContentAdd from 'material-ui/svg-icons/content/add';
+
 import Topbar from '../Topbar';
 import Explore from '../Explore';
 import MyEvents from '../MyEvents';
@@ -46,6 +49,10 @@ class MainPage extends Component {
 					/>
 					<Route exact path='/events' component={MyEvents} />
 				</Switch>
+
+				<FloatingActionButton className="new-event-button">
+					<ContentAdd />
+				</FloatingActionButton>
 			</div>
 		);
 	}

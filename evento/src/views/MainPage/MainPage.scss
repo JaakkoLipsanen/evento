@@ -1,3 +1,9 @@
 .MainPage {
 	text-align: center;
+
+	.new-event-button {
+		position: fixed;
+		right: 20px;
+		bottom: 20px;
+	}
 }
