@@ -17,7 +17,7 @@ class SignInForm extends Component {
 
 	async signin() {
 		const result = await api.signin(this.state.email, this.state.password);
-		if(result.success) {
+		if(result.success && this.props.onSignIn) {
 			this.props.onSignIn();
 		}
 		else {
@@ -34,6 +34,7 @@ class SignInForm extends Component {
 
 		return (
 			<div className='SignInForm'>
+				<p className="error-message">{ this.state.errorMessage }</p>
 				<form onSubmit={(e) => this.handleSubmit(e)}>
 					<TextField
 						type="text"

@@ -29,7 +29,7 @@ class RegisterForm extends React.Component {
 		if(registerResult.success) {
 			// After succsesful register, sign in
 			const signInResult = await api.signin(this.state.email, this.state.password);
-			if(signInResult.success) {
+			if(signInResult.success && this.props.onSignIn) {
 				this.props.onSignIn();
 			}
 		}
@@ -67,7 +67,7 @@ class RegisterForm extends React.Component {
 		return (
 			<div className="RegisterForm">
 				<form onSubmit={(e) => this.handleSubmit(e)}>
-					<p className="ErrorMessage">{ this.state.errorMessage }</p>
+					<p className="error-message">{ this.state.errorMessage }</p>
 
 					<TextField
 						floatingLabelText="name"

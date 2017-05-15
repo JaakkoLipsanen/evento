@@ -14,7 +14,7 @@ class ProfileMenu extends Component {
 	}
 
 	signOut() {
-		session.reset(); // is this enough? no need to inform backend, right?
+		session.reset(); // is this enough? no need to 'inform' backend, right?
 		window.location.replace('/evento'); // refresh tab and return to main page
 	}
 

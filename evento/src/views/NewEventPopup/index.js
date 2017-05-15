@@ -130,6 +130,7 @@ class NewEventPopup extends Component {
 					zDepth={5}
 					style={popupDivStyle}
 				>
+					<p className="error-message">{ this.state.errorMessage }</p>
 					<TextField
 						floatingLabelText="Event name"
 						hintText="Name should be short and clear"
