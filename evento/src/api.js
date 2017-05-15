@@ -141,7 +141,7 @@ export default {
 		}
 	},
 
-	async createNewEvent({ title, description, categoryId, startTime }) {
+	async createNewEvent({ title, description, categoryId, startTime, location }) {
 		if(!session.isLoggedIn()) {
 			return { success: false, error: NOT_LOGGED_IN_ERROR };
 		}
@@ -153,9 +153,10 @@ export default {
 					title: title,
 					description: description,
 					category_id: categoryId,
-					time: startTime
+					time: startTime,
+					location: location
 				})
-			})
+			});
 
 			if(!response.ok) {
 				return { success: false, error: { type: "unknown", messages: await getErrorMessages({ from: response }) } };

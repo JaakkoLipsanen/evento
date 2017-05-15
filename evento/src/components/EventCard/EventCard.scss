@@ -31,7 +31,7 @@ $card-field-margin: 4px 0px 4px 12px;
 
 	/* TODO: the image is TEMPORARY!! Replace with the actual image once we implement event photos */
 	background: linear-gradient($card-image-overlay-color, $card-image-overlay-color),
-	            url('default_background_image.jpg');
+					url('default_background_image.jpg');
 
 	background-position: center;
 	background-size: cover;

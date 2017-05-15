@@ -66,7 +66,8 @@ class NewEventPopup extends Component {
 			title: this.state.title,
 			description: this.state.description,
 			categoryId: category.id,
-			startTime: moment(startTime).format()
+			startTime: moment(startTime).format(),
+			location: this.state.location
 		});
 
 		if(result.success) {
