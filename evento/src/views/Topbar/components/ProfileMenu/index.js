@@ -27,7 +27,7 @@ class ProfileMenu extends Component {
 				<IconMenu
 					iconStyle={iconStyle}
 					iconButtonElement={
-						<IconButton style={buttonStyle}>
+						<IconButton style={buttonStyle} tooltip="Settings" tooltipPosition="bottom-left">
 							<SettingsIcon/>
 						</IconButton>
 					}

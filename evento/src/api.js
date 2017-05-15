@@ -161,8 +161,8 @@ export default {
 				return { success: false, error: { type: "unknown", messages: await getErrorMessages({ from: response }) } };
 			}
 
-			// TODO: should probably return the newly created event
-			return { success: true, payload: { } };
+			const event = await response.json();
+			return { success: true, payload: { event: event } };
 		}
 		catch(err) {
 			return { success: false, error: SOMETHING_WENT_WRONG_ERROR };

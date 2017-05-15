@@ -15,7 +15,7 @@ class DateTimePicker extends Component {
 		};
 	}
 
-	get dateTime() {
+	getDateTime() {
 		const date = this.state.date, time = this.state.time;
 		if(!date || !time) {
 			return null;
@@ -31,9 +31,9 @@ class DateTimePicker extends Component {
 		const styles = {
 			style: { height: "62px", flex: "1" },
 			inputStyle: { marginTop: "7px", width: "auto" },
-			textFieldStyle: { width: "auto", height: "62px" },
+			textFieldStyle: { width: "100%", height: "62px" },
 			floatingLabelStyle: { top: "28px" },
-			errorStyle: { bottom: "22px" },
+			errorStyle: { bottom: "12px" },
 
 			disableYearSelection: true,
 			floatingLabelFixed: true

@@ -2,7 +2,7 @@ import React, { Component } from 'react';
 import { Switch, Route } from 'react-router-dom';
 
 import FloatingActionButton from 'material-ui/FloatingActionButton';
-import ContentAdd from 'material-ui/svg-icons/content/add';
+import ContentAddIcon from 'material-ui/svg-icons/content/add';
 
 import Topbar from '../Topbar';
 import Explore from '../Explore';
@@ -52,10 +52,12 @@ class MainPage extends Component {
 				</Switch>
 
 				<FloatingActionButton className="new-event-button" onClick={() => this.newEventPopup.show()}>
-					<ContentAdd />
+					<ContentAddIcon />
 				</FloatingActionButton>
 
-				<NewEventPopup ref={(popup) => this.newEventPopup = popup} />
+				<NewEventPopup
+					onCreated={(event) => this.props.history.push('/events/' + event.id)}
+					ref={(popup) => this.newEventPopup = popup} />
 			</div>
 		);
 	}

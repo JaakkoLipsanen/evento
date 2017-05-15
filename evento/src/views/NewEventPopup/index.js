@@ -3,11 +3,12 @@ import TextField from 'material-ui/TextField';
 import SelectField from 'material-ui/SelectField';
 import MenuItem from 'material-ui/MenuItem';
 import RaisedButton from 'material-ui/RaisedButton';
+import Paper from 'material-ui/Paper';
+
 import DateTimePicker from './components/DateTimePicker';
 
 import moment from 'moment';
 import api from '../../api';
-
 import './NewEventPopup.css';
 
 class NewEventPopup extends Component {
@@ -51,31 +52,35 @@ class NewEventPopup extends Component {
 	async createEvent() {
 		const category = this.state.categories.find(c => c.name === this.state.category);
 		if (!category) {
-			this.setState({ fieldErrors: { category: 'Category not found' } });
+			this.setState({ fieldErrors: { category: 'not found' } });
 			return;
 		}
 
-		if(!this.startTimePicker.dateTime) {
-			this.setState({ fieldErrors: { time: 'Time must be set' } });
+		const startTime = this.startTimePicker.getDateTime();
+		if(!startTime) {
+			this.setState({ fieldErrors: { time: 'must be set' } });
 			return;
 		}
 
-		console.log(category);
 		const result = await api.createNewEvent({
 			title: this.state.title,
 			description: this.state.description,
 			categoryId: category.id,
-			startTime: moment(this.startTimePicker.dateTime).format()
+			startTime: moment(startTime).format()
 		});
 
 		if(result.success) {
 			// TODO: should redirect to the page of the newly created event?
 			// If creation was successful, redirect to MyEvents
-			this.props.history.push('/events');
+			// this.props.history.push('/events');
+			if(this.props.onCreated) {
+				this.props.onCreated(result.payload.event);
+			}
+
+			this.close();
 		}
 		else {
 			this.setErrors(result.error);
-			this.setState({ errorMessages: result.error.messages });
 		}
 	}
 
@@ -100,68 +105,70 @@ class NewEventPopup extends Component {
 	}
 
 	render () {
-		const styles = {
+		const fieldStyles = {
 			style: { height: "62px" },
 			inputStyle: { "margin-top": "7px" },
 			textareaStyle: { "margin-top": "26px", "margin-bottom": "-26px" },
 			floatingLabelStyle: { top: "28px" },
 			errorStyle: { bottom: "10px" },
-			fullWidth: true
+
+			fullWidth: true,
+			floatingLabelFixed: true
 		};
 
-		let errorMessages = (this.state.errorMessages || [])
-			.map(error => <p className="ErrorMessage" key={error}>{error}</p> );
+		const parentDivStyle = {
+			visibility: this.state.open ? "visible" : "hidden",
+			opacity: this.state.open ? 1 : 0
+		 };
+
+		const popupDivStyle = { marginTop: this.state.open ? "2.5vh" : "-2.5vh" };
 
 		return (
-			<div
-				className="NewEventPopup"
-				style={{ display: this.state.open ? "block" : "none" }}>
-
-				<form className="NewEventForm" onSubmit={(e) => this.handleSubmit(e)}>
-					{ errorMessages }
-
+			<div className="NewEventPopup" style={parentDivStyle}>
+				<Paper
+					className="popup-container"
+					zDepth={5}
+					style={popupDivStyle}
+				>
 					<TextField
 						floatingLabelText="Event name"
-						floatingLabelFixed={true}
 						hintText="Name should be short and clear"
 						errorText={this.state.fieldErrors.title}
 
 						value={this.state.title}
 						onChange={(evt) => this.setState({ title: evt.target.value })}
-						{...styles} />
+						{...fieldStyles} />
 
 					<TextField
 						floatingLabelText="Location"
-						floatingLabelFixed={true}
 						hintText="Address or place"
 						errorText={this.state.fieldErrors.location}
 
 						value={this.state.location}
 						onChange={(evt) => this.setState({ location: evt.target.value })}
-						{...styles} />
+						{...fieldStyles} />
 
 					<TextField
 						floatingLabelText="Description"
 						hintText="Tell more about this event"
 						errorText={this.state.fieldErrors.description}
-						floatingLabelFixed={true}
 
 						value={this.state.description}
 						multiLine={true}
 						rows={1}
 
 						onChange={(evt) => this.setState({ description: evt.target.value })}
-						{...styles} />
+						{...fieldStyles} />
 
 
 					<SelectField
 						floatingLabelText="Category"
-						floatingLabelFixed={true}
+						hintText="Select category"
 						errorText={this.state.fieldErrors.category}
 
 						value={this.state.category}
 						onChange={(e, i, val) => this.setState({ category: val })}
-						{...styles}
+						{...fieldStyles}
 					>
 						{ this.state.categories.map(category =>
 							<MenuItem key={category.id} value={category.name} primaryText={category.name} />
@@ -185,7 +192,7 @@ class NewEventPopup extends Component {
 						timeHintText="End time"
 					/>
 
-					<div style={{ display: "flex" }}>
+					<div style={{ display: "flex", marginBottom: "24px" }}>
 						<RaisedButton
 							label="Create Event"
 							primary={true}
@@ -197,7 +204,7 @@ class NewEventPopup extends Component {
 							style={{ marginTop: "16px", marginLeft: "4px", width: "50%" }}
 							onClick={() => this.close()} />
 					</div>
-				</form>
+				</Paper>
 			</div>
 		);
 	}

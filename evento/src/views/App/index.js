@@ -35,8 +35,7 @@ class App extends Component {
 					<Switch>
 						<Route exact path='/' component={ MainPage } />
 						<Route exact path='/events' component={ MainPage } />
-						<Route exact path='/event/new' component={ NewEventPopup } />
-						<Route exact path='/event/:eventId' component={ EventPage } />
+						<Route exact path='/events/:eventId' component={ EventPage } />
 						<Route path='*' component={ PathNotFound } />
 					</Switch>
 				</Router>
