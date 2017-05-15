@@ -1,47 +1,75 @@
 import React, { Component } from 'react';
+
+import { Card, CardActions, CardMedia, CardTitle, CardText } from 'material-ui/Card';
+import FlatButton from 'material-ui/FlatButton';
+import GroupIcon from 'material-ui/svg-icons/social/group';
+
 import moment from 'moment';
 import './EventCard.css'
+
+const AttendeesCountIcon = ({ count }) => (
+	<div style={{ position: "absolute", right: "12px", height: "36px", opacity: "0.825", display: "inline-block" }}>
+		<span>{ count }</span>
+		<GroupIcon style={{ marginLeft: "3px", position: "relative", top: "50%", transform: "translateY(-50%)" }} />
+	</div>
+);
 
 class EventCard extends Component {
 	render() {
 		const event = this.props.event;
-		const time = this.getTimeString(event.time);
-		return (
-			<div className="EventCard" onClick={this.props.onClick}>
-				<div className="wrapper">
-					<h4 className="category">{ event.category.name } </h4>
-					<h4 className="title">{ event.title } </h4>
-					<h4 className="location"> { event.location } </h4>
+		const timeAndLocation = `${this.formatTime(event.time)} @ ${event.location}`;
 
-					<div className="bottom-block">
-						<h4 className="time"> { time } </h4>
-						<h4 className="creator">{ event.creator.name } </h4>
-					</div>
-				</div>
-			</div>
+		const descriptionStyle= {
+			padding: "8px 16px",
+			height: "46px",
+			overflow: "hidden"
+		};
+
+		return (
+			<Card className="EventCard" zDepth={2} style={{ width: "400px" }}>
+				<CardMedia>
+					<img alt="" src="http://www.sussexbadminton.co.uk/wp-content/uploads/2015/03/Sussex-county-badminton-slider-7.jpg" />
+				</CardMedia>
+
+				<CardTitle title={event.title} subtitle={timeAndLocation} style={{ padding: "8px" }} />
+				<CardText className="card-description" style={descriptionStyle}>
+					{event.description}
+				</CardText>
+
+				<CardActions>
+					<FlatButton label="More Info" />
+					<AttendeesCountIcon count={event.attendee_count || 13} />
+				</CardActions>
+			</Card>
 		);
 	}
 
-	getTimeString(rawEventTime) {
+	formatTime(rawEventTime) {
 		if (!rawEventTime) {
-			return 'Unspecified';
+			return 'Unspecified time';
 		}
 
 		const eventTime = moment(rawEventTime)
-		const currentTime = moment();
-		const timeDifference = eventTime.diff(currentTime, 'days');
+		const day = this.getRelativeDay(eventTime);
+		const time = eventTime.format('HH:mm');
 
-		const time =  eventTime.format('HH:mm');
-		if (timeDifference === 0) {
-			return 'Today at ' + eventTime.format('HH:mm');
-		} else if (timeDifference === 1) {
-			return 'Tomorrow at ' + eventTime.format('HH:mm');
-		} else if (timeDifference < 7) {
-			const day = eventTime.format('dddd');
-			return `${day} at ${time}`;
-		} else {
-			const date = eventTime.format('MMM DD');
-			return `${date} at ${time}`;
+		return `${day} at ${time}`;
+	}
+
+	getRelativeDay(date) {
+		const currentDay = moment();
+		const timeDifference = date.diff(currentDay, 'days');
+		if(timeDifference === 0) {
+			return "Today";
+		}
+		else if(timeDifference === 1) {
+			return "Tomorrow";
+		}
+		else if(timeDifference < 7) {
+			return date.format('dddd'); // "Friday"
+		}
+		else {
+			return date.format('MMM DD'); // "May 13"
 		}
 	}
 }
