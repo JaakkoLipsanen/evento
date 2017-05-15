@@ -4,7 +4,6 @@ import { BrowserRouter as Router, Route, Switch, browserHistory } from 'react-ro
 import api from '../../api';
 import MainPage from '../MainPage';
 import EventPage from '../EventPage';
-import NewEventPopup from '../NewEventPopup';
 import AuthenticationPage from '../AuthenticationPage';
 import PathNotFound from './components/PathNotFound';
 import './App.css';
