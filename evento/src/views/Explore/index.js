@@ -39,7 +39,7 @@ class Explore extends Component {
 						<EventCard
 							key={event.id}
 							event={event}
-							onClick={() => this.props.history.push(`/event/${event.id}`)}
+							onClick={() => this.props.history.push(`/events/${event.id}`)}
 						/>
 					)}
 				</div>
