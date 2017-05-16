@@ -21,7 +21,7 @@ class EventCard extends Component {
 
 		const descriptionStyle= {
 			padding: "8px 16px",
-			height: "46px",
+			height: "58px",
 			overflow: "hidden"
 		};
 
