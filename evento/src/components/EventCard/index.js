@@ -8,7 +8,7 @@ import moment from 'moment';
 import './EventCard.css'
 
 const AttendeesCountIcon = ({ count }) => (
-	<div style={{ position: "absolute", right: "12px", height: "36px", opacity: "0.825", display: "inline-block" }}>
+	<div style={{ position: "absolute", right: "12px", height: "36px", opacity: "0.75", display: "inline-block" }}>
 		<span>{ count }</span>
 		<GroupIcon style={{ marginLeft: "3px", position: "relative", top: "50%", transform: "translateY(-50%)" }} />
 	</div>
@@ -38,7 +38,7 @@ class EventCard extends Component {
 
 				<CardActions>
 					<FlatButton label="More Info" />
-					<AttendeesCountIcon count={event.attendee_count || 13} />
+					<AttendeesCountIcon count={event.attendee_count} />
 				</CardActions>
 			</Card>
 		);
