@@ -486,7 +486,7 @@ describe('/src root files', () => {
 		});
 
 		it("sets base url", async () => {
-			fetchMock.get(`${config.BaseURL}/test`, { });
+			fetchMock.get(`${config.ServerURL}/test`, { });
 
 			config.apply();
 			const response = await fetch('/test');
@@ -494,7 +494,7 @@ describe('/src root files', () => {
 		});
 
 		it("sets default headers", async () => {
-			fetchMock.get(`${config.BaseURL}/test`, (url, opts) =>
+			fetchMock.get(`${config.ServerURL}/test`, (url, opts) =>
 				JSON.stringify(
 					opts.headers &&
 					opts.headers["Content-Type"] === 'application/json' &&
@@ -510,7 +510,7 @@ describe('/src root files', () => {
 		it("sets auth headers", async () => {
 			cookies.set(DEFAULT_COOKIES);
 
-			fetchMock.get(`${config.BaseURL}/test`, (url, opts) =>
+			fetchMock.get(`${config.ServerURL}/test`, (url, opts) =>
 				JSON.stringify(
 					opts.headers &&
 					opts.headers["Authorization"] === DEFAULT_COOKIES.auth_token)
