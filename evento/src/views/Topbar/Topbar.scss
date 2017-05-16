@@ -1,5 +1,5 @@
 $padding: 8px;
-$top-bar-color: #85b0ca;
+$top-bar-color: #607d8b;
 
 $max-content-width: 600px;
 $profile-menu-width: 40px;
@@ -9,6 +9,7 @@ $attach-menu-to-searchbar-width: $max-content-width + $profile-menu-width * 2 + 
 .Topbar {
 	background-color: $top-bar-color;
 	padding: $padding;
+	padding-bottom: 0px;
 	border-radius: 2px; // this adds slight rounding effect to the top-bar
 
 	.topbar-content {

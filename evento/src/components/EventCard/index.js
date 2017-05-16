@@ -5,7 +5,6 @@ import FlatButton from 'material-ui/FlatButton';
 import GroupIcon from 'material-ui/svg-icons/social/group';
 
 import moment from 'moment';
-import config from '../../config';
 import './EventCard.css'
 
 const EventImage = ({ src }) => (

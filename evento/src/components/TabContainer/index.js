@@ -1,19 +1,12 @@
 import React, { Component } from 'react';
+import { Tabs, Tab } from 'material-ui/Tabs';
 import './TabContainer.css';
-
-const Tab = ({title, onClick, isSelected}) => {
-	const classname = 'Tab' + (isSelected ? ' selected' : '');
-	return (
-		<div className={classname} onClick={() => onClick()}>
-			<h4>{title}</h4>
-		</div>
-	);
-};
 
 class TabContainer extends Component {
 	constructor(props) {
 		super(props);
-		const selected = this.props.tabs.filter((e) => e.path === props.path)[0];
+
+		const selected = this.props.tabs.find(tab => tab.path === props.path);
 		this.state = { selected: selected };
 	}
 
@@ -26,15 +19,26 @@ class TabContainer extends Component {
 
 	render() {
 		return (
-			<div className="TabContainer">
-				{this.props.tabs.map(tab =>
+			<Tabs
+				value={this.state.selected}
+				onChange={(tab) => this.onTabClick(tab)}
+				style={{ backgroundColor: "transparent" }}
+				tabItemContainerStyle={{ backgroundColor: "transparent" }}
+			>
+				{ this.props.tabs.map(tab =>
 					<Tab
 						key={tab.title}
-						title={tab.title}
-						isSelected={tab === this.state.selected}
-						onClick={() => this.onTabClick(tab)}
-					/> )}
-			</div>
+						label={tab.title}
+						value={tab}
+						style={{
+							fontWeight: "500",
+							fontSize: "18px",
+							backgroundColor: "transparent",
+						 	opacity: this.state.selected !== tab ? 0.75 : 1
+						}}
+					/>
+				)}
+			</Tabs>
 		);
 	}
 }
