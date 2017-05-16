@@ -32,7 +32,7 @@ class TabContainer extends Component {
 						value={tab}
 						style={{
 							fontWeight: "500",
-							fontSize: "18px",
+							fontSize: "16px",
 							backgroundColor: "transparent",
 						 	opacity: this.state.selected !== tab ? 0.75 : 1
 						}}
