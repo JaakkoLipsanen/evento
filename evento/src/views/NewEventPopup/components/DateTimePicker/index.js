@@ -32,7 +32,7 @@ class DateTimePicker extends Component {
 		// round to the nearest 5 min
 		const minutes = time.getMinutes();
 		const diff = minutes % 5;
-		if(diff != 0) {
+		if(diff !== 0) {
 			time.setMinutes(minutes + (diff >= 3 ? 5 - diff : -diff));
 		}
 		this.setState({ time: time })
