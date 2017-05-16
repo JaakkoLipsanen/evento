@@ -108,8 +108,8 @@ class NewEventPopup extends Component {
 	render () {
 		const fieldStyles = {
 			style: { height: "62px" },
-			inputStyle: { "margin-top": "9px" },
-			textareaStyle: { "margin-top": "20px", "margin-bottom": "-20px" },
+			inputStyle: { marginTop: "9px" },
+			textareaStyle: { marginTop: "20px", marginBottom: "-20px" },
 			floatingLabelStyle: { top: "28px" },
 			errorStyle: { bottom: "10px" },
 

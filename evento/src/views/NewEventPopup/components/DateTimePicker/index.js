@@ -35,7 +35,6 @@ class DateTimePicker extends Component {
 			floatingLabelStyle: { top: "28px" },
 			errorStyle: { bottom: "12px" },
 
-			disableYearSelection: true,
 			floatingLabelFixed: true
 		};
 
@@ -50,6 +49,8 @@ class DateTimePicker extends Component {
 					value={this.state.date}
 					onChange={(e, date) => this.setState({ date: date }) }
 					formatDate={(date) => moment(date).format('DD/MM/YYYY')}
+
+					disableYearSelection={true}
 					{...styles}
 				/>
 
