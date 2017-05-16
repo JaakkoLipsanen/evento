@@ -1,3 +1,9 @@
-.MyEvents { 
+$content-padding: 8px;
+
+.MyEvents {
 	text-align: center;
+
+	padding: $content-padding;
+	max-width: 1300px;
+	margin: auto;
 }

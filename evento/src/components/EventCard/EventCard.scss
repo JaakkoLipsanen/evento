@@ -28,18 +28,10 @@ $card-row-bottom-margin: 6px; // how much space between rows
 		}
 	}
 
-	@media (min-width: 1001px) and (max-width: 1500px) {
+	@media (min-width: 1001px) {
 		width: calc((100% - 2 * #{$card-margin}) / 3) !important;
 
 		&:not(:nth-child(3n)) { /* every child except last on a row */
-			margin-right: #{$card-margin};
-		}
-	}
-
-	@media (min-width: 1501px){
-		width: calc((100% - 3 * #{$card-margin}) / 4) !important;
-
-		&:not(:nth-child(4n)) { /* every child except last on a row */
 			margin-right: #{$card-margin};
 		}
 	}

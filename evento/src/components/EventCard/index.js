@@ -5,7 +5,18 @@ import FlatButton from 'material-ui/FlatButton';
 import GroupIcon from 'material-ui/svg-icons/social/group';
 
 import moment from 'moment';
+import config from '../../config';
 import './EventCard.css'
+
+const EventImage = ({ src }) => (
+	<div style={{
+		backgroundImage: `url(${src})`,
+		height: "260px",
+		backgroundSize: "cover",
+		backgroundRepeat: "no-repeat",
+		backgroundPosition: "center"
+	}} />
+);
 
 const AttendeesCountIcon = ({ count }) => (
 	<div style={{ position: "absolute", right: "12px", height: "36px", opacity: "0.75", display: "inline-block" }}>
@@ -28,7 +39,7 @@ class EventCard extends Component {
 		return (
 			<Card className="EventCard" zDepth={2} style={{ width: "400px" }}>
 				<CardMedia>
-					<img alt="" src="http://www.sussexbadminton.co.uk/wp-content/uploads/2015/03/Sussex-county-badminton-slider-7.jpg" />
+					<EventImage src={event.image} />
 				</CardMedia>
 
 				<CardTitle title={event.title} subtitle={timeAndLocation} style={{ padding: "8px" }} />
