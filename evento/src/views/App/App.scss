@@ -7,3 +7,12 @@ $default-font: "Roboto";
 	font-family: $default-font;
 	background-color: white;
 }
+
+.loading-text {
+	position: absolute;
+	top: 50%;
+	left: 50%;
+	transform: translate(-50%, -50%);
+
+	opacity: 0.125;
+}

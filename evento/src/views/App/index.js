@@ -23,7 +23,7 @@ class App extends Component {
 
 	render() {
 		if (this.state.checkingAuthentication) {
-			return <h3>'Loading...'</h3>
+			return <h3 className="loading-text">loading...</h3>
 		} else if (!this.state.authenticated) {
 			return <AuthenticationPage onSignIn={() => this.onSignin()} />
 		}
