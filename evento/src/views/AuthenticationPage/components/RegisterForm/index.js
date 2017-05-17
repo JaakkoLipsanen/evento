@@ -15,7 +15,9 @@ class RegisterForm extends React.Component {
 			passwordConf: '',
 
 			fieldErrors: {}, // contains error messages for name, email, password etc
-			errorMessage: null // contains the non-field specific error message
+			errorMessage: null, // contains the non-field specific error message
+
+			isRegistering: false,
 		};
 	}
 
@@ -25,6 +27,8 @@ class RegisterForm extends React.Component {
 			return;
 		}
 
+		this.setState({ isRegistering: true });
+
 		const registerResult = await api.register(this.state.name, this.state.email, this.state.password);
 		if(registerResult.success) {
 			// After succsesful register, sign in
@@ -32,10 +36,17 @@ class RegisterForm extends React.Component {
 			if(signInResult.success && this.props.onSignIn) {
 				this.props.onSignIn();
 			}
+			else {
+				this.setErrors(signInResult.error);
+			}
 		}
 		else {
 			this.setErrors(registerResult.error);
 		}
+
+		// if result is success, then don't set "isSigningIn" back to false again
+		// also, add some delay so that it looks a bit better (doesnt pop in/out instantly)
+		setTimeout(() => 	this.setState({ isRegistering: registerResult.success }), 300);
 	}
 
 	setErrors(error) {
@@ -61,7 +72,8 @@ class RegisterForm extends React.Component {
 		const styles = {
 			style: { height: "62px" },
 			inputStyle: { marginTop: "7px" },
-			floatingLabelStyle: { top: "28px" }
+			floatingLabelStyle: { top: "28px" },
+			errorStyle: { bottom: "12px" }
 		};
 
 		return (
@@ -112,6 +124,7 @@ class RegisterForm extends React.Component {
 						label="Register"
 						primary={true}
 						fullWidth={true}
+						disabled={this.state.isRegistering}
 						onClick={() => this.register()} />
 				</form>
 			</div>

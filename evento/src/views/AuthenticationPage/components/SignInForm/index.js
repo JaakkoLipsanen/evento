@@ -11,11 +11,15 @@ class SignInForm extends Component {
 		this.state = {
 			email: '',
 			password: '',
-		 	errorMessage: ''
+		 	errorMessage: '',
+
+			isSigningIn: false,
 		};
 	}
 
 	async signin() {
+		this.setState({ isSigningIn: true });
+
 		const result = await api.signin(this.state.email, this.state.password);
 		if(result.success && this.props.onSignIn) {
 			this.props.onSignIn();
@@ -23,24 +27,31 @@ class SignInForm extends Component {
 		else {
 			this.setState({ errorMessage: result.error.message })
 		}
+
+		// if result is success, then don't set "isSigningIn" back to false again
+		// also, add some delay so that it looks a bit better (doesnt pop in/out instantly)
+		setTimeout(() => 	this.setState({ isSigningIn: result.success }), 300);
+
 	}
 
 	render() {
 		const styles = {
 			style: { height: "62px" },
 			inputStyle: { "margin-top": "7px" },
-			floatingLabelStyle: { top: "28px" }
+			floatingLabelStyle: { top: "28px" },
+			errorStyle: { bottom: "12px" }
 		};
 
 		return (
 			<div className='SignInForm'>
-				<p className="error-message">{ this.state.errorMessage }</p>
 				<form onSubmit={(e) => this.handleSubmit(e)}>
 					<TextField
 						type="text"
 						floatingLabelText="e-mail"
 						value={this.state.email}
-						onChange={(evt) => this.setState({ email: evt.target.value })} />
+						onChange={(evt) => this.setState({ email: evt.target.value })}
+						{...styles}
+						style={{ ...styles.style, transform: "translateY(8px)" }}/>
 
 					<br/>
 					<TextField
@@ -58,6 +69,7 @@ class SignInForm extends Component {
 						label="Sign in"
 						primary={true}
 						fullWidth={true}
+						disabled={this.state.isSigningIn}
 						onClick={() => this.signin()} />
 				</form>
 			</div>
