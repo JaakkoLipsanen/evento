@@ -29,7 +29,9 @@ $popup-max-height: 95vh;
 		box-sizing: border-box;
 		transition: all $transition-duration;
 
-		transform: translateY(-50%);
+		/* 0.5px because for some reason without it the popup is very blurry on
+		   chrome while transitions are running. dunno */
+		transform: translate(0, calc(-50% + 0.5px));
 		text-align: left;
 
 		overflow-x: hidden;
