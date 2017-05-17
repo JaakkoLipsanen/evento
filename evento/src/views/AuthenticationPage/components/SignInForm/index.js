@@ -44,34 +44,32 @@ class SignInForm extends Component {
 
 		return (
 			<div className='SignInForm'>
-				<form onSubmit={(e) => this.handleSubmit(e)}>
-					<TextField
-						type="text"
-						floatingLabelText="e-mail"
-						value={this.state.email}
-						onChange={(evt) => this.setState({ email: evt.target.value })}
-						{...styles}
-						style={{ ...styles.style, transform: "translateY(8px)" }}/>
+				<TextField
+					type="text"
+					floatingLabelText="e-mail"
+					value={this.state.email}
+					onChange={(evt) => this.setState({ email: evt.target.value })}
+					{...styles}
+					style={{ ...styles.style, transform: "translateY(8px)" }}/>
 
-					<br/>
-					<TextField
-						type="password"
-						floatingLabelText="password"
-						errorText={this.state.errorMessage}
-						value={this.state.password}
+				<br/>
+				<TextField
+					type="password"
+					floatingLabelText="password"
+					errorText={this.state.errorMessage}
+					value={this.state.password}
 
-						onKeyPress={e => e.key === "Enter" && this.signin()}
-						onChange={(evt) => this.setState({ password: evt.target.value })}
-						{...styles} />
-					<br/>
+					onKeyPress={e => e.key === "Enter" && this.signin()}
+					onChange={(evt) => this.setState({ password: evt.target.value })}
+					{...styles} />
+				<br/>
 
-					<RaisedButton
-						label="Sign in"
-						primary={true}
-						fullWidth={true}
-						disabled={this.state.isSigningIn}
-						onClick={() => this.signin()} />
-				</form>
+				<RaisedButton
+					label="Sign in"
+					primary={true}
+					fullWidth={true}
+					disabled={this.state.isSigningIn}
+					onClick={() => this.signin()} />
 			</div>
 		);
 	}

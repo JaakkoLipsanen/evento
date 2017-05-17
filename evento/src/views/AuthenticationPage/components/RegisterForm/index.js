@@ -78,55 +78,53 @@ class RegisterForm extends React.Component {
 
 		return (
 			<div className="RegisterForm">
-				<form onSubmit={(e) => this.handleSubmit(e)}>
-					<p className="error-message">{ this.state.errorMessage }</p>
+				<p className="error-message">{ this.state.errorMessage }</p>
 
-					<TextField
-						floatingLabelText="name"
-						errorText={this.state.fieldErrors.name}
-						value={this.state.name}
+				<TextField
+					floatingLabelText="name"
+					errorText={this.state.fieldErrors.name}
+					value={this.state.name}
 
-						onChange={(evt) => this.setState({ name: evt.target.value })}
-						{...styles} />
+					onChange={(evt) => this.setState({ name: evt.target.value })}
+					{...styles} />
 
-					<br/>
-					<TextField
-						floatingLabelText="e-mail"
-						errorText={this.state.fieldErrors.email}
-						value={this.state.email}
+				<br/>
+				<TextField
+					floatingLabelText="e-mail"
+					errorText={this.state.fieldErrors.email}
+					value={this.state.email}
 
-						onChange={(evt) => this.setState({ email: evt.target.value })}
-						{...styles} />
+					onChange={(evt) => this.setState({ email: evt.target.value })}
+					{...styles} />
 
-					<br/>
-					<TextField
-						type="password"
-						floatingLabelText="password"
-						errorText={this.state.fieldErrors.password}
-						value={this.state.password}
+				<br/>
+				<TextField
+					type="password"
+					floatingLabelText="password"
+					errorText={this.state.fieldErrors.password}
+					value={this.state.password}
 
-						onChange={(evt) => this.setState({ password: evt.target.value })}
-						{...styles} />
+					onChange={(evt) => this.setState({ password: evt.target.value })}
+					{...styles} />
 
-					<br/>
-					<TextField
-						type="password"
-						floatingLabelText="password confirmation"
-						errorText={this.state.fieldErrors.passwordConf}
-						value={this.state.passwordConf}
+				<br/>
+				<TextField
+					type="password"
+					floatingLabelText="password confirmation"
+					errorText={this.state.fieldErrors.passwordConf}
+					value={this.state.passwordConf}
 
-						onKeyPress={e => e.key === "Enter" && this.register()}
-						onChange={(evt) => this.setState({ passwordConf: evt.target.value })}
-						{...styles} />
+					onKeyPress={e => e.key === "Enter" && this.register()}
+					onChange={(evt) => this.setState({ passwordConf: evt.target.value })}
+					{...styles} />
 
-					<br/>
-					<RaisedButton
-						label="Register"
-						primary={true}
-						fullWidth={true}
-						disabled={this.state.isRegistering}
-						onClick={() => this.register()} />
-				</form>
+				<br/>
+				<RaisedButton
+					label="Register"
+					primary={true}
+					fullWidth={true}
+					disabled={this.state.isRegistering}
+					onClick={() => this.register()} />
 			</div>
 		);
 	}
