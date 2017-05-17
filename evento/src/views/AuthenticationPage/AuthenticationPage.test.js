@@ -1,8 +1,9 @@
 import React from 'react';
-import ReactDOM from 'react-dom';
 import AuthenticationPage from './';
+
+import { renderToDOM } from '../../test-helpers';
 
 it('renders without crashing', () => {
 	const div = document.createElement('div');
-	ReactDOM.render(<AuthenticationPage />, div);
+	renderToDOM(<AuthenticationPage />, div);
 });

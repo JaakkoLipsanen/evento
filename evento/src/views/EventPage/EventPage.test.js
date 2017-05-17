@@ -3,7 +3,7 @@ import ReactDOM from 'react-dom';
 import EventPage from './';
 
 import api from '../../api';
-import { mount, mocks, cookies, createSinonSandbox } from '../../test-helpers';
+import { mount, mocks, cookies, createSinonSandbox, renderToDOM } from '../../test-helpers';
 
 const matchMocks = {
 	valid: { eventId: mocks.event.id, params: { eventId: mocks.event.id } },
@@ -41,7 +41,7 @@ describe('EventPage', () => {
 	describe('render', () => {
 		it('renders without crashing', async () => {
 			const div = document.createElement('div');
-			ReactDOM.render(<EventPage match={matchMocks.valid} />, div);
+			renderToDOM(<EventPage match={matchMocks.valid} />, div);
 		});
 
 		it('displays error message if event not found', async () => {

@@ -4,7 +4,7 @@ import moment from 'moment';
 
 import NewEventPopup from './';
 import api from '../../api';
-import { mount, createSinonSandbox, mocks, cookies } from '../../test-helpers';
+import { mount, createSinonSandbox, mocks, cookies, renderToDOM } from '../../test-helpers';
 
 const DEFAULT_TIME = moment();
 
@@ -22,7 +22,7 @@ describe('NewEventPopup', () => {
 
 	it('renders without crashing', () => {
 		const div = document.createElement('div');
-		ReactDOM.render(<NewEventPopup />, div);
+		renderToDOM(<NewEventPopup />, div);
 	});
 
 	it('has an error message', async () => {

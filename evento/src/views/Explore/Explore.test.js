@@ -3,7 +3,7 @@ import ReactDOM from 'react-dom';
 import Explore from './';
 
 import api from '../../api';
-import { mount, mocks, createSinonSandbox } from '../../test-helpers';
+import { mount, mocks, createSinonSandbox, renderToDOM } from '../../test-helpers';
 
 const ReturnAllFilterer = (events) => events;
 
@@ -12,7 +12,7 @@ describe("Explore", () => {
 
 	it('renders without crashing', () => {
 		const div = document.createElement('div');
-		ReactDOM.render(<Explore filterEvents={ReturnAllFilterer} />, div);
+		renderToDOM(<Explore filterEvents={ReturnAllFilterer} />, div);
 	});
 
 	it('shows error when getting events fails', async () => {

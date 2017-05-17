@@ -4,7 +4,7 @@ import { MemoryRouter } from 'react-router-dom';
 import sinon from 'sinon';
 
 import MainPage from './';
-import { mount, mocks } from '../../test-helpers';
+import { mount, mocks, renderToDOM } from '../../test-helpers';
 
 const DefaultEntries = undefined;
 const DefaultLocation = { pathname: '/' };
@@ -21,7 +21,7 @@ const mountMainPage = async ({ initialEntries = DefaultEntries, initialLocation 
 
 it('renders without crashing', () => {
 	const div = document.createElement('div');
-	ReactDOM.render(
+	renderToDOM(
 		(<MemoryRouter>
 			<MainPage location={{ pathname: '/explore' }} />
 		</MemoryRouter>), div);

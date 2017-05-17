@@ -4,14 +4,14 @@ import SignInForm from './';
 
 import api from '../../../../api';
 import session from '../../../../session';
-import { mount, createSinonSandbox, cookies, mocks } from '../../../../test-helpers';
+import { mount, createSinonSandbox, cookies, mocks, renderToDOM } from '../../../../test-helpers';
 
 describe('SignInForm', () => {
 	const sinon = createSinonSandbox({ restoreAfterEachTest: true });
 
 	it('renders without crashing', () => {
 		const div = document.createElement('div');
-		ReactDOM.render(<SignInForm />, div);
+		renderToDOM( <SignInForm />, div);
 	});
 
 	it('has an error message', async () => {

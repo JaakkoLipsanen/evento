@@ -4,7 +4,7 @@ import MyEvents from './';
 
 import session from '../../session';
 import api from '../../api';
-import { mount, mocks, cookies, createSinonSandbox } from '../../test-helpers';
+import { mount, mocks, cookies, createSinonSandbox, renderToDOM } from '../../test-helpers';
 
 const VALID_COOKIES = { user: mocks.user, auth_token: "valid" };
 const INVALID_COOKIES = { user: mocks.user, auth_token: "invalid" };
@@ -37,7 +37,7 @@ describe("MyEvents", () => {
 
 	it('renders without crashing', () => {
 		const div = document.createElement('div');
-		ReactDOM.render(<MyEvents />, div);
+		renderToDOM(<MyEvents />, div);
 	});
 
 	it('shows error if user is not logged in', async () => {

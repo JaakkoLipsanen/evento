@@ -21,7 +21,6 @@ class TabContainer extends Component {
 		return (
 			<Tabs
 				value={this.state.selected}
-				onChange={(tab) => this.onTabClick(tab)}
 				style={{ backgroundColor: "transparent" }}
 				tabItemContainerStyle={{ backgroundColor: "transparent" }}
 			>
@@ -30,6 +29,7 @@ class TabContainer extends Component {
 						key={tab.title}
 						label={tab.title}
 						value={tab}
+						onClick={() => this.onTabClick(tab)}
 						style={{
 							fontWeight: "500",
 							fontSize: "16px",

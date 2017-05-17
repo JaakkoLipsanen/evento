@@ -4,6 +4,7 @@ import Cookie from 'js-cookie';
 import fetchMock from 'fetch-mock';
 
 import React, { PropTypes } from 'react';
+import ReactDOM from 'react-dom'
 import MuiThemeProvider from 'material-ui/styles/MuiThemeProvider';
 import getMuiTheme from 'material-ui/styles/getMuiTheme';
 
@@ -88,7 +89,7 @@ const ApiFunctionValues = ApiFunctionNames.reduce((map, name) => { map[name] = 
 const MockAllApiCalls = (mockFunc) => ApiFunctionNames.forEach((name) => api[name] = () => mockFunc(name));
 const RestoreAllApiCalls = () => ApiFunctionNames.forEach((name) => api[name] = ApiFunctionValues[name]);
 
-const createSinonSandbox = ({ restoreAfterEachTest, throwIfApiNotMocked = true }) => {
+const createSinonSandbox = ({ restoreAfterEachTest = true, throwIfApiNotMocked = true }) => {
 	let sandbox;
 	const sinonProxy = {
 		get match() { return sandbox.match; },

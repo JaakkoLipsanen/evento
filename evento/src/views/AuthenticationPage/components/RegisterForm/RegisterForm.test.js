@@ -3,14 +3,14 @@ import ReactDOM from 'react-dom';
 import RegisterForm from './';
 
 import api from '../../../../api';
-import { mount, mocks, createSinonSandbox } from '../../../../test-helpers';
+import { mount, mocks, createSinonSandbox, renderToDOM } from '../../../../test-helpers';
 
 describe('RegisterForm', () => {
 	const sinon = createSinonSandbox({ restoreAfterEachTest: true });
 
 	it('renders without crashing', () => {
 		const div = document.createElement('div');
-		ReactDOM.render(<RegisterForm />, div);
+		renderToDOM(<RegisterForm />, div);
 	});
 
 	it('has an error message', async () => {
