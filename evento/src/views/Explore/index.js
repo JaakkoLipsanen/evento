@@ -2,6 +2,7 @@ import React, { Component } from 'react';
 
 import api from '../../api';
 import EventCard from '../../components/EventCard';
+import EventPopup from '../EventPopup';
 import './Explore.css';
 
 class Explore extends Component {
@@ -11,6 +12,10 @@ class Explore extends Component {
 			events: [],
 			errorMessage: null
 		};
+	}
+
+	get filteredEvents() {
+		return this.props.filterEvents(this.state.events);
 	}
 
 	async componentDidMount() {
@@ -23,8 +28,9 @@ class Explore extends Component {
 		}
 	}
 
-	get filteredEvents() {
-		return this.props.filterEvents(this.state.events);
+	showEvent(event) {
+		this.eventPopup.show(event);
+		// this.props.history.push(`/events/${event.id}`)
 	}
 
 	render() {
@@ -39,10 +45,12 @@ class Explore extends Component {
 						<EventCard
 							key={event.id}
 							event={event}
-							onClick={() => this.props.history.push(`/events/${event.id}`)}
+							onClick={() => this.showEvent(event) }
 						/>
 					)}
 				</div>
+
+				<EventPopup ref={(eventPopup) => this.eventPopup = eventPopup } />
 			</div>
 		);
 	}

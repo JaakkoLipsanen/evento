@@ -47,7 +47,7 @@ class EventCard extends Component {
 				</CardText>
 
 				<CardActions>
-					<FlatButton label="More Info" />
+					<FlatButton label="More Info" onClick={() => this.props.onClick(event) } />
 					<AttendeesCountIcon count={event.attendee_count} />
 				</CardActions>
 			</Card>

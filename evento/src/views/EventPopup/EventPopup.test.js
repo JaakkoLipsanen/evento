@@ -1,6 +1,6 @@
 import React from 'react';
 import ReactDOM from 'react-dom';
-import EventPage from './';
+import EventPopup from './';
 
 import api from '../../api';
 import { mount, mocks, cookies, createSinonSandbox, renderToDOM } from '../../test-helpers';
@@ -10,7 +10,7 @@ const matchMocks = {
 	invalid: { eventId: 99999, params: { eventId: 99999 } }
 };
 
-describe('EventPage', () => {
+describe('EventPopup', () => {
 	const sinon = createSinonSandbox({ restoreAfterEachTest: true });
 	afterEach(() => { cookies.reset(); });
 
@@ -41,13 +41,13 @@ describe('EventPage', () => {
 	describe('render', () => {
 		it('renders without crashing', async () => {
 			const div = document.createElement('div');
-			renderToDOM(<EventPage match={matchMocks.valid} />, div);
+			renderToDOM(<EventPopup match={matchMocks.valid} />, div);
 		});
 
 		it('displays error message if event not found', async () => {
 			mockGetEventFailure(matchMocks.invalid.eventId);
 
-			const eventPage = await mount(<EventPage match={matchMocks.invalid} />);
+			const eventPage = await mount(<EventPopup match={matchMocks.invalid} />);
 			expect(eventPage.text()).toContain(api.DEFAULT_ERROR_MESSAGE);
 		});
 
@@ -55,7 +55,7 @@ describe('EventPage', () => {
 			mockGetEventSuccess(matchMocks.invalid.eventId);
 			mockGetAttendeesFailure(matchMocks.invalid.eventId);
 
-			const eventPage = await mount(<EventPage match={matchMocks.invalid} />)
+			const eventPage = await mount(<EventPopup match={matchMocks.invalid} />)
 			expect(eventPage.text()).toContain(api.DEFAULT_ERROR_MESSAGE);
 		});
 
@@ -64,7 +64,7 @@ describe('EventPage', () => {
 			mockGetAttendeesSuccess(matchMocks.valid.eventId);
 
 			cookies.set({ user: mocks.user, auth_token: "valid" });
-			const eventPage = await mount(<EventPage match={matchMocks.valid} />);
+			const eventPage = await mount(<EventPopup match={matchMocks.valid} />);
 
 			expect(eventPage.find('.Attend').length).toBe(1);
 			expect(eventPage.find('.DoNotAttend').length).toBe(0);
@@ -75,7 +75,7 @@ describe('EventPage', () => {
 			mockGetAttendeesSuccess(matchMocks.valid.eventId);
 
 			cookies.set({ user: mocks.attendees[0], auth_token: "valid" });
-			const eventPage = await mount(<EventPage match={matchMocks.valid} />)
+			const eventPage = await mount(<EventPopup match={matchMocks.valid} />)
 
 			expect(eventPage.find('.Attend').length).toBe(0);
 			expect(eventPage.find('.DoNotAttend').length).toBe(1);
@@ -86,14 +86,14 @@ describe('EventPage', () => {
 		mockGetEventSuccess(matchMocks.valid.eventId);
 		mockGetAttendeesSuccess(matchMocks.valid.eventId);
 
-		const eventPage = await mount(<EventPage match={matchMocks.valid} />)
+		const eventPage = await mount(<EventPopup match={matchMocks.valid} />)
 		expect(eventPage.state('event')).toEqual(mocks.event);
 		expect(eventPage.state('attendees')).toEqual(mocks.attendees);
 	});
 
 	describe('isUserAttending', () => {
 		it('returns true when user is attending the event', async () => {
-			const eventPage = await mount(<EventPage match={matchMocks.valid} />)
+			const eventPage = await mount(<EventPopup match={matchMocks.valid} />)
 
 			eventPage.setState({ attendees: mocks.attendees });
 			cookies.set({ user:  mocks.attendees[mocks.attendees.length - 1] });
@@ -102,7 +102,7 @@ describe('EventPage', () => {
 		});
 
 		it('returns false when user is not attending the event', async () => {
-			const eventPage = await mount(<EventPage match={matchMocks.valid} />)
+			const eventPage = await mount(<EventPopup match={matchMocks.valid} />)
 			eventPage.setState({ attendees: mocks.attendees });
 			cookies.set({ user: mocks.user, auth_token: "valid" }); // Non attending user
 
@@ -110,7 +110,7 @@ describe('EventPage', () => {
 		});
 
 		it('returns false when user cookie is missing', async () => {
-			const eventPage = await mount(<EventPage match={matchMocks.valid} />)
+			const eventPage = await mount(<EventPopup match={matchMocks.valid} />)
 			eventPage.setState({ attendees: mocks.attendees });
 
 			expect(eventPage.instance().isUserAttending()).toBe(false);
@@ -130,7 +130,7 @@ describe('EventPage', () => {
 		});
 
 		it('is called with true value when AttendButton is clicked', async () => {
-			const eventPage = await mount(<EventPage match={matchMocks.valid} />);
+			const eventPage = await mount(<EventPopup match={matchMocks.valid} />);
 			const updateIsAttending = sinon.spy(eventPage.instance(), 'updateIsAttending');
 
 			eventPage.find('.Attend').simulate('click');
@@ -141,7 +141,7 @@ describe('EventPage', () => {
 		it('is called with true value when DoNotAttendButon is clicked', async () => {
 			cookies.set({ user: mocks.attendees[0], auth_token: "valid" });
 
-			const eventPage = await mount(<EventPage match={matchMocks.valid} />);
+			const eventPage = await mount(<EventPopup match={matchMocks.valid} />);
 			const updateIsAttending = sinon.spy(eventPage.instance(), 'updateIsAttending');
 
 			eventPage.find('.DoNotAttend').simulate('click');
@@ -153,7 +153,7 @@ describe('EventPage', () => {
 		it('fetches attendees again after succesful update', async () => {
 			cookies.set({ user: mocks.attendees[0], auth_token: "valid" });
 
-			const eventPage = await mount(<EventPage match={matchMocks.valid} />);
+			const eventPage = await mount(<EventPopup match={matchMocks.valid} />);
 			const fetchAttendees = sinon.spy(eventPage.instance(), "fetchAttendees");
 
 			eventPage.find('.DoNotAttend').simulate('click');
@@ -164,7 +164,7 @@ describe('EventPage', () => {
 		});
 
 		it('sends a post request to /events/:id/attendees when user not attending', async () => {
-			const eventPage = await mount(<EventPage match={matchMocks.valid} />);
+			const eventPage = await mount(<EventPopup match={matchMocks.valid} />);
 
 			sinon.restore(); // restore updateIsAttending mock
 			const updateIsAttending = sinon.spy(api, "updateIsAttending");
@@ -175,7 +175,7 @@ describe('EventPage', () => {
 
 		it('sends a delete request to /events/:id/attendees when user is attending', async () => {
 			cookies.set({ user: mocks.attendees[0], auth_token: "valid" });
-			const eventPage = await mount(<EventPage match={matchMocks.valid} />);
+			const eventPage = await mount(<EventPopup match={matchMocks.valid} />);
 
 			sinon.restore(); // restore updateIsAttending mock
 			const updateIsAttending = sinon.spy(api, "updateIsAttending");
@@ -194,7 +194,7 @@ describe('EventPage', () => {
 				.withArgs(matchMocks.valid.eventId, sinon.match.any)
 				.callsFake(() => mocks.api.responses.DefaultError);
 
-			const eventPage = await mount(<EventPage match={matchMocks.valid} />);
+			const eventPage = await mount(<EventPopup match={matchMocks.valid} />);
 			eventPage.find('.Attend').simulate('click');
 			await eventPage.wait();
 

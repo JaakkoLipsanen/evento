@@ -3,7 +3,7 @@ import { BrowserRouter as Router, Route, Switch, browserHistory } from 'react-ro
 
 import api from '../../api';
 import MainPage from '../MainPage';
-import EventPage from '../EventPage';
+import EventPopup from '../EventPopup';
 import AuthenticationPage from '../AuthenticationPage';
 import PathNotFound from './components/PathNotFound';
 import './App.css';
@@ -34,7 +34,7 @@ class App extends Component {
 					<Switch>
 						<Route exact path='/' component={ MainPage } />
 						<Route exact path='/events' component={ MainPage } />
-						<Route exact path='/events/:eventId' component={ EventPage } />
+						<Route exact path='/events/:eventId' component={ EventPopup } />
 						<Route path='*' component={ PathNotFound } />
 					</Switch>
 				</Router>

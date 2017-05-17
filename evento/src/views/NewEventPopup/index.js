@@ -220,6 +220,7 @@ class NewEventPopup extends Component {
 
 					<Toggle
 						toggled={this.state.isWeekly}
+						disabled={true}
 						onToggle={(e, val) => this.setState({ isWeekly: val })}
 						label="Repeat weekly"
 						style={{ marginLeft: "50%", width: "calc(50% - 6px)", paddingLeft: "6px" }} />

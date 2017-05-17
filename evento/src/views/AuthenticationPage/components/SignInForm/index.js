@@ -21,8 +21,10 @@ class SignInForm extends Component {
 		this.setState({ isSigningIn: true });
 
 		const result = await api.signin(this.state.email, this.state.password);
-		if(result.success && this.props.onSignIn) {
-			this.props.onSignIn();
+		if(result.success) {
+			if(this.props.onSignIn) {
+				this.props.onSignIn();
+			}
 		}
 		else {
 			this.setState({ errorMessage: result.error.message })
