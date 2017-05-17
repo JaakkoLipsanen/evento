@@ -3,6 +3,10 @@ import sinon from 'sinon';
 import Cookie from 'js-cookie';
 import fetchMock from 'fetch-mock';
 
+import React, { PropTypes } from 'react';
+import MuiThemeProvider from 'material-ui/styles/MuiThemeProvider';
+import getMuiTheme from 'material-ui/styles/getMuiTheme';
+
 import mockFactory from './mock-factory';
 import api from '../api';
 
@@ -59,11 +63,23 @@ const waitForFetches = (milliseconds = 50) => {
 };
 
 const mount = async (component) => {
-	const mounted = enzyme.mount(component);
+	const muiTheme = getMuiTheme();
+	const mounted = enzyme.mount(component, {
+		context: { muiTheme },
+		childContextTypes: {muiTheme: React.PropTypes.object}
+	});
+
 	await waitForFetches();
 
 	mounted.wait = waitForFetches;
 	return mounted;
+};
+
+const renderToDOM = async (component, domElement) => {
+	ReactDOM.render(
+		<MuiThemeProvider>{ component }</MuiThemeProvider>,
+		domElement
+	);
 };
 
 const ApiFunctionNames = Object.getOwnPropertyNames(api).filter((p) =>  typeof api[p] === 'function');
@@ -98,4 +114,4 @@ const createSinonSandbox = ({ restoreAfterEachTest, throwIfApiNotMocked = true }
 	return sinonProxy;
 };
 
-export { cookies, mocks, mount, createSinonSandbox }
+export { cookies, mocks, mount, createSinonSandbox, renderToDOM }
