@@ -4,6 +4,7 @@ import SelectField from 'material-ui/SelectField';
 import MenuItem from 'material-ui/MenuItem';
 import RaisedButton from 'material-ui/RaisedButton';
 import Paper from 'material-ui/Paper';
+import Toggle from 'material-ui/Toggle';
 
 import DateTimePicker from './components/DateTimePicker';
 
@@ -16,6 +17,15 @@ class NewEventPopup extends Component {
 		super(props);
 		this.state = {
 			categories: [],
+			fieldErrors: {}
+			// other fields specified in reset()
+		}
+	}
+
+	reset() {
+		// this doesn't atm reset start date/time or end time, since they are saved
+		// to the state-ly component DateTimePicker. TODO: fix it?
+		this.setState({
 			title: '',
 			description: '',
 			category: null,
@@ -24,10 +34,13 @@ class NewEventPopup extends Component {
 			errorMessage: null, // singular error, like "Server not responding"
 			fieldErrors: { }, // field specific error, like "category not found"
 			open: false,
-		}
+		});
+
+		this.forceUpdate();
 	}
 
 	show() {
+		this.reset();
 		this.setState({ open: true });
 	}
 
@@ -36,6 +49,7 @@ class NewEventPopup extends Component {
 	}
 
 	componentDidMount() {
+		this.reset();
 		this.fetchCategories();
 	}
 
@@ -105,6 +119,16 @@ class NewEventPopup extends Component {
 		}
 	}
 
+	onStartTimeChange(time) {
+		// if start time is changed and end time is specified,
+		// then default end time to start time + 1hr
+		if(!this.endTimePicker.getTime()) {
+			const newTime = new Date(time);
+			newTime.setHours(time.getHours() + 1);
+			this.endTimePicker.setTime(newTime);
+		}
+	}
+
 	render () {
 		const fieldStyles = {
 			style: { height: "62px" },
@@ -122,7 +146,8 @@ class NewEventPopup extends Component {
 			opacity: this.state.open ? 1 : 0
 		 };
 
-		const popupDivStyle = { marginTop: this.state.open ? "2.5vh" : "-2.5vh" };
+		// fade the position to the center from above
+		const popupDivStyle = { marginTop: this.state.open ? "50vh" : "35vh" };
 
 		return (
 			<div className="NewEventPopup" style={parentDivStyle}>
@@ -178,8 +203,8 @@ class NewEventPopup extends Component {
 					</SelectField>
 
 					<DateTimePicker
-						onChange={(date) => this.setStartTime(date)}
 						ref={picker => this.startTimePicker = picker}
+						onTimeChange={(time) => this.onStartTimeChange(time)}
 
 						dateHintText="Start date"
 						timeHintText="Start time"
@@ -187,12 +212,17 @@ class NewEventPopup extends Component {
 					/>
 
 					<DateTimePicker
-						onChange={(date) => this.setEndTime(date)}
 						ref={picker => this.endTimePicker = picker}
 
-						dateHintText="End date"
+						timeOnly={true}
 						timeHintText="End time"
 					/>
+
+					<Toggle
+						toggled={this.state.isWeekly}
+						onToggle={(e, val) => this.setState({ isWeekly: val })}
+						label="Repeat weekly"
+						style={{ marginLeft: "50%", width: "calc(50% - 6px)", paddingLeft: "6px" }} />
 
 					<div style={{ display: "flex", marginBottom: "24px" }}>
 						<RaisedButton
