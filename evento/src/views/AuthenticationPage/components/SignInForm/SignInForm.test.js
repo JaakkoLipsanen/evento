@@ -14,91 +14,122 @@ describe('SignInForm', () => {
 		renderToDOM( <SignInForm />, div);
 	});
 
-	it('has an error message', async () => {
-		const signInPage = await mount(<SignInForm />);
-		expect(signInPage.find('.ErrorMessage').node).not.toBeUndefined();
+	it('renders an error message', async () => {
+		const wrapper = await mount(<SignInForm />);
+		wrapper.setState({errorMessage: 'invalid credentials'})
+		const passwordField = wrapper.find('TextField').at(1);
+
+		expect(passwordField.prop('errorText')).toBe('invalid credentials');
 	});
 
 	describe('form', () => {
-		it('calls callback onSubmit', async () => {
-			const signInPage = await mount(<SignInForm />);
-			const callback = sinon.spy(signInPage.instance(), 'handleSubmit');
-			signInPage.find('form').simulate('submit');
+		it('calls signin() on submit button click', async () => {
+			const wrapper = await mount(<SignInForm />);
+			const callback = sinon.spy(wrapper.instance(), 'signin');
+
+			const signInButton = wrapper.find('EnhancedButton');
+			signInButton.simulate('click');
+
+			expect(callback.calledOnce).toBe(true);
+		});
+
+		it('calls signin() on enter key press', async () => {
+			const wrapper = await mount(<SignInForm />);
+			const callback = sinon.spy(wrapper.instance(), 'signin');
+
+			const passwordField = wrapper.find('TextField').at(1)
+			wrapper.find('input').at(1).simulate('keyPress', { key: 'Enter' });
 
 			expect(callback.calledOnce).toBe(true);
 		});
 
 		it('changes email state onChange', async () => {
-			const signInPage = await mount(<SignInForm />);
-			signInPage.find('input').at(0).simulate('change', { target: { value: 'name@example.com' } });
+			const wrapper = await mount(<SignInForm />);
+			wrapper.find('input').at(0).simulate('change', { target: { value: 'name@example.com' } });
 
-			expect(signInPage.state('email')).toBe('name@example.com');
+			expect(wrapper.state('email')).toBe('name@example.com');
 		});
 
 		it('changes password state onChange', async () => {
-			const signInPage = await mount(<SignInForm/>);
-			signInPage.find('input').at(1).simulate('change', { target: { value: 'secretpassword123' } });
+			const wrapper = await mount(<SignInForm/>);
+			wrapper.find('input').at(1).simulate('change', { target: { value: 'secretpassword123' } });
 
-			expect(signInPage.state('password')).toBe('secretpassword123');
+			expect(wrapper.state('password')).toBe('secretpassword123');
 		});
 	});
 
 	describe('handleSubmit', () => {
 		beforeEach(() => { cookies.reset(); });
 
-		const AUTH_TOKEN = '12345678';
-		const USER = mocks.user;
-		const PASSWORD = "secretpassword123";
+		// ====== These are no longer used but may be used in future ======
 
-		const signIn = async (email, password, history) => {
-			const signInPage = await mount(<SignInForm history={history} />);
+		// const AUTH_TOKEN = '12345678';
+		// const USER = mocks.user;
+		// const PASSWORD = "secretpassword123";
+		//
+		// const signIn = async (email, password, history) => {
+		// 	const wrapper = await mount(<SignInForm history={history} />);
+		//
+		// 	// Type credentials and submit
+		// 	wrapper.find('input').at(0).simulate('change', { target: { value: email } });
+		// 	wrapper.find('input').at(1).simulate('change', { target: { value: password } });
+		// 	wrapper.find('form').simulate('submit');
+		// 	await wrapper.wait();
+		//
+		// 	return wrapper;
+		// };
+		//
+		// const successfulSignIn = async (history) => {
+		// 	sinon.stub(api, "signin")
+		// 		.withArgs(USER.email, PASSWORD)
+		// 		.callsFake(() => mocks.api.responses.create({ user: USER, auth_token: AUTH_TOKEN }));
+		//
+		// 	const wrapper = await signIn(USER.email, PASSWORD, history);
+		// 	return { wrapper, auth_token: AUTH_TOKEN, user: USER };
+		// };
+		//
+		// const failedSignIn = async (history) => {
+		// 	sinon.stub(api, "signin")
+		// 		.withArgs(USER.email, PASSWORD)
+		// 		.callsFake(() => mocks.api.responses.createError({ message: api.INVALID_CREDENTIALS_MESSAGE }));
+		//
+		// 	return await signIn(USER.email, PASSWORD, history);
+		// };
 
-			// Type credentials and submit
-			signInPage.find('input').at(0).simulate('change', { target: { value: email } });
-			signInPage.find('input').at(1).simulate('change', { target: { value: password } });
-			signInPage.find('form').simulate('submit');
-			await signInPage.wait();
 
-			return signInPage;
-		};
+	// 	/* this should be in api.js
+	// 	it('sets auth_token and userId cookies on successful fetch', async () => {
+	// 		const { auth_token, user } = await successfulSignIn();
+	//
+	// 		expect(session.getAuthToken()).toEqual(auth_token)
+	// 		expect(session.getUser()).toEqual(user);
+	// 	}); */
 
-		const successfulSignIn = async (history) => {
+		it('calls onSignIn on successiful sign in', async () => {
 			sinon.stub(api, "signin")
-				.withArgs(USER.email, PASSWORD)
-				.callsFake(() => mocks.api.responses.create({ user: USER, auth_token: AUTH_TOKEN }));
+				.callsFake(() => mocks.api.responses.DefaultSuccess);
 
-			const signInPage = await signIn(USER.email, PASSWORD, history);
-			return { signInPage, auth_token: AUTH_TOKEN, user: USER };
-		};
+			const mockOnClick = sinon.spy();
+			const wrapper = await mount(<SignInForm onSignIn={mockOnClick} />);
 
-		const failedSignIn = async (history) => {
-			sinon.stub(api, "signin")
-				.withArgs(USER.email, PASSWORD)
-				.callsFake(() => mocks.api.responses.createError({ message: api.INVALID_CREDENTIALS_MESSAGE }));
+			const signInButton = wrapper.find('EnhancedButton');
+			signInButton.simulate('click');
+			await wrapper.wait();
 
-			return await signIn(USER.email, PASSWORD, history);
-		};
-
-		it('calls preventDefault on event', async () => {
-			const event = { preventDefault: sinon.spy() };
-			const signInPage = await mount(<SignInForm />);
-			signInPage.instance().handleSubmit(event);
-
-			expect(event.preventDefault.calledOnce).toBe(true);
+			expect(mockOnClick.calledOnce).toBe(true);
 		});
 
-		/* this should be in api.js
-		it('sets auth_token and userId cookies on successful fetch', async () => {
-			const { auth_token, user } = await successfulSignIn();
-
-			expect(session.getAuthToken()).toEqual(auth_token)
-			expect(session.getUser()).toEqual(user);
-		}); */
-
 		it('sets error message on failed sign in', async () => {
-			const signInPage = await failedSignIn();
+			sinon.stub(api, "signin")
+				.callsFake(() => mocks.api.responses.createError({ message: api.INVALID_CREDENTIALS_MESSAGE }));
 
-			expect(signInPage.state('errorMessage')).toBe('Invalid credentials');
+			const wrapper = await mount(<SignInForm />);
+
+			const signInButton = wrapper.find('EnhancedButton');
+			signInButton.simulate('click');
+			await wrapper.wait();
+
+			expect(wrapper.state('errorMessage')).toBe(api.INVALID_CREDENTIALS_MESSAGE);
 			expect(session.getAuthToken()).toBeFalsy();
 			expect(session.getUser()).toBeFalsy();
 		});
