@@ -1,22 +1,9 @@
-$max-width: 1400px;
 $default-font: "Roboto";
 
-$body-background-color: white;
-
 .App {
-	max-width: $max-width;
 	min-height: 100vh;
 	box-sizing: border-box;
 
 	font-family: $default-font;
 	background-color: white;
-
-	@media all and (min-width: $max-width) {
-		margin: auto;
-		border-radius: 2px;
-	}
-}
-
-body {
-	background-color: $body-background-color;
 }

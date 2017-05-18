@@ -7,6 +7,7 @@ import ContentAdd from 'material-ui/svg-icons/content/add';
 import Topbar from '../Topbar';
 import Explore from '../Explore';
 import MyEvents from '../MyEvents';
+import NewEventPopup from '../NewEventPopup';
 import './MainPage.css';
 
 const createEventFilterer = (filterQuery) => {
@@ -50,9 +51,11 @@ class MainPage extends Component {
 					<Route exact path='/events' component={MyEvents} />
 				</Switch>
 
-				<FloatingActionButton className="new-event-button">
+				<FloatingActionButton className="new-event-button" onClick={() => this.newEventPopup.show()}>
 					<ContentAdd />
 				</FloatingActionButton>
+
+				<NewEventPopup ref={(popup) => this.newEventPopup = popup} />
 			</div>
 		);
 	}

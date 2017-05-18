@@ -47,7 +47,6 @@ class RegisterForm extends React.Component {
 			const raw = error.messages.raw;
 			const getErr = (field) => field ? field[0] : undefined;
 
-			console.log(this.nameField);
 			this.setState({
 				fieldErrors: {
 					name: getErr(raw.name),

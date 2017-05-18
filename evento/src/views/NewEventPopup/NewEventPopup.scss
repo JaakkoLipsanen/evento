@@ -1,44 +1,47 @@
-.NewEventPage {
+.NewEventPopup {
+	position: fixed;
+	top: 2.5vh;
+	left: 2.5vw;
+	width: 95vw;
+	height: 95vh;
+
+	background-color: rgba(255, 255, 255, 1);
+	border: 2px solid gray;
+	border-radius: 4px;
+	padding: 8px;
 	padding-top: 48px;
+	box-sizing: border-box;
 	text-align: left;
 
 	.ErrorMessage {
 		color: red;
 	}
-	
+
 	input, textarea {
 		margin-left: 0px;
 		margin-bottom: 10px;
 		padding-left: 2px;
-		
+
 		width: 100%;
 		height: 32px;
 		font-size: 18px;
 		font-family: "Roboto";
 	}
-	
+
 	label {
 		display: block;
 	}
-	
-	textarea {
-		height: 3em !important;
-	}
-	
-	.start-time-picker-container div, .end-time-picker-container div {
-		width: 100%;
-	}
-	
+
 	.DatePicker {
 		width: 100%;
 	}
-  
+
 	.NewEventForm {
 		margin: auto;
 		width: 95vw;
 		max-width: 500px;
 	}
-	
+
 	input[type=submit] {
 		height: 44px;
 	}

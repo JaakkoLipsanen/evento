@@ -2,13 +2,13 @@ import React from 'react';
 import ReactDOM from 'react-dom';
 import moment from 'moment';
 
-import NewEventPage from './';
+import NewEventPopup from './';
 import api from '../../api';
 import { mount, createSinonSandbox, mocks, cookies } from '../../test-helpers';
 
 const DEFAULT_TIME = moment();
 
-describe('NewEventPage', () => {
+describe('NewEventPopup', () => {
 	const sinon = createSinonSandbox({ restoreAfterEachTest: true });
 	beforeEach(() => cookies.reset());
 
@@ -22,11 +22,11 @@ describe('NewEventPage', () => {
 
 	it('renders without crashing', () => {
 		const div = document.createElement('div');
-		ReactDOM.render(<NewEventPage />, div);
+		ReactDOM.render(<NewEventPopup />, div);
 	});
 
 	it('has an error message', async () => {
-		const wrapper = await mount(<NewEventPage />);
+		const wrapper = await mount(<NewEventPopup />);
 		wrapper.setState({ errorMessages: ['test error'] });
 		expect(wrapper.find('.ErrorMessage').node).not.toBeUndefined();
 	});
@@ -36,7 +36,7 @@ describe('NewEventPage', () => {
 		sinon.stub(api, "getCategories")
 			.callsFake(() => mocks.api.responses.createError({ message: "Random error" }));
 
-		const wrapper = await mount(<NewEventPage />);
+		const wrapper = await mount(<NewEventPopup />);
 
 		expect(wrapper.state('errorMessages')).not.toBeFalsy();
 		expect(wrapper.state('errorMessages').length).toBe(1);
@@ -45,7 +45,7 @@ describe('NewEventPage', () => {
 
 	describe('form', async () => {
 		it('calls callback onSubmit', async () => {
-			const wrapper = await mount(<NewEventPage/>);
+			const wrapper = await mount(<NewEventPopup/>);
 			const callback = sinon.spy(wrapper.instance(), 'handleSubmit');
 			wrapper.find('form').simulate('submit');
 
@@ -53,7 +53,7 @@ describe('NewEventPage', () => {
 		});
 
 		it('changes title state onChange', async () => {
-			const wrapper = await mount(<NewEventPage />);
+			const wrapper = await mount(<NewEventPopup />);
 			wrapper.find('.title-input')
 				.simulate('change', {target: {value: 'Party'}});
 
@@ -61,7 +61,7 @@ describe('NewEventPage', () => {
 		});
 
 		it('changes description state onChange', async () => {
-			const wrapper = await mount(<NewEventPage/>);
+			const wrapper = await mount(<NewEventPopup/>);
 			wrapper.find('.description-input')
 				.simulate('change', {target: {value: 'Biggest baddest party!'}});
 
@@ -69,7 +69,7 @@ describe('NewEventPage', () => {
 		});
 
 		it('changes location state onChange', async () => {
-			const wrapper = await mount(<NewEventPage/>);
+			const wrapper = await mount(<NewEventPopup/>);
 			wrapper.find('.location-input')
 				.simulate('change', {target: {value: 'My house'}});
 
@@ -77,7 +77,7 @@ describe('NewEventPage', () => {
 		});
 
 		it('changes category state onChange', async () => {
-			const wrapper = await mount(<NewEventPage/>);
+			const wrapper = await mount(<NewEventPopup/>);
 			wrapper.find('.category-input')
 				.simulate('change', {target: {value: 'Other'}});
 
@@ -86,7 +86,7 @@ describe('NewEventPage', () => {
 
 		it('changes startTime state onChange', async () => {
 			const value = moment().add(10, 'days');
-			const wrapper = await mount(<NewEventPage/>);
+			const wrapper = await mount(<NewEventPopup/>);
 
 			wrapper.find('.start-time-picker-container input').at(0)
 				.simulate('change', { target: { value: value } });
@@ -96,7 +96,7 @@ describe('NewEventPage', () => {
 
 		it('changes endTime state onChange', async () => {
 			const value = moment().add(10, 'days');
-			const wrapper = await mount(<NewEventPage/>);
+			const wrapper = await mount(<NewEventPopup/>);
 
 			wrapper.find('.end-time-picker-container input').at(0)
 				.simulate('change', { target: { value: value } });
@@ -106,7 +106,7 @@ describe('NewEventPage', () => {
 
 		it('changes the endTime if startTime is setted and is after the endTime', async () => {
 			const value = moment().add(10, 'days');
-			const wrapper = await mount(<NewEventPage/>);
+			const wrapper = await mount(<NewEventPopup/>);
 
 			const originalEndTime = wrapper.state('endTime');
 			wrapper.find('.start-time-picker-container input').at(0)
@@ -117,7 +117,7 @@ describe('NewEventPage', () => {
 
 		it('changes the startTime if endTime is setted and is before the startTime', async () => {
 			const value = moment().add(10, 'days');
-			const wrapper = await mount(<NewEventPage/>);
+			const wrapper = await mount(<NewEventPopup/>);
 
 			const originalStartTime = wrapper.state('startTime');
 			wrapper.find('.end-time-picker-container input').at(0)
@@ -130,7 +130,7 @@ describe('NewEventPage', () => {
 	describe('handleSubmit', () => {
 		it('calls preventDefault on event', async () => {
 			const event = { preventDefault: sinon.spy() };
-			const wrapper = await mount(<NewEventPage/>);
+			const wrapper = await mount(<NewEventPopup/>);
 			wrapper.instance().handleSubmit(event);
 
 			expect(event.preventDefault.calledOnce).toBe(true);
@@ -138,7 +138,7 @@ describe('NewEventPage', () => {
 
 		const createEvent = async (title, description, category, startTime, history) => {
 			cookies.set({ user: mocks.user, auth_token: "valid" });
-			const wrapper = await mount(<NewEventPage history={history} />);
+			const wrapper = await mount(<NewEventPopup history={history} />);
 			wrapper.setState({ categories: [category] });
 
 			// Type all fields and submit
