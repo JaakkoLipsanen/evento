@@ -41,7 +41,7 @@ class MyEvents extends Component {
 						<EventCard
 							key={event.id}
 							event={event}
-							onClick={() => this.props.history.push(`/events/${event.id}`)}
+							onClick={() => this.props.onEventSelected(event) }
 						/>)
 					}
 				</div>

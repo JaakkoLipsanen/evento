@@ -1,11 +1,12 @@
 import React, { Component } from 'react';
+
 import TextField from 'material-ui/TextField';
 import SelectField from 'material-ui/SelectField';
 import MenuItem from 'material-ui/MenuItem';
 import RaisedButton from 'material-ui/RaisedButton';
-import Paper from 'material-ui/Paper';
 import Toggle from 'material-ui/Toggle';
 
+import Popup from '../../components/Popup';
 import DateTimePicker from './components/DateTimePicker';
 
 import moment from 'moment';
@@ -33,7 +34,6 @@ class NewEventPopup extends Component {
 
 			errorMessage: null, // singular error, like "Server not responding"
 			fieldErrors: { }, // field specific error, like "category not found"
-			open: false,
 		});
 
 		this.forceUpdate();
@@ -41,11 +41,11 @@ class NewEventPopup extends Component {
 
 	show() {
 		this.reset();
-		this.setState({ open: true });
+		this.popup.show();
 	}
 
 	close() {
-		this.setState({ open: false })
+		this.popup.close();
 	}
 
 	componentDidMount() {
@@ -81,13 +81,11 @@ class NewEventPopup extends Component {
 			description: this.state.description,
 			categoryId: category.id,
 			startTime: moment(startTime).format(),
-			location: this.state.location
+			location: this.state.location,
+			/* TODO: duration and is repeating weekly */
 		});
 
 		if(result.success) {
-			// TODO: should redirect to the page of the newly created event?
-			// If creation was successful, redirect to MyEvents
-			// this.props.history.push('/events');
 			if(this.props.onCreated) {
 				this.props.onCreated(result.payload.event);
 			}
@@ -106,24 +104,25 @@ class NewEventPopup extends Component {
 		// errors with the submitted fields
 		if(error.messages && error.messages.raw) {
 			const raw = error.messages.raw;
-			const getErr = (field) => field ? field[0] : undefined;
+			const getFirstErr = (field) => field ? field[0] : undefined;
 
 			this.setState({
 				fieldErrors: {
-					title: getErr(raw.title),
-					description: getErr(raw.description),
-					category: getErr(raw.category),
-					time: getErr(raw.time),
+					title: getFirstErr(raw.title),
+					description: getFirstErr(raw.description),
+					category: getFirstErr(raw.category),
+					time: getFirstErr(raw.time),
 				}
 			});
 		}
 	}
 
 	onStartTimeChange(time) {
-		// if start time is changed and end time is specified,
-		// then default end time to start time + 1hr
+		// if start time is changed and end time is not specified,
+		// then default the end time to start at (time + 1hr)
 		if(!this.endTimePicker.getTime()) {
 			const newTime = new Date(time);
+
 			newTime.setHours(time.getHours() + 1);
 			this.endTimePicker.setTime(newTime);
 		}
@@ -141,31 +140,20 @@ class NewEventPopup extends Component {
 			floatingLabelFixed: true
 		};
 
-		const parentDivStyle = {
-			visibility: this.state.open ? "visible" : "hidden",
-			opacity: this.state.open ? 1 : 0,
-			pointerEvents: this.state.open ? "auto" : "none"
-		 };
-
-		// fade the position to the center from above
-		const popupDivStyle = { marginTop: this.state.open ? "50vh" : "35vh" };
-
 		return (
-			<div className="NewEventPopup" style={parentDivStyle}>
-				<Paper
-					className="popup-container"
-					zDepth={5}
-					style={popupDivStyle}
-				>
+			<Popup className="NewEventPopup" ref={(popup) => this.popup = popup }>
+				<div className="form-container">
 					<p className="error-message">{ this.state.errorMessage }</p>
+
 					<TextField
 						floatingLabelText="Event name"
 						hintText="Name should be short and clear"
 						errorText={this.state.fieldErrors.title}
 
 						value={this.state.title}
-						onChange={(evt) => this.setState({ title: evt.target.value })}
-						{...fieldStyles} />
+						onChange={(e, val) => this.setState({ title: val })}
+						{...fieldStyles}
+					/>
 
 					<TextField
 						floatingLabelText="Location"
@@ -173,8 +161,9 @@ class NewEventPopup extends Component {
 						errorText={this.state.fieldErrors.location}
 
 						value={this.state.location}
-						onChange={(evt) => this.setState({ location: evt.target.value })}
-						{...fieldStyles} />
+						onChange={(e, val) => this.setState({ location: val })}
+						{...fieldStyles}
+					/>
 
 					<TextField
 						floatingLabelText="Description"
@@ -185,9 +174,9 @@ class NewEventPopup extends Component {
 						multiLine={true}
 						rows={1}
 
-						onChange={(evt) => this.setState({ description: evt.target.value })}
-						{...fieldStyles} />
-
+						onChange={(e, val) => this.setState({ description: val })}
+						{...fieldStyles}
+					/>
 
 					<SelectField
 						floatingLabelText="Category"
@@ -224,22 +213,25 @@ class NewEventPopup extends Component {
 						disabled={true}
 						onToggle={(e, val) => this.setState({ isWeekly: val })}
 						label="Repeat weekly"
-						style={{ marginLeft: "50%", width: "calc(50% - 6px)", paddingLeft: "6px" }} />
+						style={{ marginLeft: "50%", width: "calc(50% - 6px)", paddingLeft: "6px" }}
+					/>
 
 					<div style={{ display: "flex", marginBottom: "24px" }}>
 						<RaisedButton
 							label="Create Event"
 							primary={true}
 							style={{ marginTop: "16px", marginRight: "4px", width: "50%" }}
-							onClick={() => this.createEvent()} />
+							onClick={() => this.createEvent() }
+						/>
 
 						<RaisedButton
 							label="Cancel"
 							style={{ marginTop: "16px", marginLeft: "4px", width: "50%" }}
-							onClick={() => this.close()} />
+							onClick={() => this.close() }
+						/>
 					</div>
-				</Paper>
-			</div>
+				</div>
+			</Popup>
 		);
 	}
 }

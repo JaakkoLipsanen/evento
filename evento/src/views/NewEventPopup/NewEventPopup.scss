@@ -1,40 +1,12 @@
-$popup-background-fade-color: rgba(0, 0, 0, 0.15);
-$transition-duration: 0.35s;
-
 $popup-max-width: 540px;
-$popup-max-height: 95vh;
 
-.NewEventPopup {
-	position: fixed;
-	width: 100vw;
-	height: 100vh;
-	top: 0;
-	left: 0;
-	z-index: 100;
-
-	opacity: 0;
-	background-color: $popup-background-fade-color;
-	transition: all $transition-duration;
-
+.Popup {
 	.popup-container {
-		width: 95vw;
 		max-width: $popup-max-width;
-		max-height: $popup-max-height;
-		margin: auto;
-		margin-top: 50vh;
 
-		border-radius: 4px;
-		padding: 20px;
-		padding-top: 32px;
-		box-sizing: border-box;
-		transition: all $transition-duration;
-
-		/* 0.5px because for some reason without it the popup is very blurry on
-		   chrome while transitions are running. dunno */
-		transform: translate(0, calc(-50% + 0.5px));
-		text-align: left;
-
-		overflow-x: hidden;
-		overflow-y: auto;
+		.form-container {
+			padding: 20px;
+			padding-top: 32px;
+		}
 	}
 }

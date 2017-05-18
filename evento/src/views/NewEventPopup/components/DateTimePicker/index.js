@@ -1,7 +1,8 @@
 import React, { Component } from 'react';
-import moment from 'moment';
+
 import DatePicker from 'material-ui/DatePicker';
 import TimePicker from 'material-ui/TimePicker';
+import moment from 'moment';
 
 import './DateTimePicker.css';
 
