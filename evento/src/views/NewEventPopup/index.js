@@ -111,10 +111,11 @@ class NewEventPopup extends Component {
 			this.setState({
 				fieldErrors: {
 					title: getFirstErr(raw.title),
+					location: getFirstErr(raw.location),
 					description: getFirstErr(raw.description),
 					category: getFirstErr(raw.category),
+					image: getFirstErr(raw.image),
 					time: getFirstErr(raw.time),
-					image: getFirstErr(raw.image)
 				}
 			});
 		}
@@ -170,7 +171,7 @@ class NewEventPopup extends Component {
 
 					<TextField
 						floatingLabelText="Description"
-						hintText="Tell more about this event"
+						hintText="Tell more about this event (optional)"
 						errorText={this.state.fieldErrors.description}
 
 						value={this.state.description}
@@ -223,9 +224,10 @@ class NewEventPopup extends Component {
 
 					<Toggle
 						toggled={this.state.isWeekly}
-						disabled={true}
 						onToggle={(e, val) => this.setState({ isWeekly: val })}
+
 						label="Repeat weekly"
+						disabled={true}
 						style={{ marginLeft: "50%", width: "calc(50% - 6px)", paddingLeft: "6px" }}
 					/>
 
