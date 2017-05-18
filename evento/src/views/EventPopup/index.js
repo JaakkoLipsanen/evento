@@ -92,13 +92,15 @@ class EventPopup extends Component {
 
 	render() {
 		return (
-			<Popup
-				ref={(popup) => this.popup = popup}
-				closeOnOutsideClick={true}
-			>
-				<span>{ this.state.errorMessage }</span>
-				{ this.getContent() }
-			</Popup>
+			<div className="EventPopup">
+				<Popup
+					ref={(popup) => this.popup = popup}
+					closeOnOutsideClick={true}
+				>
+					<span>{ this.state.errorMessage }</span>
+					{ this.getContent() }
+				</Popup>
+			</div>
 		);
 	}
 

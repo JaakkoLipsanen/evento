@@ -1,24 +1,38 @@
 $right-bar-width: 256px;
 
-.content-container {
-	padding: 20px;
-	padding-top: 12px;
-	padding-bottom: 8px;
+.EventPopup {
+	.content-container {
+		padding: 20px;
+		padding-top: 12px;
+		padding-bottom: 8px;
 
-	display: flex;
+		display: flex;
 
-	.left-bar {
-		display: inline-block;
-		flex: 1;
-		margin-right: 4px;
+		.left-bar {
+			display: inline-block;
+			flex: 1;
+			margin-right: 4px;
+		}
+
+		.right-bar {
+			display: inline-block;
+			flex: 0 0 $right-bar-width;
+
+			.Map {
+				margin-bottom: 8px !important;
+			}
+		}
 	}
 
-	.right-bar {
-		display: inline-block;
-		flex: 0 0 $right-bar-width;
+	/* under 580px width then split left & right panels from side-to-side -> vertical */
+	@media (max-width: 580px) {
+		.content-container {
+			display: block;
 
-		.Map {
-			margin-bottom: 8px !important;
+			.left-bar, .right-bar {
+				flex: none;
+				width: 100%;
+			}
 		}
 	}
 }

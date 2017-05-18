@@ -1,12 +1,14 @@
 $popup-max-width: 540px;
 
-.Popup {
-	.popup-container {
-		max-width: $popup-max-width;
+.NewEventPopup {
+	.Popup {
+		.popup-container {
+			max-width: $popup-max-width;
 
-		.form-container {
-			padding: 20px;
-			padding-top: 32px;
+			.content-container {
+				padding: 20px;
+				padding-top: 32px;
+			}
 		}
 	}
 }

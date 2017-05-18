@@ -40,18 +40,6 @@ $popup-max-height: 96.5vh;
 		}
 	}
 
-	/* under 580px width then split left & right panels from side-to-side -> vertical */
-	@media (max-width: 580px) {
-		.content-container {
-			display: block;
-
-			.left-bar, .right-bar {
-				flex: none;
-				width: 100%;
-			}
-		}
-	}
-
 	/* 381-780px width then keep static width */
 	$grow-until-device-width: 700px;
 	@media (min-width: 381px) and (max-width: $grow-until-device-width) {

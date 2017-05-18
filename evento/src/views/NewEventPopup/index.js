@@ -141,97 +141,99 @@ class NewEventPopup extends Component {
 		};
 
 		return (
-			<Popup className="NewEventPopup" ref={(popup) => this.popup = popup }>
-				<div className="form-container">
-					<p className="error-message">{ this.state.errorMessage }</p>
+			<div className="NewEventPopup">
+				<Popup ref={(popup) => this.popup = popup }>
+					<div className="content-container">
+						<p className="error-message">{ this.state.errorMessage }</p>
 
-					<TextField
-						floatingLabelText="Event name"
-						hintText="Name should be short and clear"
-						errorText={this.state.fieldErrors.title}
+						<TextField
+							floatingLabelText="Event name"
+							hintText="Name should be short and clear"
+							errorText={this.state.fieldErrors.title}
 
-						value={this.state.title}
-						onChange={(e, val) => this.setState({ title: val })}
-						{...fieldStyles}
-					/>
-
-					<TextField
-						floatingLabelText="Location"
-						hintText="Address or place"
-						errorText={this.state.fieldErrors.location}
-
-						value={this.state.location}
-						onChange={(e, val) => this.setState({ location: val })}
-						{...fieldStyles}
-					/>
-
-					<TextField
-						floatingLabelText="Description"
-						hintText="Tell more about this event"
-						errorText={this.state.fieldErrors.description}
-
-						value={this.state.description}
-						multiLine={true}
-						rows={1}
-
-						onChange={(e, val) => this.setState({ description: val })}
-						{...fieldStyles}
-					/>
-
-					<SelectField
-						floatingLabelText="Category"
-						hintText="Select category"
-						errorText={this.state.fieldErrors.category}
-
-						value={this.state.category}
-						onChange={(e, i, val) => this.setState({ category: val })}
-						{...fieldStyles}
-					>
-						{ this.state.categories.map(category =>
-							<MenuItem key={category.id} value={category.name} primaryText={category.name} />
-						)}
-					</SelectField>
-
-					<DateTimePicker
-						ref={picker => this.startTimePicker = picker}
-						onTimeChange={(time) => this.onStartTimeChange(time)}
-
-						dateHintText="Start date"
-						timeHintText="Start time"
-						errorText={this.state.fieldErrors.time}
-					/>
-
-					<DateTimePicker
-						ref={picker => this.endTimePicker = picker}
-
-						timeOnly={true}
-						timeHintText="End time"
-					/>
-
-					<Toggle
-						toggled={this.state.isWeekly}
-						disabled={true}
-						onToggle={(e, val) => this.setState({ isWeekly: val })}
-						label="Repeat weekly"
-						style={{ marginLeft: "50%", width: "calc(50% - 6px)", paddingLeft: "6px" }}
-					/>
-
-					<div style={{ display: "flex", marginBottom: "24px" }}>
-						<RaisedButton
-							label="Create Event"
-							primary={true}
-							style={{ marginTop: "16px", marginRight: "4px", width: "50%" }}
-							onClick={() => this.createEvent() }
+							value={this.state.title}
+							onChange={(e, val) => this.setState({ title: val })}
+							{...fieldStyles}
 						/>
 
-						<RaisedButton
-							label="Cancel"
-							style={{ marginTop: "16px", marginLeft: "4px", width: "50%" }}
-							onClick={() => this.close() }
+						<TextField
+							floatingLabelText="Location"
+							hintText="Address or place"
+							errorText={this.state.fieldErrors.location}
+
+							value={this.state.location}
+							onChange={(e, val) => this.setState({ location: val })}
+							{...fieldStyles}
 						/>
+
+						<TextField
+							floatingLabelText="Description"
+							hintText="Tell more about this event"
+							errorText={this.state.fieldErrors.description}
+
+							value={this.state.description}
+							multiLine={true}
+							rows={1}
+
+							onChange={(e, val) => this.setState({ description: val })}
+							{...fieldStyles}
+						/>
+
+						<SelectField
+							floatingLabelText="Category"
+							hintText="Select category"
+							errorText={this.state.fieldErrors.category}
+
+							value={this.state.category}
+							onChange={(e, i, val) => this.setState({ category: val })}
+							{...fieldStyles}
+						>
+							{ this.state.categories.map(category =>
+								<MenuItem primaryText={category.name} key={category.id} value={category.name} />
+							)}
+						</SelectField>
+
+						<DateTimePicker
+							ref={picker => this.startTimePicker = picker}
+							onTimeChange={(time) => this.onStartTimeChange(time)}
+
+							dateHintText="Start date"
+							timeHintText="Start time"
+							errorText={this.state.fieldErrors.time}
+						/>
+
+						<DateTimePicker
+							ref={picker => this.endTimePicker = picker}
+
+							timeOnly={true}
+							timeHintText="End time"
+						/>
+
+						<Toggle
+							toggled={this.state.isWeekly}
+							disabled={true}
+							onToggle={(e, val) => this.setState({ isWeekly: val })}
+							label="Repeat weekly"
+							style={{ marginLeft: "50%", width: "calc(50% - 6px)", paddingLeft: "6px" }}
+						/>
+
+						<div style={{ display: "flex", marginBottom: "24px" }}>
+							<RaisedButton
+								label="Create Event"
+								primary={true}
+								style={{ marginTop: "16px", marginRight: "4px", width: "50%" }}
+								onClick={() => this.createEvent() }
+							/>
+
+							<RaisedButton
+								label="Cancel"
+								style={{ marginTop: "16px", marginLeft: "4px", width: "50%" }}
+								onClick={() => this.close() }
+							/>
+						</div>
 					</div>
-				</div>
-			</Popup>
+				</Popup>
+			</div>
 		);
 	}
 }
