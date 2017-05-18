@@ -141,7 +141,7 @@ export default {
 		}
 	},
 
-	async createNewEvent({ title, description, categoryId, startTime, location }) {
+	async createNewEvent({ title, description, categoryId, startTime, location, image }) {
 		if(!session.isLoggedIn()) {
 			return { success: false, error: NOT_LOGGED_IN_ERROR };
 		}
@@ -154,12 +154,22 @@ export default {
 					description: description,
 					category_id: categoryId,
 					time: startTime,
-					location: location
+					location: location,
+					image_url: image // backend returns 'image', but must send 'image_url'
 				})
 			});
 
 			if(!response.ok) {
-				return { success: false, error: { type: "unknown", messages: await getErrorMessages({ from: response }) } };
+				/* so, there is a disparency with image vs image_url
+				   the backend returns 'image' when event is fetched, but it requires
+				   the field to be named 'image_url' when a new event is submitted.
+				   We could/should fix this in the backend, but for now, let's just
+				   do this tape-and-fix style fix :P */
+				const result = { success: false, error: { type: "unknown", messages: await getErrorMessages({ from: response }) } };
+				result.error.messages.raw.image = result.error.messages.raw.image_url;
+				result.error.messages["image"] = result.error.messages["image_url"];
+
+				return result;
 			}
 
 			const event = await response.json();
