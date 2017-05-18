@@ -31,6 +31,7 @@ class NewEventPopup extends Component {
 			description: '',
 			category: null,
 			location: '',
+			image: '',
 
 			errorMessage: null, // singular error, like "Server not responding"
 			fieldErrors: { }, // field specific error, like "category not found"
@@ -82,6 +83,7 @@ class NewEventPopup extends Component {
 			categoryId: category.id,
 			startTime: moment(startTime).format(),
 			location: this.state.location,
+			image: this.state.image
 			/* TODO: duration and is repeating weekly */
 		});
 
@@ -112,6 +114,7 @@ class NewEventPopup extends Component {
 					description: getFirstErr(raw.description),
 					category: getFirstErr(raw.category),
 					time: getFirstErr(raw.time),
+					image: getFirstErr(raw.image)
 				}
 			});
 		}
@@ -191,6 +194,16 @@ class NewEventPopup extends Component {
 							<MenuItem key={category.id} value={category.name} primaryText={category.name} />
 						)}
 					</SelectField>
+
+					<TextField
+						floatingLabelText="Image URL"
+						hintText="Image for the event (optional)"
+						errorText={this.state.fieldErrors.image}
+
+						value={this.state.image}
+						onChange={(e, val) => this.setState({ image: val })}
+						{...fieldStyles}
+					/>
 
 					<DateTimePicker
 						ref={picker => this.startTimePicker = picker}
