@@ -158,6 +158,7 @@ class NewEventPopup extends Component {
 							value={this.state.title}
 							onChange={(e, val) => this.setState({ title: val })}
 							{...fieldStyles}
+						/>
 
 						<TextField
 							floatingLabelText="Location"
