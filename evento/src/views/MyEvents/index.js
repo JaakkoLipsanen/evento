@@ -35,7 +35,7 @@ class MyEvents extends Component {
 
 		return (
 			<div className="MyEvents">
-				<h1>My Events: </h1>
+				<h2>You are attending to the following events</h2>
 				<div className="event-card-list">
 					{ this.state.events.map(event =>
 						<EventCard

@@ -2,7 +2,9 @@ $popup-background-fade-color: rgba(0, 0, 0, 0.15);
 $transition-duration: 0.35s;
 
 $popup-max-width: 820px;
-$popup-max-height: 95vh;
+$popup-max-height: 96.5vh;
+
+$right-bar-width: 256px;
 
 .EventPopup {
 	position: fixed;
@@ -17,38 +19,118 @@ $popup-max-height: 95vh;
 	transition: all $transition-duration;
 
 	.popup-container {
-		width: calc(100vw - 64px);
 		max-width: $popup-max-width;
 		max-height: $popup-max-height;
 		margin: auto;
 		margin-top: 50vh;
 
+		transition: all $transition-duration;
 		border-radius: 4px;
 		box-sizing: border-box;
-		transition: all $transition-duration;
+		text-align: left;
+		overflow: hidden;
 
 		/* 0.5px because for some reason without it the popup is very blurry on
 		   chrome while transitions are running. dunno */
 		transform: translate(0, calc(-50% + 0.5px));
-		text-align: left;
-
-		overflow-x: hidden;
-		overflow-y: auto;
 	}
 
 	.content-container {
 		padding: 20px;
 		padding-top: 12px;
+		padding-bottom: 8px;
+
 		display: flex;
 
 		.left-bar {
 			display: inline-block;
-			flex: 2;
+			flex: 1;
 		}
 
 		.right-bar {
 			display: inline-block;
-			flex: 0 0 144px;
+			flex: 0 0 $right-bar-width;
+
+			img {
+				display: block;
+				margin: auto;
+				margin-bottom: 8px;
+				cursor: pointer;
+			}
+
+			.AttendeesList {
+				.header {
+					font-size: 16px;
+					font-weight: 500;
+					opacity: 0.9;
+					margin-bottom: 4px;
+					margin-top: 12px;
+
+					.attendee-count {
+						font-size: 12px;
+						font-weight: 400;
+						position: relative;
+						bottom: 1px;
+					}
+				}
+
+				.attendee-container {
+					padding-left: 4px;
+					margin: 4px;
+					height: 124px !important;
+
+					li {
+						list-style-type: none;
+
+						p {
+							 margin-top: 2px;
+							 margin-bottom: 2px;
+							 font-size: 14px;
+						}
+					}
+				}
+			}
+		}
+	}
+
+	/* under 380px width then reduce left/right empty space 64px -> 32px */
+	@media (max-width: 380px) {
+		.popup-container {
+			width: calc(100vw - 32px);
+		}
+	}
+
+	/* under 580px width then split left & right panels from side-to-side -> vertical */
+	@media (max-width: 580px) {
+		.content-container {
+			display: block;
+
+			.left-bar, .right-bar {
+				flex: none;
+				width: 100%;
+			}
+		}
+	}
+
+	/* 381-780px width then keep static width */
+	$grow-until-device-width: 700px;
+	@media (min-width: 381px) and (max-width: $grow-until-device-width) {
+		.popup-container {
+			width: calc(100vw - 64px)
+		}
+	}
+
+	$wait-start-device-width: $grow-until-device-width + 1px;
+	$wait-end-device-width: $popup-max-width * 1.8;
+	@media (min-width: $wait-start-device-width ) and (max-width: $wait-end-device-width) {
+		.popup-container {
+			width: calc(#{$wait-start-device-width}  - 64px);
+		}
+	}
+
+	@media (min-width: $wait-end-device-width) {
+		.popup-container {
+			width: calc(#{$wait-start-device-width} - 64px + (100vw - #{$wait-end-device-width}))
 		}
 	}
 }

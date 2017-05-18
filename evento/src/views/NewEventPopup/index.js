@@ -143,7 +143,8 @@ class NewEventPopup extends Component {
 
 		const parentDivStyle = {
 			visibility: this.state.open ? "visible" : "hidden",
-			opacity: this.state.open ? 1 : 0
+			opacity: this.state.open ? 1 : 0,
+			pointerEvents: this.state.open ? "auto" : "none"
 		 };
 
 		// fade the position to the center from above
