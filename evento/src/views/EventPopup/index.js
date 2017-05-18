@@ -1,95 +1,15 @@
 import React, { Component } from 'react';
-
-import Paper from 'material-ui/Paper';
-import RaisedButton from 'material-ui/RaisedButton';
 import { CardTitle } from 'material-ui/Card';
-import { Scrollbars } from 'react-custom-scrollbars';
 
-import { enableBodyScrolling, disableBodyScrolling, getRelativeDateTime } from '../../helper'
+import Popup from '../../components/Popup';
+import Map from './components/Map';
+import AttendeeList from './components/AttendeeList';
+import AttendButton from './components/AttendButton';
+
+import { getRelativeDateTime } from '../../helper'
 import api from '../../api';
 import session from '../../session';
 import './EventPopup.css';
-
-const AttendeesList = ({ event, attendees = [] }) => (
-	<div className="AttendeesList">
-		<h4 className="header">
-			Attendees
-
-			<span className="attendee-count">
-				{` (${event.attendee_count})`}
-			</span>
-		</h4>
-
-		<Scrollbars className="attendee-container" autoHide>
-			{ attendees.map(attendee => (
-				<li key={attendee.id}>
-					<p>{ attendee.name }</p>
-				</li>
-			))}
-		</Scrollbars>
-	</div>
-);
-
-/* static google maps centered on the event location */
-const Map = ({ event, size = { width: 400, height: 250 } }) => {
-	const eventLocation = event.location.replace(' ', '+');
-
-	// google maps api key. I realize that it's not wise to put this in here,
-	// but what can you do :D we could do this in back end as well but not really
-	// feeling it :P
-	const API_KEY = "AIzaSyAEYDif6SXl8ruGqVAUaJasxV9jarDKMk0";
-	const query = `
-		center=${eventLocation}&
-		zoom=11&
-		size=${size.width}x${size.height}&
-		markers=${eventLocation}&
-		key=${API_KEY}`;
-
-	const imagePath = `https://maps.googleapis.com/maps/api/staticmap?${query}`;
-	return (
-		<a target="_blank" href={`http://maps.google.com/?q=${eventLocation}`}>
-			<img
-				src={imagePath}
-				alt=""
-				style={{ width: `${size.width}px`, height: `${size.height}px` }}
-			/>
-		</a>
-	);
-}
-
-/* state-ly component because of the on hover behavior */
-class AttendButton extends Component {
-	constructor(props) {
-		super(props);
-		this.state = { hovering: false };
-	}
-
-	render() {
-		const { onChange, isAttending } = this.props;
-		const { hovering } = this.state;
-
-		const showPrimaryColorByDefault = (!isAttending && hovering) || (isAttending && !hovering);
-		return (
-			<RaisedButton
-				label={
-					isAttending ?
-						(hovering ? "Unattend" : "Attending") :
-						(hovering ? "Attend" : "Not attending")
-				}
-
-				onClick={() => onChange(!isAttending) }
-				onMouseOver={() => this.setState({ hovering: true }) }
-				onMouseLeave={() => this.setState({ hovering: false }) }
-
-				primary={showPrimaryColorByDefault}
-				secondary={!showPrimaryColorByDefault}
-
-				fullWidth={true}
-				overlayStyle={{ backgroundColor: "transparent" }}
-			/>
-		);
-	}
-}
 
 const EventImage = ({ src }) => (
 	<div style={{
@@ -102,44 +22,46 @@ const EventImage = ({ src }) => (
 	}} />
 );
 
-
 class EventPopup extends Component {
 	constructor(props) {
 		super(props);
 		this.state = {
 			event: null,
 			attendees: [],
-			errorMessage: null,
-
-			open: false
+			errorMessage: null
 		};
 	}
 
 	reset() {
 		this.setState({
+			event: null,
 			attendees: [],
-			event: event,
-			errorMessage: null,
-
-			open: false
+			errorMessage: null
 		});
 	}
 
 	show(event) {
 		this.reset();
 		this.setState(
-			{ event: event, open: true },
+			{ event: event },
 			() => this.fetchAttendees()
 		);
 
-		/* disable body scrolling (aka scrolling on the main page)
-		   and save the body scroll value to this.windowScroll */
-		this.windowScroll = disableBodyScrolling();
+		this.popup.show();
 	}
 
 	close() {
-		this.setState({ open: false })
-		enableBodyScrolling(this.windowScroll); // re-enable body scrolling
+		this.popup.close();
+	}
+
+	// is user attending this current event
+	isUserAttending() {
+		const user = session.getUser();
+		if(!user || !this.state.attendees) {
+			return false;
+		}
+
+		return this.state.attendees.some(attendee => attendee.id === user.id);
 	}
 
 	async fetchAttendees() {
@@ -168,42 +90,15 @@ class EventPopup extends Component {
 		}
 	}
 
-	isUserAttending() {
-		const user = session.getUser();
-		if(!user || !this.state.attendees) {
-			return false;
-		}
-
-		return this.state.attendees.some(attendee => attendee.id === user.id);
-	}
-
 	render() {
-		const parentDivStyle = {
-			visibility: this.state.open ? "visible" : "hidden",
-			opacity: this.state.open ? 1 : 0
-		 };
-
-		// fade the position to the center from above
-		const popupDivStyle = { marginTop: this.state.open ? "50vh" : "35vh" };
 		return (
-			<div className="EventPopup" style={parentDivStyle} onClick={() => this.close()}>
-				<Paper
-					className="popup-container"
-					zDepth={5}
-					style={popupDivStyle}
-					onClick={e => e.stopPropagation() }
-				>
-					<Scrollbars
-						autoHide
-						autoHeight
-						autoHeightMin={100}
-						autoHeightMax={"96.5vh"}
-					>
-						<span>{ this.state.errorMessage }</span>
-						{ this.getContent() }
-					</Scrollbars>
-				</Paper>
-			</div>
+			<Popup
+				ref={(popup) => this.popup = popup}
+				closeOnOutsideClick={true}
+			>
+				<span>{ this.state.errorMessage }</span>
+				{ this.getContent() }
+			</Popup>
 		);
 	}
 
@@ -215,9 +110,11 @@ class EventPopup extends Component {
 
 		const titleStyle = { textAlign: "left", padding: "0px" };
 		const timeAndLocation = `${getRelativeDateTime(event.time)} @ ${event.location}`;
+
 		return (
 			<div>
 				<EventImage src={event.image} />
+
 				<div className="content-container">
 					<div className="left-bar">
 						<CardTitle title={event.title} subtitle={timeAndLocation} style={titleStyle} />
@@ -230,7 +127,7 @@ class EventPopup extends Component {
 							isAttending={this.isUserAttending()}
 						/>
 
-						<AttendeesList event={event} attendees={attendees} />
+						<AttendeeList event={event} attendees={attendees} />
 					</div>
 				</div>
 			</div>
