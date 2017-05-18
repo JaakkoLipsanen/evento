@@ -13,6 +13,10 @@ class MyEvents extends Component {
 		};
 	}
 
+	get filteredEvents() {
+		return this.props.filterEvents(this.state.events);
+	}
+
 	componentDidMount() {
 		this.fetchEvents();
 	}
@@ -37,7 +41,7 @@ class MyEvents extends Component {
 			<div className="MyEvents">
 				<h2>You are attending to the following events</h2>
 				<div className="event-card-list">
-					{ this.state.events.map(event =>
+					{ this.filteredEvents.map(event =>
 						<EventCard
 							key={event.id}
 							event={event}
