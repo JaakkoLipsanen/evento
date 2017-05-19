@@ -14,118 +14,155 @@ describe('RegisterForm', () => {
 	});
 
 	it('has an error message', async () => {
-		const registerForm = await mount(<RegisterForm />);
-		registerForm.setState({ errorMessages: ['test error'] });
+		const wrapper = await mount(<RegisterForm />);
+		wrapper.setState({errorMessage: 'test error'})
 
-		expect(registerForm.find('.ErrorMessage').node).not.toBeUndefined();
+		expect(wrapper.find('.error-message').text()).toBe('test error');
 	});
 
 	describe('form', () => {
-		it('calls callback onSubmit', async () => {
-			const registerForm = await mount(<RegisterForm />);
-			const callback = sinon.spy(registerForm.instance(), 'handleSubmit');
-			registerForm.find('form').simulate('submit');
+		it('calls register() on submit button click', async () => {
+			const wrapper = await mount(<RegisterForm />);
+			const callback = sinon.spy(wrapper.instance(), 'register');
+
+			const registerButton = wrapper.find('EnhancedButton');
+			registerButton.simulate('click');
+
+			expect(callback.calledOnce).toBe(true);
+		});
+
+		it('calls register() on enter key press', async () => {
+			const wrapper = await mount(<RegisterForm />);
+			const callback = sinon.spy(wrapper.instance(), 'register');
+
+			wrapper.find('input').at(3).simulate('keyPress', { key: 'Enter' });
 
 			expect(callback.calledOnce).toBe(true);
 		});
 
 		it('changes name state onChange', async () => {
-			const registerForm = await mount(<RegisterForm/>);
-			registerForm.find('input').at(0).simulate('change', { target: { value: 'Antti' } });
+			const wrapper = await mount(<RegisterForm />);
+			wrapper.find('input').at(0).simulate('change', { target: { value: 'Antti' } });
 
-			expect(registerForm.state('name')).toBe('Antti');
+			expect(wrapper.state('name')).toBe('Antti');
 		});
 
 		it('changes email state onChange', async () => {
-			const registerForm = await mount(<RegisterForm />);
-			registerForm.find('input').at(1).simulate('change', { target: { value: 'name@example.com' } });
+			const wrapper = await mount(<RegisterForm />);
+			wrapper.find('input').at(1).simulate('change', { target: { value: 'name@example.com' } });
 
-			expect(registerForm.state('email')).toBe('name@example.com');
+			expect(wrapper.state('email')).toBe('name@example.com');
 		});
 
 		it('changes password state onChange', async () => {
-			const registerForm = await mount(<RegisterForm />);
-			registerForm.find('input').at(2).simulate('change', { target: { value: 'secretpassword123' } });
+			const wrapper = await mount(<RegisterForm />);
+			wrapper.find('input').at(2).simulate('change', { target: { value: 'secretpassword123' } });
 
-			expect(registerForm.state('password')).toBe('secretpassword123');
+			expect(wrapper.state('password')).toBe('secretpassword123');
 		});
 
 		it('changes password confirmation state onChange', async () => {
-			const registerForm = await mount(<RegisterForm />);
-			registerForm.find('input').at(3).simulate('change', { target: { value: 'secretpasswordConf123' } });
+			const wrapper = await mount(<RegisterForm />);
+			wrapper.find('input').at(3).simulate('change', { target: { value: 'secretpasswordConf123' } });
 
-			expect(registerForm.state('passwordConf')).toBe('secretpasswordConf123');
+			expect(wrapper.state('passwordConf')).toBe('secretpasswordConf123');
 		});
 	});
 
-	describe('handleSubmit', () => {
+	describe('register', () => {
 		it('changes errorMessages if password and passwordConf do not match', async () => {
-			const registerForm = await mount(<RegisterForm />);
-			registerForm.find('input').at(2).simulate('change', { target: { value: 'secretpassword123' } });
-			registerForm.find('input').at(3).simulate('change', { target: { value: 'somethingelse' } });
-			registerForm.find('form').simulate('submit');
+			const wrapper = await mount(<RegisterForm />);
+			wrapper.find('input').at(2).simulate('change', { target: { value: 'secretpassword123' } });
+			wrapper.find('input').at(3).simulate('change', { target: { value: 'somethingelse' } });
 
-			expect(registerForm.state('errorMessages')).toContain('Passwords do not match');
+			const registerButton = wrapper.find('EnhancedButton');
+			registerButton.simulate('click');
+
+			expect(wrapper.state('fieldErrors').passwordConf).toContain("Passwords do not match")
 		});
 
-		it('calls preventDefault on event', async () => {
-			const event = { preventDefault: sinon.spy() };
-			const registerForm = await mount(<RegisterForm />);
-			registerForm.instance().handleSubmit(event);
-
-			expect(event.preventDefault.calledOnce).toBe(true);
-		});
-
-		const register = async (name, email, password, passwordConf, history) => {
-			const registerForm = await mount(<RegisterForm history={history} />);
+		const register = async (name='', email='', password='', passwordConf='', onSignIn) => {
+			const wrapper = await mount(<RegisterForm onSignIn={onSignIn} />);
 
 			// Type all fields and submit
-			registerForm.find('input').at(0).simulate('change', { target: { value: name } });
-			registerForm.find('input').at(1).simulate('change', { target: { value: email } });
-			registerForm.find('input').at(2).simulate('change', { target: { value: password } });
-			registerForm.find('input').at(3).simulate('change', { target: { value: passwordConf } });
-			registerForm.find('form').simulate('submit');
-			await registerForm.wait();
+			wrapper.find('input').at(0).simulate('change', { target: { value: name } });
+			wrapper.find('input').at(1).simulate('change', { target: { value: email } });
+			wrapper.find('input').at(2).simulate('change', { target: { value: password } });
+			wrapper.find('input').at(3).simulate('change', { target: { value: passwordConf } });
 
-			return registerForm;
+			wrapper.find('EnhancedButton').simulate('click');
+			await wrapper.wait();
+
+			return wrapper;
 		};
 
-		it('signs in after successful registering', async () => {
-			const history = { push: sinon.spy() };
+		it('calls register api function after on successiful register', async () => {
+			const stub = sinon.stub(api, "register")
+				.callsFake(() => mocks.api.responses.DefaultSuccess);
+
+			const wrapper = await register(mocks.user.name, mocks.user.email,
+				'validpassword123', 'validpassword123');
+
+			expect(stub.calledOnce).toBe(true);
+		});
+
+		it('signs in after successiful registering', async () => {
 			sinon.stub(api, "register")
 				.callsFake(() => mocks.api.responses.DefaultSuccess);
 
-			const spy = sinon.spy();
-			sinon.stub(api, "signin")
-				.callsFake(spy);
+			const stub = sinon.stub(api, "signin")
+				.callsFake(() => mocks.api.responses.DefaultSuccess);
 
-			const registerForm = await register(mocks.user.name, mocks.user.email,
-				'validpassword123', 'validpassword123', history);
+			const onSignInSpy = sinon.spy();
 
-			expect(spy.calledOnce).toBe(true);
+			const wrapper = await register(mocks.user.name, mocks.user.email,
+				'validpassword123', 'validpassword123', onSignInSpy);
+
+			expect(stub.calledOnce).toBe(true);
+			expect(onSignInSpy.calledOnce).toBe(true);
 		});
 
-		it('does not redirect on failed registering', async () => {
-			const history = { push: sinon.spy() };
-			sinon.stub(api, "register")
-				.callsFake(() => mocks.api.responses.DefaultError);
+		const createError = (messages) => {
+			return { success: false, error: { type: "unknown", messages: getErrorMessages(messages) } };
+		}
 
-			const registerForm = await register('Antti', 'bad', 'nope', 'nope', history);
-			expect(history.push.called).toBe(false);
-		});
+		const getErrorMessages = (error) => {
+			const errorMessages = Object.keys(error).map(key => error[key].map(value => `${key} ${value}`));
+			const flattened = [].concat.apply([], errorMessages);
+
+			flattened.raw = error;
+			return flattened;
+		};
 
 		it('sets error messages on failed register', async () => {
-			sinon.stub(api, "register")
-				.callsFake(() => mocks.api.responses.createError({
-					messages: [
-						"email is invalid", "email can't be blank",
-						"name is too short", "name can't be blank"
-					]
-				}));
+			const errorMessage = {
+				"password":["can't be blank"],
+				"name":["can't be blank"],
+				"email":["is invalid"],
+				"password_digest":["can't be blank"]
+			};
 
-			const registerForm = await register('', '', '', '');
-			expect(registerForm.state('errorMessages').length).toBeGreaterThan(0);
-			expect(registerForm.state('errorMessages')).toContain("email is invalid");
+			sinon.stub(api, "register")
+				.callsFake(() => createError(errorMessage));
+
+			const wrapper = await register();
+
+			expect(wrapper.state('fieldErrors').name).toBe("can't be blank");
+			expect(wrapper.state('fieldErrors').password).toBe("can't be blank");
+			expect(wrapper.state('fieldErrors').email).toBe("is invalid");
+		});
+
+		it('sets error messages on failed signin', async () => {
+			const errorMessage = {"error":{"authentication":["Wrong credentials"]}};
+
+			sinon.stub(api, "register")
+				.callsFake(() => mocks.api.responses.DefaultSuccess);
+			sinon.stub(api, "signin")
+				.callsFake(() => mocks.api.responses.createError({ message: api.INVALID_CREDENTIALS_MESSAGE }));
+
+			const wrapper = await register();
+
+			expect(wrapper.state('errorMessage')).toBe(api.INVALID_CREDENTIALS_MESSAGE);
 		});
 	});
 });

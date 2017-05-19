@@ -22,7 +22,7 @@ describe('SignInForm', () => {
 		expect(passwordField.prop('errorText')).toBe('invalid credentials');
 	});
 
-	describe('form', () => {
+	describe('signin', () => {
 		it('calls signin() on submit button click', async () => {
 			const wrapper = await mount(<SignInForm />);
 			const callback = sinon.spy(wrapper.instance(), 'signin');
