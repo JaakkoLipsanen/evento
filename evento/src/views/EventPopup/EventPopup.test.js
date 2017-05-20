@@ -118,8 +118,6 @@ describe('EventPopup', () => {
 			const eventPage = await mount(<EventPopup match={matchMocks.valid} />)
 			eventPage.setState({ attendees: mocks.attendees });
 
-			console.log(mocks.generate.event())
-
 			expect(eventPage.instance().isUserAttending()).toBe(false);
 		});
 	});
