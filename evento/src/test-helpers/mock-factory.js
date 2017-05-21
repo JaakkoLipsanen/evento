@@ -33,7 +33,8 @@ export default {
 			title: generateString(15),
 			description: generateString(50),
 			category: this.createCategory(),
-			creator: this.createUser()
+			creator: this.createUser(),
+			location: generateString(15),
 		}
 	},
 
