@@ -39,7 +39,7 @@ class SignInForm extends Component {
 	render() {
 		const styles = {
 			style: { height: "62px" },
-			inputStyle: { "margin-top": "7px" },
+			inputStyle: { "marginTop": "7px" },
 			floatingLabelStyle: { top: "28px" },
 			errorStyle: { bottom: "12px" }
 		};

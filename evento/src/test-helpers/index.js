@@ -3,13 +3,19 @@ import sinon from 'sinon';
 import Cookie from 'js-cookie';
 import fetchMock from 'fetch-mock';
 
-import React, { PropTypes } from 'react';
-import ReactDOM from 'react-dom'
+import React from 'react';
+import PropTypes from 'prop-types';
+
+import ReactDOM from 'react-dom';
 import MuiThemeProvider from 'material-ui/styles/MuiThemeProvider';
 import getMuiTheme from 'material-ui/styles/getMuiTheme';
 
 import mockFactory from './mock-factory';
 import api from '../api';
+
+// Fixes unknown-prop errors during tests
+const injectTapEventPlugin = require("react-tap-event-plugin");
+injectTapEventPlugin();
 
 const cookies = {
 	set(cookies) {
@@ -67,7 +73,7 @@ const mount = async (component) => {
 	const muiTheme = getMuiTheme();
 	const mounted = enzyme.mount(component, {
 		context: { muiTheme },
-		childContextTypes: {muiTheme: React.PropTypes.object}
+		childContextTypes: {muiTheme: PropTypes.object}
 	});
 
 	await waitForFetches();

@@ -17,9 +17,16 @@ class NewEventPopup extends Component {
 	constructor(props) {
 		super(props);
 		this.state = {
-			categories: [],
-			fieldErrors: {}
-			// other fields specified in reset()
+			categories: [],	// All available categories
+
+			title: '',
+			description: '',
+			category: null,
+			location: '',
+			image: '',
+
+			errorMessage: null, // singular error, like "Server not responding"
+			fieldErrors: { }, // field specific error, like "category not found"
 		}
 	}
 
@@ -33,8 +40,8 @@ class NewEventPopup extends Component {
 			location: '',
 			image: '',
 
-			errorMessage: null, // singular error, like "Server not responding"
-			fieldErrors: { }, // field specific error, like "category not found"
+			errorMessage: null,
+			fieldErrors: { },
 		});
 
 		this.forceUpdate();
