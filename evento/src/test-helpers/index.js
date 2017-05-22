@@ -82,6 +82,19 @@ const mount = async (component) => {
 	return mounted;
 };
 
+const shallow = async (component) => {
+	const muiTheme = getMuiTheme();
+	const mounted = enzyme.shallow(component, {
+		context: { muiTheme },
+		childContextTypes: {muiTheme: PropTypes.object}
+	});
+
+	await waitForFetches();
+
+	mounted.wait = waitForFetches;
+	return mounted;
+};
+
 const renderToDOM = async (component, domElement) => {
 	ReactDOM.render(
 		<MuiThemeProvider>{ component }</MuiThemeProvider>,
@@ -121,4 +134,4 @@ const createSinonSandbox = ({ restoreAfterEachTest = true, throwIfApiNotMocked =
 	return sinonProxy;
 };
 
-export { cookies, mocks, mount, createSinonSandbox, renderToDOM }
+export { cookies, mocks, mount, shallow, createSinonSandbox, renderToDOM }
