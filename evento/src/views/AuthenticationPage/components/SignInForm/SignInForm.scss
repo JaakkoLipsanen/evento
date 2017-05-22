@@ -1,11 +1,4 @@
-.SignInForm { 
+.SignInForm {
 	text-align: center;
-
-	.ErrorMessage {
-		color: red;
-	}
-
-	.Link {
-		color: blue;
-	}
+	display: inline-block;
 }

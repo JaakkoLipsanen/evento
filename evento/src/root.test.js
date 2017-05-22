@@ -6,6 +6,8 @@ import moment from 'moment';
 import api from './api';
 import session from './session';
 import config from './config';
+import * as helper from './helper';
+
 import { mocks, cookies, createSinonSandbox } from './test-helpers';
 
 const EMPTY_VALID_RESPONSE = { status: 200, body: { } };
@@ -486,7 +488,7 @@ describe('/src root files', () => {
 		});
 
 		it("sets base url", async () => {
-			fetchMock.get(`${config.BaseURL}/test`, { });
+			fetchMock.get(`${config.ServerURL}/test`, { });
 
 			config.apply();
 			const response = await fetch('/test');
@@ -494,7 +496,7 @@ describe('/src root files', () => {
 		});
 
 		it("sets default headers", async () => {
-			fetchMock.get(`${config.BaseURL}/test`, (url, opts) =>
+			fetchMock.get(`${config.ServerURL}/test`, (url, opts) =>
 				JSON.stringify(
 					opts.headers &&
 					opts.headers["Content-Type"] === 'application/json' &&
@@ -510,7 +512,7 @@ describe('/src root files', () => {
 		it("sets auth headers", async () => {
 			cookies.set(DEFAULT_COOKIES);
 
-			fetchMock.get(`${config.BaseURL}/test`, (url, opts) =>
+			fetchMock.get(`${config.ServerURL}/test`, (url, opts) =>
 				JSON.stringify(
 					opts.headers &&
 					opts.headers["Authorization"] === DEFAULT_COOKIES.auth_token)
@@ -521,5 +523,25 @@ describe('/src root files', () => {
 			const result = await response.json();
 			expect(result).toBe(true);
 		});
+	});
+
+	describe('helper.js', () => {
+		it("getRelativeDateTime returns correctly on future days", async () => {
+			const now = moment().add(1, 's');
+
+			expect(helper.getRelativeDateTime(null)).toContain("Unspecified");
+			expect(helper.getRelativeDateTime(now.toDate())).toContain("Today");
+			expect(helper.getRelativeDateTime(now.add(1, 'd').toDate())).toContain("Tomorrow");
+
+			const underWeek = now.add(4, 'd');
+			expect(helper.getRelativeDateTime(underWeek.toDate())).toContain(underWeek.format('dddd'));
+
+			const overWeek = now.add(10, 'd');
+			expect(helper.getRelativeDateTime(overWeek.toDate())).toContain(overWeek.format('MMM DD'));
+		});
+
+		// TODO: not implemented
+		// like 'Yesterday', "Two days ago" etc
+		it("getRelativeDateTime returns correctly on past days");
 	});
 });

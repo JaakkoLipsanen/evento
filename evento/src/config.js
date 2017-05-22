@@ -1,7 +1,7 @@
 
 import session from './session';
 
-const BaseURL = 'https://evento-api.herokuapp.com';
+const ServerURL = 'https://evento-api.herokuapp.com';
 const getDefaultHeaders = () => {
 
 	const AuthHeader = session.isLoggedIn() ?
@@ -20,9 +20,9 @@ export default {
 		const _fetch = window.fetch;
 		window.fetch = (url, params) => {
 			const parameters = { headers: getDefaultHeaders(), ...params  };
-			return _fetch(BaseURL + url, parameters);
+			return _fetch(ServerURL + url, parameters);
 		};
 	},
 
-	BaseURL: BaseURL
+	ServerURL: ServerURL
 }

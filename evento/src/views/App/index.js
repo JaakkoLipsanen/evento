@@ -3,8 +3,7 @@ import { BrowserRouter as Router, Route, Switch, browserHistory } from 'react-ro
 
 import api from '../../api';
 import MainPage from '../MainPage';
-import EventPage from '../EventPage';
-import NewEventPage from '../NewEventPage';
+import EventPopup from '../EventPopup';
 import AuthenticationPage from '../AuthenticationPage';
 import PathNotFound from './components/PathNotFound';
 import './App.css';
@@ -24,9 +23,9 @@ class App extends Component {
 
 	render() {
 		if (this.state.checkingAuthentication) {
-			return <h3>'Loading...'</h3>
+			return <h3 className="loading-text">loading...</h3>
 		} else if (!this.state.authenticated) {
-			return <AuthenticationPage onSignIn={ () => this.onSignin() } />
+			return <AuthenticationPage onSignIn={() => this.onSignin()} />
 		}
 
 		return (
@@ -35,8 +34,7 @@ class App extends Component {
 					<Switch>
 						<Route exact path='/' component={ MainPage } />
 						<Route exact path='/events' component={ MainPage } />
-						<Route exact path='/event/new' component={ NewEventPage } />
-						<Route exact path='/event/:eventId' component={ EventPage } />
+						<Route exact path='/events/:eventId' component={ EventPopup } />
 						<Route path='*' component={ PathNotFound } />
 					</Switch>
 				</Router>
@@ -45,7 +43,7 @@ class App extends Component {
 	}
 
 	async checkAuthenticationStatus() {
-		this.setState({ checkAuthenticationStatus: true })
+		this.setState({ checkingAuthentication: true })
 
 		const result = await api.getAuthenticationStatus();
 		const isAuthenticated = result.success && result.payload.isAuthenticated;
@@ -54,7 +52,6 @@ class App extends Component {
 
 	onSignin() {
 		this.setState({ authenticated: true });
-		this.forceUpdate(); // re-render App
 	}
 }
 

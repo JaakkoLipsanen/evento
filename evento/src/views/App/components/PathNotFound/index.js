@@ -4,8 +4,10 @@ import './PathNotFound.css'
 class PathNotFound extends Component {
 	render() {
 		return (
-      <h1> 404! </h1>
-    );
+			<div className="PathNotFound">
+				<h1> page not found! </h1>
+			</div>
+		);
 	}
 }
 

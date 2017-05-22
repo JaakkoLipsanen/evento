@@ -4,13 +4,14 @@ import MyEvents from './';
 
 import session from '../../session';
 import api from '../../api';
-import { mount, mocks, cookies, createSinonSandbox } from '../../test-helpers';
+import { mount, mocks, cookies, createSinonSandbox, renderToDOM } from '../../test-helpers';
 
 const VALID_COOKIES = { user: mocks.user, auth_token: "valid" };
 const INVALID_COOKIES = { user: mocks.user, auth_token: "invalid" };
 
 describe("MyEvents", () => {
 	const sinon = createSinonSandbox({ restoreAfterEachTest: true, throwIfApiNotMocked: false });
+	const ReturnAllFilterer = (events) => events;
 
 	beforeEach(() => {
 		cookies.reset();
@@ -37,18 +38,18 @@ describe("MyEvents", () => {
 
 	it('renders without crashing', () => {
 		const div = document.createElement('div');
-		ReactDOM.render(<MyEvents />, div);
+		renderToDOM(<MyEvents filterEvents={ReturnAllFilterer} />, div);
 	});
 
 	it('shows error if user is not logged in', async () => {
-		const myEventsPage = await mount(<MyEvents />);
+		const myEventsPage = await mount(<MyEvents filterEvents={ReturnAllFilterer} />);
 		expect(myEventsPage.text()).toEqual(api.NOT_LOGGED_IN_MESSAGE);
 	});
 
 	it('shows error if given incorrect parameters', async () => {
 		cookies.set(INVALID_COOKIES);
 
-		const myEventsPage = await mount(<MyEvents />);
+		const myEventsPage = await mount(<MyEvents filterEvents={ReturnAllFilterer} />);
 		expect(myEventsPage.text()).toEqual(api.DEFAULT_ERROR_MESSAGE);
 	});
 
@@ -56,18 +57,20 @@ describe("MyEvents", () => {
 		beforeEach(() => cookies.set(VALID_COOKIES));
 
 		it('shows events if user is logged in', async () => {
-			const myEventsPage = await mount(<MyEvents />);
+			const myEventsPage = await mount(<MyEvents filterEvents={ReturnAllFilterer} />);
 
 			expect(myEventsPage.state('events')).toEqual(mocks.events);
 			expect(myEventsPage.find('EventCard').length).toEqual(mocks.events.length);
 		});
 
-		it('updates history when event is clicked', async () => {
-			const history = { push: sinon.spy() };
-			const myEventsPage = await mount(<MyEvents history={history} />);
-
-			myEventsPage.find('EventCard').at(1).simulate('click');
-			expect(history.push.calledWith(`/event/${mocks.events[1].id}`)).toBe(true);
-		});
+		it('calls onEventSelected when EventCard is clicked')
+		// , async () => {
+		// 	const eventSelectSpy = sinon.spy();
+		// 	const myEventsPage = await mount(<MyEvents filterEvents={ReturnAllFilterer} onEventSelected={eventSelectSpy}/>);
+		// 	const eventCard = myEventsPage.find('EventCard').at(0);
+		// 	eventCard.simulate('click');
+		//
+		// 	expect(eventSelectSpy.called).toBe(true);
+		// });
 	})
 })

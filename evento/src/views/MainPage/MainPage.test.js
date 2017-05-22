@@ -1,10 +1,10 @@
-import React from 'react';
+import React, { Component } from 'react';
 import ReactDOM from 'react-dom';
 import { MemoryRouter } from 'react-router-dom';
 import sinon from 'sinon';
 
 import MainPage from './';
-import { mount, mocks } from '../../test-helpers';
+import { mount, shallow, mocks, renderToDOM } from '../../test-helpers';
 
 const DefaultEntries = undefined;
 const DefaultLocation = { pathname: '/' };
@@ -21,7 +21,7 @@ const mountMainPage = async ({ initialEntries = DefaultEntries, initialLocation 
 
 it('renders without crashing', () => {
 	const div = document.createElement('div');
-	ReactDOM.render(
+	renderToDOM(
 		(<MemoryRouter>
 			<MainPage location={{ pathname: '/explore' }} />
 		</MemoryRouter>), div);
@@ -94,4 +94,34 @@ it('changes path after tab is clicked', async () => {
 
 	mainPage.find('Tab').at(0).simulate('click');
 	expect(history.push.calledOnce).toBe(true);
+});
+
+it('calls showEvent when onNewEventCreated is called', async () => {
+		const wrapper = await shallow(<MainPage />);
+		const mainPage = wrapper.shallow()
+		const showEventSpy = sinon.spy(wrapper.instance(), 'showEvent');
+
+		wrapper.instance().onNewEventCreated(mocks.event);
+		await wrapper.wait(700);
+
+		expect(showEventSpy.calledOnce).toBe(true);
+});
+
+it('changes key when onNewEventCreated is called', async () => {
+		const wrapper = await shallow(<MainPage />);
+		const oldKey = wrapper.instance().key;
+
+		wrapper.instance().onNewEventCreated(mocks.event);
+
+		expect(wrapper.instance().key !== oldKey).toBe(true);
+});
+
+it('forceUpdates when onNewEventCreated is called', async () => {
+		const wrapper = await shallow(<MainPage />);
+		const oldKey = wrapper.instance().key;
+		const foreUpdateSpy = sinon.spy(Component.prototype, 'forceUpdate');
+
+		expect(foreUpdateSpy.calledOnce).toBe(false);
+		wrapper.instance().onNewEventCreated(mocks.event);
+		expect(foreUpdateSpy.calledOnce).toBe(true);
 });

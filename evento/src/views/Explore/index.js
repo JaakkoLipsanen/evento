@@ -13,6 +13,10 @@ class Explore extends Component {
 		};
 	}
 
+	get filteredEvents() {
+		return this.props.filterEvents(this.state.events);
+	}
+
 	async componentDidMount() {
 		const result = await api.getEvents();
 		if(result.success) {
@@ -21,10 +25,6 @@ class Explore extends Component {
 		else {
 			this.setState({ errorMessage: result.error.message });
 		}
-	}
-
-	get filteredEvents() {
-		return this.props.filterEvents(this.state.events);
 	}
 
 	render() {
@@ -39,7 +39,7 @@ class Explore extends Component {
 						<EventCard
 							key={event.id}
 							event={event}
-							onClick={() => this.props.history.push(`/event/${event.id}`)}
+							onClick={() => this.props.onEventSelected(event) }
 						/>
 					)}
 				</div>

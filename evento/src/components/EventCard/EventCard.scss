@@ -1,78 +1,22 @@
 $width: 100%;
-$height: 190px;
-
-$text-color: rgb(232, 232, 232);
-$card-image-overlay-color: rgba(0, 0, 0, 0.225);
-$text-shadow-blur-amount: 8px;
-$text-shadow-color: rgba(0, 0, 0, 0.6);
-
 $card-margin: 14px;
-$card-inner-padding: 4px;
-$card-border-radius: 6px; // for rounding corner
 $card-row-bottom-margin: 6px; // how much space between rows
-
-/* default margin for everything inside the card */
-$card-field-margin: 4px 0px 4px 12px;
 
 .EventCard {
 	width: $width;
-	height: $height;
 	display: inline-block;
+	text-align: center;
 
 	margin: $card-row-bottom-margin 0px;
-	padding: $card-inner-padding;
-
 	box-sizing: border-box;
-	cursor: pointer;
-
-	color: $text-color;
-	text-shadow: 0px 0px $text-shadow-blur-amount $text-shadow-color;
-	border-radius: $card-border-radius;
-
-	/* TODO: the image is TEMPORARY!! Replace with the actual image once we implement event photos */
-	background: linear-gradient($card-image-overlay-color, $card-image-overlay-color),
-	            url('default_background_image.jpg');
-
-	background-position: center;
-	background-size: cover;
-
-	h4 {
-		margin: $card-field-margin;
-		font-size: 22px;
-	}
-
-	.wrapper {
-		position: relative;
-		height: 100%;
-	}
-
-	.title {
-		margin-top: 14px;
-	}
-
-	.location {
-		font-size: 14px;
-	}
-
-	.bottom-block {
-		position: absolute;
-		width: 100%;
-		bottom: 0px;
-	}
-
-	.time, .creator {
-		display: inline-block;
-		font-size: 15px;
-	}
-
-	.creator {
-		position: absolute;
-		right: 8px;
-	}
 
 	/* different amount of cards per row depending on screen width */
 	@media (max-width: 600px) {
 		width: 100% !important;
+		.card-description {
+			/* full-width event cards can have varying height */
+			height: auto !important;
+		}
 	}
 
 	/* TODO: rest of these maybe could be generalized to a single mixin or smth */
@@ -84,18 +28,10 @@ $card-field-margin: 4px 0px 4px 12px;
 		}
 	}
 
-	@media (min-width: 1001px) and (max-width: 1500px) {
+	@media (min-width: 1001px) {
 		width: calc((100% - 2 * #{$card-margin}) / 3) !important;
 
 		&:not(:nth-child(3n)) { /* every child except last on a row */
-			margin-right: #{$card-margin};
-		}
-	}
-
-	@media (min-width: 1501px){
-		width: calc((100% - 3 * #{$card-margin}) / 4) !important;
-
-		&:not(:nth-child(4n)) { /* every child except last on a row */
 			margin-right: #{$card-margin};
 		}
 	}

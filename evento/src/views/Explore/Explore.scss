@@ -9,4 +9,7 @@ $content-padding: 8px;
 .event-card-list {
 	text-align: left;
 	margin-top: $top-margin;
+
+	max-width: 1300px;
+	margin: auto;
 }

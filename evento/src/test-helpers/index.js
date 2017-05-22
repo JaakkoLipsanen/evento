@@ -3,8 +3,19 @@ import sinon from 'sinon';
 import Cookie from 'js-cookie';
 import fetchMock from 'fetch-mock';
 
+import React from 'react';
+import PropTypes from 'prop-types';
+
+import ReactDOM from 'react-dom';
+import MuiThemeProvider from 'material-ui/styles/MuiThemeProvider';
+import getMuiTheme from 'material-ui/styles/getMuiTheme';
+
 import mockFactory from './mock-factory';
 import api from '../api';
+
+// Fixes unknown-prop errors during tests
+const injectTapEventPlugin = require("react-tap-event-plugin");
+injectTapEventPlugin();
 
 const cookies = {
 	set(cookies) {
@@ -59,11 +70,36 @@ const waitForFetches = (milliseconds = 50) => {
 };
 
 const mount = async (component) => {
-	const mounted = enzyme.mount(component);
+	const muiTheme = getMuiTheme();
+	const mounted = enzyme.mount(component, {
+		context: { muiTheme },
+		childContextTypes: {muiTheme: PropTypes.object}
+	});
+
 	await waitForFetches();
 
 	mounted.wait = waitForFetches;
 	return mounted;
+};
+
+const shallow = async (component) => {
+	const muiTheme = getMuiTheme();
+	const mounted = enzyme.shallow(component, {
+		context: { muiTheme },
+		childContextTypes: {muiTheme: PropTypes.object}
+	});
+
+	await waitForFetches();
+
+	mounted.wait = waitForFetches;
+	return mounted;
+};
+
+const renderToDOM = async (component, domElement) => {
+	ReactDOM.render(
+		<MuiThemeProvider>{ component }</MuiThemeProvider>,
+		domElement
+	);
 };
 
 const ApiFunctionNames = Object.getOwnPropertyNames(api).filter((p) =>  typeof api[p] === 'function');
@@ -72,7 +108,7 @@ const ApiFunctionValues = ApiFunctionNames.reduce((map, name) => { map[name] = 
 const MockAllApiCalls = (mockFunc) => ApiFunctionNames.forEach((name) => api[name] = () => mockFunc(name));
 const RestoreAllApiCalls = () => ApiFunctionNames.forEach((name) => api[name] = ApiFunctionValues[name]);
 
-const createSinonSandbox = ({ restoreAfterEachTest, throwIfApiNotMocked = true }) => {
+const createSinonSandbox = ({ restoreAfterEachTest = true, throwIfApiNotMocked = true }) => {
 	let sandbox;
 	const sinonProxy = {
 		get match() { return sandbox.match; },
@@ -98,4 +134,4 @@ const createSinonSandbox = ({ restoreAfterEachTest, throwIfApiNotMocked = true }
 	return sinonProxy;
 };
 
-export { cookies, mocks, mount, createSinonSandbox }
+export { cookies, mocks, mount, shallow, createSinonSandbox, renderToDOM }
