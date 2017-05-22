@@ -32,7 +32,7 @@ class SignInForm extends Component {
 
 		// if result is success, then don't set "isSigningIn" back to false again
 		// also, add some delay so that it looks a bit better (doesnt pop in/out instantly)
-		setTimeout(() => 	this.setState({ isSigningIn: result.success }), 300);
+		setTimeout(() => this.setState({ isSigningIn: result.success }), 300);
 
 	}
 

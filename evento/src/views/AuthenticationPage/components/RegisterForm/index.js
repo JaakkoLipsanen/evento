@@ -46,7 +46,7 @@ class RegisterForm extends React.Component {
 
 		// if result is success, then don't set "isSigningIn" back to false again
 		// also, add some delay so that it looks a bit better (doesnt pop in/out instantly)
-		setTimeout(() => 	this.setState({ isRegistering: registerResult.success }), 300);
+		setTimeout(() => this.setState({ isRegistering: registerResult.success }), 300);
 	}
 
 	setErrors(error) {
