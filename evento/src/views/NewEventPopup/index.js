@@ -79,11 +79,6 @@ class NewEventPopup extends Component {
 		}
 
 		const startTime = this.startTimePicker.getDateTime();
-		if(!startTime) {
-			this.setState({ fieldErrors: { time: 'must be set' } });
-			return;
-		}
-
 		const result = await api.createNewEvent({
 			title: this.state.title,
 			description: this.state.description,
