@@ -120,7 +120,7 @@ describe('EventPopup', () => {
 			eventPage.instance().show(mocks.event)
 			await eventPage.wait();
 
-			eventPage.find('button').simulate('click');
+			eventPage.find('button').at(0).simulate('click');
 
 			expect(updateIsAttending.calledOnce).toBe(true);
 			expect(updateIsAttending.calledWith(true)).toBe(true);
@@ -134,7 +134,7 @@ describe('EventPopup', () => {
 			eventPage.instance().show(mocks.event)
 			await eventPage.wait();
 
-			eventPage.find('button').simulate('click');
+			eventPage.find('button').at(0).simulate('click');
 
 			expect(updateIsAttending.calledOnce).toBe(true);
 			expect(updateIsAttending.calledWith(false)).toBe(true);
@@ -149,7 +149,7 @@ describe('EventPopup', () => {
 			eventPage.instance().show(mocks.event)
 			await eventPage.wait();
 
-			eventPage.find('button').simulate('click');
+			eventPage.find('button').at(0).simulate('click');
 
 			expect(fetchAttendees.called).toBe(true);
 		});
@@ -168,7 +168,7 @@ describe('EventPopup', () => {
 			eventPage.instance().show(mocks.event)
 			await eventPage.wait();
 
-			eventPage.find('button').simulate('click');
+			eventPage.find('button').at(0).simulate('click');
 			await eventPage.wait();
 
 			expect(eventPage.state('errorMessage')).toEqual(api.DEFAULT_ERROR_MESSAGE);

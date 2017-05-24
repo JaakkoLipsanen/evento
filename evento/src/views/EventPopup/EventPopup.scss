@@ -23,6 +23,14 @@ $right-bar-width: 256px;
 			}
 		}
 	}
+	.button-container {
+
+		.close-button {
+			margin-bottom: 8px !important;
+		}
+	}
+
+
 
 	/* under 580px width then split left & right panels from side-to-side -> vertical */
 	@media (max-width: 580px) {
