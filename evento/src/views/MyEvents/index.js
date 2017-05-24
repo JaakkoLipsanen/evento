@@ -66,15 +66,15 @@ class MyEvents extends Component {
 					}
 				</div>
 				<h2>{ pastHeader }</h2>
-					<div className="event-card-list">
-						{ this.state.pastEvents.map(event =>
-							<EventCard
-								key={event.id}
-								event={event}
-								onClick={() => this.props.onEventSelected(event) }
-							/>)
-						}
-					</div>
+				<div className="event-card-list">
+					{ this.state.pastEvents.map(event =>
+						<EventCard
+							key={event.id}
+							event={event}
+							onClick={() => this.props.onEventSelected(event) }
+						/>)
+					}
+				</div>
 			</div>
 		);
 	}
