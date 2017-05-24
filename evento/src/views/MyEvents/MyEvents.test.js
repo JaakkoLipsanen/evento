@@ -59,7 +59,7 @@ describe("MyEvents", () => {
 		it('shows events if user is logged in', async () => {
 			const myEventsPage = await mount(<MyEvents filterEvents={ReturnAllFilterer} />);
 
-			expect(myEventsPage.state('events')).toEqual(mocks.events);
+			expect(myEventsPage.state('upcomingEvents')).toEqual(mocks.events);
 			expect(myEventsPage.find('EventCard').length).toEqual(mocks.events.length);
 		});
 

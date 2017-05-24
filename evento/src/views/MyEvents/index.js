@@ -8,14 +8,14 @@ class MyEvents extends Component {
 	constructor() {
 		super();
 		this.state = {
-			events: [],
+			upcomingEvents: [],
 			pastEvents: [],
 			errorMessage: null
 		};
 	}
 
 	get filteredEvents() {
-		return this.props.filterEvents(this.state.events);
+		return this.props.filterEvents(this.state.upcomingEvents);
 	}
 
 	componentDidMount() {
@@ -31,11 +31,28 @@ class MyEvents extends Component {
 			const pastEvents = result.payload.events
 				.filter(e => Date.parse(e.time) <= Date.now());
 
-			this.setState({ events: upcomingEvents, pastEvents: pastEvents });
+			this.setState({
+				upcomingEvents: upcomingEvents,
+				pastEvents: pastEvents
+			});
 		}
 		else {
 			this.setState({ errorMessage: result.error.message });
 		}
+	}
+
+	getUpcomingHeader() {
+		if (this.state.upcomingEvents.length === 0) {
+			return "You have no upcoming events";
+		} else if (this.filteredEvents.length === 0) {
+			return "None of your upcoming events matched the query";
+		}
+
+		return "You are attending to the following events";
+	}
+
+	getPastHeader() {
+		return this.state.pastEvents.length > 0 ? "Your past events" : "";
 	}
 
 	render() {
@@ -43,19 +60,9 @@ class MyEvents extends Component {
 			return <h4>{this.state.errorMessage}</h4>
 		}
 
-		let upcomingHeader = "You are attending to the following events";
-		if (this.state.events.length === 0) {
-			upcomingHeader = "You have no upcoming events";
-		} else if (this.filteredEvents.length === 0) {
-			upcomingHeader = "None of your upcoming events matched the query";
-		}
-
-		const pastHeader = this.state.pastEvents.length > 0 ?
-			"Your past events" : "";
-
 		return (
 			<div className="MyEvents">
-				<h2>{ upcomingHeader }</h2>
+				<h2>{ this.getUpcomingHeader() }</h2>
 				<div className="event-card-list">
 					{ this.filteredEvents.map(event =>
 						<EventCard
@@ -65,7 +72,7 @@ class MyEvents extends Component {
 						/>)
 					}
 				</div>
-				<h2>{ pastHeader }</h2>
+				<h2>{ this.getPastHeader() }</h2>
 				<div className="event-card-list">
 					{ this.state.pastEvents.map(event =>
 						<EventCard

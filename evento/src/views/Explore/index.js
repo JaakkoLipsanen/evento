@@ -17,7 +17,11 @@ class Explore extends Component {
 		return this.props.filterEvents(this.state.events);
 	}
 
-	async componentDidMount() {
+	componentDidMount() {
+		this.fetchEvents();
+	}
+
+	async fetchEvents() {
 		const result = await api.getEvents();
 		if(result.success) {
 			const upcomingEvents = result.payload.events
