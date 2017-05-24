@@ -6,10 +6,10 @@ const generateId = () =>
 const generateString = (n) =>
 	(Math.random().toString(36) + '00000000000000000').slice(2, n + 2);
 
-// Return time stamp of day after tomorrow
-const generateTimeStamp = () => {
+// Return future time stamp
+const generateTimeStamp = (daysInFuture=2) => {
 	const dayAfterTomorrow = new Date();
-	dayAfterTomorrow.setDate(dayAfterTomorrow.getDate() + 2);
+	dayAfterTomorrow.setDate(dayAfterTomorrow.getDate() + daysInFuture);
 	return dayAfterTomorrow.toISOString();
 }
 
