@@ -1,5 +1,6 @@
 import React, { Component } from 'react';
 import { CardTitle } from 'material-ui/Card';
+import RaisedButton from 'material-ui/RaisedButton';
 
 import Popup from '../../components/Popup';
 import Map from './components/Map';
@@ -131,6 +132,14 @@ class EventPopup extends Component {
 
 						<AttendeeList event={event} attendees={attendees} />
 					</div>
+				</div>
+				<div className="button-container">
+					<RaisedButton
+						className="close-button"
+						label="Close"
+						style={{ marginTop: "16px", marginLeft: "4px", width: "50%" }}
+						onClick={() => this.close() }
+					/>
 				</div>
 			</div>
 		);
