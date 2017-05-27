@@ -17,10 +17,16 @@ class Explore extends Component {
 		return this.props.filterEvents(this.state.events);
 	}
 
-	async componentDidMount() {
+	componentDidMount() {
+		this.fetchEvents();
+	}
+
+	async fetchEvents() {
 		const result = await api.getEvents();
 		if(result.success) {
-			this.setState({ events: result.payload.events });
+			const upcomingEvents = result.payload.events
+				.filter(e => Date.parse(e.time) > Date.now());
+			this.setState({ events: upcomingEvents });
 		}
 		else {
 			this.setState({ errorMessage: result.error.message });
